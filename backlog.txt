@@ -1,0 +1,28 @@
+Learning Framework PR Backlog
+
+- Test with no features present, no features specified
+- How is YL using less RAM and how much less? This seems to be quite a major issue possibly also causing LF to be much slower on larger corpora/with larger feature sets
+- NER
+ - How is YL doing NER and how is it better--I think he's making a separate BE classifier for each class
+ - Overlapping NEs in NER input--what happens?
+ - Consider OI sequence to be OB--read YL paper for input, check CONLL
+- Features back onto existing docs if same input/output AS in class.
+- Output features to runtime params, default to “class”?
+- Make it possible to generate arff compatible with an existing pipe? Done but fails to export any instance with any feature not present in the header.
+- Print out class indices so that people know what they are if they want to use the weights parameter
+- Remove instance identifier param
+- Friendlier defaults
+ - Consider making epsilon default to 0.01
+ - Get it so it at least always converges?
+- Should be some way of specifying a boolean feature for the presence of an annotation type at that location. At the moment if you just give type and not feature it uses the clean string
+- Should be possible to request multiple features on the same annotation to be combined into a compound feature rather than their connection being lost.
+- Could I actually write the training output to the info file?
+- Print out features with highest weights, so we can see what are the important features--in progress
+- Nice to integrate LibLinear
+- Think about exposing the pipe
+- Cross Validation PR
+- Maybe feature selection, or support exporting to an external tool to facilitate this
+- PAUM
+- LDA
+- Check again that I have supported any learner parameters--for example I found a load more for J48.
+
