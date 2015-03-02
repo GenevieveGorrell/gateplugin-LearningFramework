@@ -1,10 +1,26 @@
-<project name="LearningFramework" basedir="." >
+<project name="LearningFramework" basedir="."  default="build" >
   <!-- Prevent Ant from warning about includeantruntime not being set -->
   <property name="build.sysclasspath" value="ignore" />
 
   <property file="build.properties" />
+  <!-- Name of the plugin -->
+  <property name="plugin.name" value="ModularPipelines"/>
 
-  <property name="gate.home" location="../../../gate" />
+  <!-- Make environment variables available -->
+  <property environment="env" />
+
+  <!-- If environment variable GATE_HOME is set, use it for
+       gate.home (unless it was already set in build.properties -->
+  <condition property="gate.home" value="${env.GATE_HOME}">
+    <isset property="env.GATE_HOME"/>
+  </condition>
+
+  <!-- If gate.home is not set from build.properties or the 
+       environment variable GATE_HOME, assume that this
+       plugin is in GATE Developer's plugin directory -->
+  <property name="gate.home" location="../.." />
+
+
   <property name="gate.lib" location="${gate.home}/lib" />
   <property name="gate.jar" location="${gate.home}/bin/gate.jar" />
   <property name="src.dir" location="src" />
