@@ -1,10 +1,10 @@
-<project name="LearningFramework" basedir="."  default="build" >
+<project name="Learning_Framework" basedir="."  default="build" >
   <!-- Prevent Ant from warning about includeantruntime not being set -->
   <property name="build.sysclasspath" value="ignore" />
 
   <property file="build.properties" />
   <!-- Name of the plugin -->
-  <property name="plugin.name" value="ModularPipelines"/>
+  <property name="plugin.name" value="Learning_Framework"/>
 
   <!-- Make environment variables available -->
   <property environment="env" />
