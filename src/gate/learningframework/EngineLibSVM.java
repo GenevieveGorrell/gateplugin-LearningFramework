@@ -144,19 +144,19 @@ public class EngineLibSVM  extends Engine {
 		}
 	}
 
-	private svm_parameter makeParam(){
+	private svm_parameter makeParam(double num_feats){
 		//Default parameters (kernel etc.) are pretty good. For guidelines 
 		//see here: http://www.csie.ntu.edu.tw/~cjlin/papers/guide/guide.pdf
 		//To find out what the defaults are, see here: http://www.csie.ntu.edu.tw/~cjlin/libsvm/
 		svm_parameter param=new svm_parameter();
-
+		
 		param.cache_size=20000; //Default of 100 is a bit low
 
 		//By default we're going to calculate probabilities and write them
 		//on the annotations at apply time. This is slow because it isn't
 		//such a natural thing for an SVM to do. The user can override this
 		//option using the runtime parameter learnerParams.
-		param.probability=1;
+		//param.probability=1; //Changed my mind. Let's stick to the usual default.
 
 		//This supposedly is the default. However in my experience if it is
 		//absent, libsvm chucks a null or never terminates training. User
@@ -250,6 +250,14 @@ public class EngineLibSVM  extends Engine {
 				}
 			}
 		}
+		
+		//By convention, a gamma of zero indicates that we should 
+		//use 1/number of features. We don't ever want to have a 
+		//gamma of zero because the model will fail.
+		if(param.gamma==0.0){
+			param.gamma=1/num_feats;
+		}
+		
 		return param;
 	}
 
@@ -261,8 +269,6 @@ public class EngineLibSVM  extends Engine {
 				f.delete();
 			}
 		}
-
-		svm_parameter param = makeParam();
 
 		//Mallet feature prep stuff is so helpful so we'll start there
 		CorpusWriterMallet trMal = (CorpusWriterMallet)trainingCorpus;
@@ -282,12 +288,14 @@ public class EngineLibSVM  extends Engine {
 
 		}
 
+		svm_parameter param = makeParam(trMal.getInstances().getDataAlphabet().size());
+		
 		//Train is a static method on svm
 		libsvm.svm.svm_set_print_string_function(print_func);
 		libsvm.svm.rand.setSeed(1);
 		svmModel = libsvm.svm.svm_train(prob, param);
 		
-		printModel(trMal);
+		//printModel(trMal);
 
 		//Save the classifier so we don't have to retrain if we
 		//restart GATE
@@ -352,28 +360,22 @@ public class EngineLibSVM  extends Engine {
 			//Now convert to svm format
 			svm_node[] vec = CorpusWriterMallet.getLibSVMVectorForInst(instance);
 
-			int[] labels = new int[numberOfLabels];
-			svm.svm_get_labels(this.svmModel,labels);
-
-			double[] prob_estimates = new double[numberOfLabels];
-			double v = svm.svm_predict_probability(
-					this.svmModel, vec, prob_estimates);
-
-			double bestConf = 0.0;
-
-			//Just in case the user turned off probabilities, we initialize to
-			//a basic prediction
 			int bestLabel = (new Double(svm.svm_predict(this.svmModel, vec))).intValue();
 
-			//For each label option ..
-			for(int i=0;i<numberOfLabels;i++){
-				double prob = prob_estimates[i];
-				if(prob>bestConf){
-					bestConf = prob;
-					bestLabel = labels[i];
-				}
+
+			double[] confidences = new double[numberOfLabels];
+			
+			if(svm.svm_check_probability_model(this.svmModel)==1){
+				double v = svm.svm_predict_probability(
+						this.svmModel, vec, confidences);
+			} else {
+				svm.svm_predict_values(this.svmModel, vec, confidences);
 			}
 
+			//Note to self--is it possible that labels won't always be in order?
+			//If so, this won't work! But I think (hope) they always will be!
+			double bestConf = confidences[bestLabel];
+			
 			String labelstr = (String)this.pipe.getTargetAlphabet().lookupObject(bestLabel);
 			GateClassification gc = new GateClassification(
 					instanceAnnotation, labelstr, bestConf);
@@ -390,7 +392,7 @@ public class EngineLibSVM  extends Engine {
 	public void evaluateXFold(CorpusWriter evalCorpus, int folds){
 		CorpusWriterMallet cwm = (CorpusWriterMallet)evalCorpus; 
 		svm_problem prob = cwm.getLibSVMProblem();
-		svm_parameter param = makeParam();
+		svm_parameter param = makeParam(cwm.getInstances().getDataAlphabet().size());
 
 		double[] target = new double[prob.l];
 
@@ -415,7 +417,7 @@ public class EngineLibSVM  extends Engine {
 	public void evaluateHoldout(CorpusWriter evalCorpus, float trainingproportion){
 		CorpusWriterMallet cwm = (CorpusWriterMallet)evalCorpus; 
 		svm_problem[] probs = cwm.getLibSVMProblemSplit(trainingproportion);
-		svm_parameter param = makeParam();
+		svm_parameter param = makeParam(cwm.getInstances().getDataAlphabet().size());
 
 		//Train is a static method on svm
 		svm_model svmMod = libsvm.svm.svm_train(probs[0], param);

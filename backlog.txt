@@ -11,8 +11,6 @@ Learning Framework PR Backlog
 - Make it possible to generate arff compatible with an existing pipe? Done but fails to export any instance with any feature not present in the header.
 - Print out class indices so that people know what they are if they want to use the weights parameter
 - Remove instance identifier param
-- Friendlier defaults
- - Get it so it at least always converges? Turn off probabilities or replace with something else.
 - Should be some way of specifying a boolean feature for the presence of an annotation type at that location. At the moment if you just give type and not feature it uses the clean string
 - Should be possible to request multiple features on the same annotation to be combined into a compound feature rather than their connection being lost.
 - Could I actually write the training output to the info file?
