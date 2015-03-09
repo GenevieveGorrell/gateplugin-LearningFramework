@@ -12,16 +12,13 @@ Learning Framework PR Backlog
 - Print out class indices so that people know what they are if they want to use the weights parameter
 - Remove instance identifier param
 - Friendlier defaults
- - Consider making epsilon default to 0.01
- - Get it so it at least always converges?
+ - Get it so it at least always converges? Turn off probabilities or replace with something else.
 - Should be some way of specifying a boolean feature for the presence of an annotation type at that location. At the moment if you just give type and not feature it uses the clean string
 - Should be possible to request multiple features on the same annotation to be combined into a compound feature rather than their connection being lost.
 - Could I actually write the training output to the info file?
-- Print out features with highest weights, so we can see what are the important features--in progress
-- Nice to integrate LibLinear
+- LibLinear--important for NLP!!
 - Think about exposing the pipe
 - Cross Validation PR
-- Maybe feature selection, or support exporting to an external tool to facilitate this
 - PAUM
 - LDA
 - Check again that I have supported any learner parameters--for example I found a load more for J48.
