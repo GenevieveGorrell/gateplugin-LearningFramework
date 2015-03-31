@@ -20,4 +20,6 @@ Learning Framework PR Backlog
 - PAUM
 - LDA
 - Check again that I have supported any learner parameters--for example I found a load more for J48.
+- Set ALL LibSVM parameters to the default values they are documented to have.
+- Include learner parameters in the info file.
 
