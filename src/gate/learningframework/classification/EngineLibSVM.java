@@ -151,33 +151,26 @@ public class EngineLibSVM  extends Engine {
 		//Default parameters (kernel etc.) are pretty good. For guidelines 
 		//see here: http://www.csie.ntu.edu.tw/~cjlin/papers/guide/guide.pdf
 		//To find out what the defaults are, see here: http://www.csie.ntu.edu.tw/~cjlin/libsvm/
+		
+		//However it seems as though the defaults aren't set in the Java version
+		//so we're going to set them all to their defaults here, except for
+		//gamma, where we need to wait and see what the user said, and override 
+		//a user setting of zero.
+		
 		svm_parameter param=new svm_parameter();
 		
-		param.cache_size=20000; //Default of 100 is a bit low
-
-		//By default we're going to calculate probabilities and write them
-		//on the annotations at apply time. This is slow because it isn't
-		//such a natural thing for an SVM to do. The user can override this
-		//option using the runtime parameter learnerParams.
-		//param.probability=1; //Changed my mind. Let's stick to the usual default.
-
-		//This supposedly is the default. However in my experience if it is
-		//absent, libsvm chucks a null or never terminates training. User
-		//is welcome to override with a different value but it should't be
-		//absent.
-		param.eps = 0.001;
-
-		//Supposedly the default is 1 but it looks to me like the default is
-		//actually 0, because if I don't set it, the behaviour I see is as though
-		//it were 0. If it's zero we get the same result for everything.
-		//This isn't helpful, so I'll set it here to the sensible default it
-		//ought to have.
-		param.C = 1;
-		
-		//Again, supposedly the default is 2 but it looks to me like it's 0.
-		//We'll make it 2 so that functionality reflects the current online
-		//libsvm documentation.
-		param.kernel_type = 2;
+		param.svm_type=param.C_SVC;		
+		param.kernel_type=param.RBF;
+		param.degree=3;
+		//gamma waits til later
+		param.coef0=0;
+		param.C=1;
+		param.nu=0.5;
+		param.p=0.1;
+		param.cache_size=400;
+		param.eps=0.001;
+		param.shrinking=1;
+		param.probability=0;
 
 		//Weights need setting up
 		param.nr_weight = 0;

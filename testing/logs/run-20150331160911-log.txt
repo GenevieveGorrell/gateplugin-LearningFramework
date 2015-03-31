@@ -1,0 +1,31 @@
+JAVA_OPTS is now -Xmx8G
+PARMS are RunPipeline -b ./logs/run-20150331160911-benchmark.txt /home/genevieve/git/gate-plugins/Learning_Framework/testing/evaluation.xgapp -c lf.config.yaml cl-testing cl-out
+/home/genevieve/git/yodie/yodie-tools/scala/scaladist/bin/scala -cp /home/genevieve/git/yodie/yodie-tools/scala/lib/*:/home/genevieve/git/gate-plugins/Learning_Framework/testing:/home/genevieve/git/gate-plugins/Learning_Framework/testing/lib/*:/home/genevieve/git/yodie/yodie-tools/scala/disambiguation-scala.jar:/home/genevieve/gate-top/externals/gate/bin/gate.jar:/home/genevieve/gate-top/externals/gate/lib/* RunPipeline -b ./logs/run-20150331160911-benchmark.txt /home/genevieve/git/gate-plugins/Learning_Framework/testing/evaluation.xgapp -c lf.config.yaml cl-testing cl-out
+Error: Bad arguments for option 'benchfile': './logs/run-20150331160911-benchmark.txt /home/genevieve/git/gate-plugins/Learning_Framework/testing/evaluation.xgapp' - you should provide exactly one argument for this option
+RunPipeline.scala called from the runPipeline.sh script.
+Usage: runPipeline.sh [OPTIONS] pipelineFile.xgapp inDir [outDir]
+  -a, --abortonerror       Abort all processing if the pipeline throws and
+                           exception
+  -b, --benchfile  <arg>   Name of the benchmark file to create
+                           (default = gate_benchmark.txt)
+  -c, --config  <arg>      Config file to use. This will override all config files
+                           in the pipeline and all sub-pipelines
+  -C, --continue           Continue and do not override existing documents
+  -d, --debug              Enable debugging mode
+  -B, --dobench            Enable benchmarking
+  -l, --logging  <arg>     Use the given file to configure logging
+  -m, --max  <arg>         Maximum number of documents to process (not counting
+                           skipped ones if -C is specified)
+  -o, --outformat  <arg>   Output format to use, either 'xml' or 'finf', default
+                           is 'finf' (default = finf)
+  -r, --readonly           Do not save the documents after processing
+  -s, --skiponerrors       If processing the document throws an exception do NOT
+                           save it
+  -h, --help               Show usage information
+      --version            Show version of this program
+
+ trailing arguments:
+  pipeline (required)     The pipeline file to use
+  indir (required)        Input directory
+  outdir (not required)   Output directory
+If outDir is not specified, the processed files will be written back into the inDir
