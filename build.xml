@@ -58,7 +58,8 @@
            destdir="${classes.dir}"
            debug="true"
            debuglevel="lines,source"
-           source="1.7" />
+           source="1.7" 
+           target="1.7" />
   </target>
 
   <!-- Build JavaDoc documentation -->
