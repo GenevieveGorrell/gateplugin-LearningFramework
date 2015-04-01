@@ -1,4 +1,4 @@
-<!-- creole.xml for LearningFramework PR -->
+<!-- creole.xml for Learning_Framework -->
 <CREOLE-DIRECTORY>
   <JAR scan="true">learningframework.jar</JAR>
  

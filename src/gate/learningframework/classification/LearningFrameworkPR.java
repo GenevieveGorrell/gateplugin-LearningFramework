@@ -55,7 +55,7 @@ import gate.util.InvalidOffsetException;
 
 
 /**
- * <p>Training, evaluation and application of Mallet ML in GATE.</p>
+ * <p>Training, evaluation and application of ML in GATE.</p>
  */
 
 @CreoleResource(name = "Learning Framework PR", comment = "Training, evaluation and application of ML in GATE.")

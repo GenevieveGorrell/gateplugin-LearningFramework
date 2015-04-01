@@ -33,4 +33,4 @@ cp cl-test/* cl-out
 
 runPipeline.sh -c lf.config.yaml ${SCRIPTDIR}/lf-evaluation.xgapp cl-out
 
-echo "Should be 797 v 482."
+echo "Should be 1010 v 269."
