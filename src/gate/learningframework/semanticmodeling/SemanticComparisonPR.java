@@ -10,6 +10,7 @@ import edu.ucla.sspace.common.Similarity;
 import edu.ucla.sspace.vector.DoubleVector;
 import gate.Annotation;
 import gate.AnnotationSet;
+import gate.Controller;
 import gate.Document;
 import gate.Factory;
 import gate.FeatureMap;
@@ -17,6 +18,7 @@ import gate.ProcessingResource;
 import gate.Resource;
 import gate.Utils;
 import gate.creole.AbstractLanguageAnalyser;
+import gate.creole.ControllerAwarePR;
 import gate.creole.ExecutionException;
 import gate.creole.ResourceInstantiationException;
 import gate.creole.metadata.CreoleParameter;
@@ -28,7 +30,7 @@ import gate.creole.metadata.RunTime;
 		+ "annotations using semantic vectors produced using a semantic model created using"
 		+ " the Semantic Modeling PR.")
 public class SemanticComparisonPR extends AbstractLanguageAnalyser implements
-ProcessingResource{
+ProcessingResource, ControllerAwarePR {
 
 	/**
 	 * 
@@ -169,65 +171,80 @@ ProcessingResource{
 	@Override
 	public void execute() throws ExecutionException {
 
-		//Do this once only on the first document
-		if(corpus.indexOf(document)==0) {
-			if(semanticModel==null){
-				semanticModel = SemanticModel.restoreModel(new File(saveDirectory.getFile()));
+		Document doc = getDocument();
+
+		AnnotationSet instances = doc.getAnnotations(instanceASName).get(instanceType);
+		AnnotationSet comparisons = doc.getAnnotations(comparisonASName).get(comparisonType);
+
+		for(Annotation instance: instances){
+			Annotation comparisonAnnotation = null;
+			AnnotationSet tmpas = null;
+
+			switch(this.getComparisonSpecification()){
+			case FIRST_CONTAINED:
+				comparisonAnnotation = Utils.getContainedAnnotations(comparisons, instance)
+				.inDocumentOrder().iterator().next();
+				break;
+			case FIRST_OVERLAPPING:
+				comparisonAnnotation = Utils.getOverlappingAnnotations(comparisons, instance)
+				.inDocumentOrder().iterator().next();
+				break;
+			case FIRST_COVERING:
+				comparisonAnnotation = Utils.getCoveringAnnotations(comparisons, instance)
+				.inDocumentOrder().iterator().next();
+				break;
+			case LAST_CONTAINED:
+				tmpas = Utils.getContainedAnnotations(comparisons, instance);
+				comparisonAnnotation = tmpas.inDocumentOrder().get(tmpas.size()-1);
+				break;
+			case LAST_OVERLAPPING:
+				tmpas = Utils.getOverlappingAnnotations(comparisons, instance);
+				comparisonAnnotation = tmpas.inDocumentOrder().get(tmpas.size()-1);
+				break;
+			case LAST_COVERING:
+				tmpas = Utils.getCoveringAnnotations(comparisons, instance);
+				comparisonAnnotation = tmpas.inDocumentOrder().get(tmpas.size()-1);
+				break;
 			}
-			if(semanticModel==null){
-				logger.warn("Semantic Modeling: No semantic model available!");
-			}
-		}
-
-		if(semanticModel!=null){
-			Document doc = getDocument();
-
-			AnnotationSet instances = doc.getAnnotations(instanceASName).get(instanceType);
-			AnnotationSet comparisons = doc.getAnnotations(comparisonASName).get(comparisonType);
-
-			for(Annotation instance: instances){
-				Annotation comparisonAnnotation = null;
-				AnnotationSet tmpas = null;
-
-				switch(this.getComparisonSpecification()){
-				case FIRST_CONTAINED:
-					comparisonAnnotation = Utils.getContainedAnnotations(comparisons, instance)
-					.inDocumentOrder().iterator().next();
-					break;
-				case FIRST_OVERLAPPING:
-					comparisonAnnotation = Utils.getOverlappingAnnotations(comparisons, instance)
-					.inDocumentOrder().iterator().next();
-					break;
-				case FIRST_COVERING:
-					comparisonAnnotation = Utils.getCoveringAnnotations(comparisons, instance)
-					.inDocumentOrder().iterator().next();
-					break;
-				case LAST_CONTAINED:
-					tmpas = Utils.getContainedAnnotations(comparisons, instance);
-					comparisonAnnotation = tmpas.inDocumentOrder().get(tmpas.size()-1);
-					break;
-				case LAST_OVERLAPPING:
-					tmpas = Utils.getOverlappingAnnotations(comparisons, instance);
-					comparisonAnnotation = tmpas.inDocumentOrder().get(tmpas.size()-1);
-					break;
-				case LAST_COVERING:
-					tmpas = Utils.getCoveringAnnotations(comparisons, instance);
-					comparisonAnnotation = tmpas.inDocumentOrder().get(tmpas.size()-1);
-					break;
-				}
 
 
-				String instanceString = instance.getFeatures().get(instanceFeature).toString();
-				String comparisonString = comparisonAnnotation.getFeatures().get(comparisonFeature).toString();
+			String instanceString = instance.getFeatures().get(instanceFeature).toString();
+			String comparisonString = comparisonAnnotation.getFeatures().get(comparisonFeature).toString();
 
-				DoubleVector instanceVector = semanticModel.transform(instanceString);
-				DoubleVector comparisonVector = semanticModel.transform(comparisonString);
+			DoubleVector instanceVector = semanticModel.transform(instanceString);
+			DoubleVector comparisonVector = semanticModel.transform(comparisonString);
 
-				if(instanceVector!=null && comparisonVector!=null){
-					Double sim = Similarity.getSimilarity(similarityFunction, instanceVector, comparisonVector);
-					instance.getFeatures().put(this.outputFeature, sim);
-				}
+			if(instanceVector!=null && comparisonVector!=null){
+				Double sim = Similarity.getSimilarity(similarityFunction, instanceVector, comparisonVector);
+				instance.getFeatures().put(this.outputFeature, sim);
 			}
 		}
+	}
+
+	@Override
+	public void controllerExecutionAborted(Controller arg0, Throwable arg1)
+			throws ExecutionException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void controllerExecutionFinished(Controller arg0)
+			throws ExecutionException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void controllerExecutionStarted(Controller arg0)
+			throws ExecutionException {
+		if(semanticModel==null){
+			semanticModel = SemanticModel.restoreModel(new File(saveDirectory.getFile()));
+		}
+		if(semanticModel==null){
+			logger.warn("Semantic Modeling: No semantic model available!");
+			interrupt();
+		}
+		
 	}
 }

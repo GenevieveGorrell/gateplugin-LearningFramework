@@ -35,6 +35,8 @@ import org.apache.log4j.Logger;
 
 
 
+
+
 //import cc.mallet.pipe.Pipe;
 import edu.ucla.sspace.common.SemanticSpace;
 import edu.ucla.sspace.common.Similarity;
@@ -42,12 +44,14 @@ import edu.ucla.sspace.vector.DoubleVector;
 import edu.ucla.sspace.vsm.VectorSpaceModel;
 import gate.AnnotationSet;
 import gate.Annotation;
+import gate.Controller;
 import gate.Document;
 import gate.Factory;
 import gate.FeatureMap;
 import gate.ProcessingResource;
 import gate.Resource;
 import gate.Utils;
+import gate.creole.ControllerAwarePR;
 import gate.creole.ResourceInstantiationException;
 import gate.creole.AbstractLanguageAnalyser;
 import gate.creole.ExecutionException;
@@ -68,7 +72,7 @@ import gate.util.InvalidOffsetException;
 		+ " that can be used in a variety of ways (visualization, comparison).")
 public class SemanticModelingPR extends AbstractLanguageAnalyser implements
 ProcessingResource,
-Serializable {
+Serializable, ControllerAwarePR {
 
 	/**
 	 * 
@@ -222,45 +226,17 @@ Serializable {
 	@Override
 	public void execute() throws ExecutionException {	 
 		Document doc = getDocument();
-		//Do this once only on the first document
-		if(corpus.indexOf(document)==0) {
-			if(modelType==null){
-				logger.warn("SemanticModeling: Please select a model type!");
-				semanticModel=null;
+
+		AnnotationSet instances = doc.getAnnotations(inputASName).get(instanceType);
+		for(Annotation instance: instances){
+			String stringToAdd = "";
+			if(instanceFeature!=null && !instanceFeature.isEmpty()){
+				stringToAdd = instance.getFeatures().get(instanceFeature).toString();
 			} else {
-				switch(modelType){
-				case MALLET_LDA:
-					//semanticModel = new SemanticModelMallet(savedModelDirectoryFile, modelFileName, false);
-					break;
-				case SEMSPACE_TFIDF:
-					try {
-						semanticModel = new SemanticModelSspace(new File(saveDirectory.getFile()), modelFileName, false);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					break;
-				}
+				stringToAdd = Utils.cleanStringFor(doc, instance);
 			}
-		}
-
-		if(semanticModel!=null){
-			AnnotationSet instances = doc.getAnnotations(inputASName).get(instanceType);
-			for(Annotation instance: instances){
-				String stringToAdd = "";
-				if(instanceFeature!=null && !instanceFeature.isEmpty()){
-					stringToAdd = instance.getFeatures().get(instanceFeature).toString();
-				} else {
-					stringToAdd = Utils.cleanStringFor(doc, instance);
-				}
-				stringToAdd = CorpusWriterSspace.prepare(stringToAdd);
-				this.semanticModel.add(stringToAdd);
-			}
-		}
-
-		//Do this once only, on the last document.
-		if(corpus.indexOf(document)==(corpus.size()-1)) {	
-			semanticModel.conclude();				
-			logger.info("Semantic Modeling: Preparation complete!");				
+			stringToAdd = CorpusWriterSspace.prepare(stringToAdd);
+			this.semanticModel.add(stringToAdd);
 		}
 
 	}
@@ -268,6 +244,43 @@ Serializable {
 	@Override
 	public synchronized void interrupt() {
 		super.interrupt();
+	}
+
+	@Override
+	public void controllerExecutionAborted(Controller arg0, Throwable arg1)
+			throws ExecutionException {
+		logger.warn("SemanticModeling: Execution aborted!");
+	}
+
+	@Override
+	public void controllerExecutionFinished(Controller arg0)
+			throws ExecutionException {
+		semanticModel.conclude();				
+		logger.info("Semantic Modeling: Preparation complete!");	
+	}
+
+	@Override
+	public void controllerExecutionStarted(Controller arg0)
+			throws ExecutionException {
+		if(modelType==null){
+			logger.warn("SemanticModeling: Please select a model type!");
+			semanticModel=null;
+			interrupt();
+		} else {
+			switch(modelType){
+			case MALLET_LDA:
+				//semanticModel = new SemanticModelMallet(savedModelDirectoryFile, modelFileName, false);
+				break;
+			case SEMSPACE_TFIDF:
+				try {
+					semanticModel = new SemanticModelSspace(new File(saveDirectory.getFile()), modelFileName, false);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				break;
+			}
+		}
+		
 	}
 
 }

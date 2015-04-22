@@ -33,11 +33,13 @@ import org.apache.log4j.Logger;
 import cc.mallet.pipe.Pipe;
 import gate.AnnotationSet;
 import gate.Annotation;
+import gate.Controller;
 import gate.Document;
 import gate.Factory;
 import gate.FeatureMap;
 import gate.ProcessingResource;
 import gate.Resource;
+import gate.creole.ControllerAwarePR;
 import gate.creole.ResourceInstantiationException;
 import gate.creole.AbstractLanguageAnalyser;
 import gate.creole.ExecutionException;
@@ -61,7 +63,7 @@ import gate.util.InvalidOffsetException;
 @CreoleResource(name = "Learning Framework PR", comment = "Training, evaluation and application of ML in GATE.")
 public class LearningFrameworkPR extends AbstractLanguageAnalyser implements
 ProcessingResource,
-Serializable {
+Serializable, ControllerAwarePR {
 
 	/**
 	 * 
@@ -465,92 +467,11 @@ Serializable {
 
 		switch(this.getOperation()){
 		case TRAIN:	
-			//Do this once only on the first document
-			if(corpus.indexOf(document)==0) {
-				if(trainingAlgo==null){
-					logger.warn("LearningFramework: Please select an algorithm!");
-					trainingLearner=null;
-					break;
-				} else {
-					trainingLearner = this.createLearner(this.trainingAlgo, this.savedModelDirectoryFile);
-
-					switch(this.getTrainingAlgo()){
-					case LIBSVM: //Yes we are making a mallet corpus writer for use with libsvm ..
-					case MALLET_CL_C45:
-					case MALLET_CL_DECISION_TREE:
-					case MALLET_CL_MAX_ENT:
-					case MALLET_CL_NAIVE_BAYES_EM:
-					case MALLET_CL_NAIVE_BAYES:
-					case MALLET_CL_WINNOW:
-						File trainfilemallet = new File(
-								gate.util.Files.fileFromURL(saveDirectory), trainfilenamemallet);
-						trainingCorpus = new CorpusWriterMallet(this.conf, this.instanceName, 
-								this.inputASName, trainfilemallet, mode, classType, 
-								classFeature, identifierFeature);
-						break;
-					case MALLET_SEQ_CRF:
-						File trainfilemalletseq = new File(
-								gate.util.Files.fileFromURL(saveDirectory), trainfilenamemalletseq);
-						trainingCorpus = new CorpusWriterMalletSeq(this.conf, this.instanceName, 
-								this.inputASName, trainfilemalletseq, this.sequenceSpan, 
-								mode, classType, classFeature, identifierFeature);
-						break;
-					case WEKA_CL_NUM_ADDITIVE_REGRESSION:
-						File trainfileweka = new File(
-								gate.util.Files.fileFromURL(saveDirectory), trainfilenamearff);
-						trainingCorpus = new CorpusWriterArffNumericClass(this.conf, this.instanceName, 
-								this.inputASName, trainfileweka, 
-								mode, classType, classFeature, identifierFeature, null);
-						break;
-					case WEKA_CL_NAIVE_BAYES:
-					case WEKA_CL_J48:
-					case WEKA_CL_RANDOM_TREE:
-					case WEKA_CL_IBK:
-						trainfileweka = new File(
-								gate.util.Files.fileFromURL(saveDirectory), trainfilenamearff);
-						trainingCorpus = new CorpusWriterArff(this.conf, this.instanceName, 
-								this.inputASName, trainfileweka, 
-								mode, classType, classFeature, identifierFeature, null);
-						break;
-					}
-
-					logger.info("LearningFramework: Preparing training data ...");
-				}
-			}
-
 			if(trainingLearner!=null){
 				this.trainingCorpus.add(doc);
 			}
-
-			//Do this once only, on the last document.
-			if(corpus.indexOf(document)==(corpus.size()-1) && trainingLearner!=null) {	
-				//Ready to go
-				logger.info("LearningFramework: Training " 
-						+ trainingLearner.whatIsIt().toString() + " ...");
-
-				trainingLearner.train(conf, trainingCorpus);
-				this.applicationLearner = trainingLearner;
-				logger.info("LearningFramework: Training complete!");				
-			}
 			break;
 		case APPLY_CURRENT_MODEL:
-			//Do this once only on the first document
-			if(corpus.indexOf(document)==0) {
-				//this.applicationLearner = Engine.restoreLearner(savedModelDirectoryFile);
-				if(this.applicationLearner==null){
-					logger.warn("LearningFramework: Begin by training a model!");
-					break;
-				} else {
-					logger.info("LearningFramework: Applying " 
-							+ this.applicationLearner.whatIsIt().toString());
-					if(applicationLearner.getMode()!=this.getMode()){
-						logger.warn("LearningFramework: Warning! Applying "
-								+ "model trained in " + applicationLearner.getMode() 
-								+ " mode in " + this.getMode() + " mode!");
-					}
-				}
-			}
-
 			if(applicationLearner!=null){
 				List<GateClassification> gcs = null;
 
@@ -590,223 +511,16 @@ Serializable {
 			}
 			break;
 		case EVALUATE_X_FOLD:
-			//Do this once only on the first document
-			if(corpus.indexOf(document)==0) {
-				if(trainingAlgo==null){
-					logger.warn("LearningFramework: Please select an algorithm!");
-					evaluationLearner=null;
-					break;
-				} else {
-					evaluationLearner = this.createLearner(this.trainingAlgo, this.evaluationModelDirectoryFile);
-
-					switch(this.getTrainingAlgo()){
-					case LIBSVM: //Yes we are making a mallet corpus writer for use with libsvm ..
-					case MALLET_CL_C45:
-					case MALLET_CL_DECISION_TREE:
-					case MALLET_CL_MAX_ENT:
-					case MALLET_CL_NAIVE_BAYES_EM:
-					case MALLET_CL_NAIVE_BAYES:
-					case MALLET_CL_WINNOW:
-						File testfilemallet = new File(
-								gate.util.Files.fileFromURL(saveDirectory), testfilenamemallet);
-						testCorpus = new CorpusWriterMallet(this.conf, this.instanceName, 
-								this.inputASName, testfilemallet, mode, classType, 
-								classFeature, identifierFeature);
-						break;
-					case MALLET_SEQ_CRF:
-						File testfilemalletseq = new File(
-								gate.util.Files.fileFromURL(saveDirectory), testfilenamemalletseq);
-						testCorpus = new CorpusWriterMalletSeq(this.conf, this.instanceName, 
-								this.inputASName, testfilemalletseq, this.sequenceSpan, 
-								mode, classType, classFeature, identifierFeature);
-						break;
-					case WEKA_CL_NUM_ADDITIVE_REGRESSION:
-						File testfileweka = new File(
-								gate.util.Files.fileFromURL(saveDirectory), testfilenamearff);
-						testCorpus = new CorpusWriterArffNumericClass(this.conf, this.instanceName, 
-								this.inputASName, testfileweka, mode, classType, classFeature, 
-								identifierFeature, null);
-						break;
-					case WEKA_CL_NAIVE_BAYES:
-					case WEKA_CL_J48:
-					case WEKA_CL_RANDOM_TREE:
-					case WEKA_CL_IBK:
-						testfileweka = new File(
-								gate.util.Files.fileFromURL(saveDirectory), testfilenamearff);
-						testCorpus = new CorpusWriterArff(this.conf, this.instanceName, 
-								this.inputASName, testfileweka, mode, classType, classFeature, 
-								identifierFeature, null);
-						break;
-					}
-				}
-			}
-
-			if(evaluationLearner!=null){
-				this.testCorpus.add(doc);
-			}
-
-			//Do this once only, on the last document.
-			if(corpus.indexOf(document)==(corpus.size()-1) && evaluationLearner!=null) {	
-				//Ready to evaluate
-				logger.info("LearningFramework: Evaluating ..");
-				evaluationLearner.evaluateXFold(testCorpus, this.foldsForXVal);
-			}
-			break;
 		case EVALUATE_HOLDOUT:
-			//Do this once only on the first document
-			if(corpus.indexOf(document)==0) {
-				if(trainingAlgo==null){
-					logger.warn("LearningFramework: Please select an algorithm!");
-					evaluationLearner=null;
-					break;
-				} else {
-					evaluationLearner = this.createLearner(this.trainingAlgo, this.evaluationModelDirectoryFile);
-
-					switch(this.getTrainingAlgo()){
-					case LIBSVM: //Yes we are making a mallet corpus writer for use with libsvm ..
-					case MALLET_CL_C45:
-					case MALLET_CL_DECISION_TREE:
-					case MALLET_CL_MAX_ENT:
-					case MALLET_CL_NAIVE_BAYES_EM:
-					case MALLET_CL_NAIVE_BAYES:
-					case MALLET_CL_WINNOW:
-						File testfilemallet = new File(
-								gate.util.Files.fileFromURL(saveDirectory), testfilenamemallet);
-						testCorpus = new CorpusWriterMallet(this.conf, this.instanceName, 
-								this.inputASName, testfilemallet, mode, classType, 
-								classFeature, identifierFeature);
-						break;
-					case MALLET_SEQ_CRF:
-						File testfilemalletseq = new File(
-								gate.util.Files.fileFromURL(saveDirectory), testfilenamemalletseq);
-						testCorpus = new CorpusWriterMalletSeq(this.conf, this.instanceName, 
-								this.inputASName, testfilemalletseq, this.sequenceSpan, 
-								mode, classType, classFeature, identifierFeature);
-						break;
-					case WEKA_CL_NUM_ADDITIVE_REGRESSION:
-						File testfileweka = new File(
-								gate.util.Files.fileFromURL(saveDirectory), testfilenamearff);
-						testCorpus = new CorpusWriterArffNumericClass(this.conf, this.instanceName, 
-								this.inputASName, testfileweka, mode, classType, classFeature, 
-								identifierFeature, null);
-						break;
-					case WEKA_CL_NAIVE_BAYES:
-					case WEKA_CL_J48:
-					case WEKA_CL_RANDOM_TREE:
-					case WEKA_CL_IBK:
-						testfileweka = new File(
-								gate.util.Files.fileFromURL(saveDirectory), testfilenamearff);
-						testCorpus = new CorpusWriterArff(this.conf, this.instanceName, 
-								this.inputASName, testfileweka, mode, classType, classFeature, 
-								identifierFeature, null);
-						break;
-					}
-				}
-			}
-
 			if(evaluationLearner!=null){
 				this.testCorpus.add(doc);
-			}
-
-			//Do this once only, on the last document.
-			if(corpus.indexOf(document)==(corpus.size()-1) && evaluationLearner!=null) {	
-				//Ready to evaluate
-				logger.info("LearningFramework: Evaluating ..");
-				evaluationLearner.evaluateHoldout(
-						testCorpus, this.trainingproportion);
 			}
 			break;
 		case EXPORT_ARFF:
-			//Do this once only on the first document
-			if(corpus.indexOf(document)==0) {
-				File outputfilearff = new File(
-						gate.util.Files.fileFromURL(saveDirectory), corpusoutputdirectory);
-				exportCorpus = new CorpusWriterArff(this.conf, this.instanceName, this.inputASName, 
-						outputfilearff, mode, classType, classFeature, identifierFeature, null);
-				//exportCorpus.initializeOutputStream();
-			}
-
-			//Every document
-			exportCorpus.add(document);
-
-			//Do this once only, on the last document.
-			if(corpus.indexOf(document)==(corpus.size()-1)) {
-				exportCorpus.conclude();
-			}
-			break;
 		case EXPORT_ARFF_THRU_CURRENT_PIPE:
-			//Do this once only on the first document
-			if(corpus.indexOf(document)==0) {
-				File outputfilearff = new File(
-						gate.util.Files.fileFromURL(saveDirectory), corpusoutputdirectory);
-				
-				if(CorpusWriterArff.getArffPipe(outputfilearff)==null){
-					logger.warn("LearningFramework: No pipe found in corpus output directory! "
-							+ "Begin by exporting arff training data without using pipe "
-							+ "so as to create one which you can then use to export test "
-							+ "data.");
-					break;
-				}
-				
-				exportCorpus = new CorpusWriterArff(this.conf, this.instanceName, this.inputASName, 
-						outputfilearff, mode, classType, classFeature, identifierFeature, 
-						CorpusWriterArff.getArffPipe(outputfilearff));
-				//exportCorpus.initializeOutputStream();
-			}
-
-			//Every document
-			exportCorpus.add(document);
-
-			//Do this once only, on the last document.
-			if(corpus.indexOf(document)==(corpus.size()-1)) {
-				exportCorpus.conclude();
-			}
-			break;
 		case EXPORT_ARFF_NUMERIC_CLASS:
-			//Do this once only on the first document
-			if(corpus.indexOf(document)==0) {
-				File outputfilearff = new File(
-						gate.util.Files.fileFromURL(saveDirectory), corpusoutputdirectory);
-				exportCorpus = new CorpusWriterArffNumericClass(this.conf, this.instanceName, this.inputASName, 
-						outputfilearff, mode, classType, classFeature, identifierFeature, null);
-				//exportCorpus.initializeOutputStream();
-			}
-
-			//Every document
-			exportCorpus.add(document);
-
-			//Do this once only, on the last document.
-			if(corpus.indexOf(document)==(corpus.size()-1)) {
-				exportCorpus.conclude();
-			}
-			break;
 		case EXPORT_ARFF_NUMERIC_CLASS_THRU_CURRENT_PIPE:
-			//Do this once only on the first document
-			if(corpus.indexOf(document)==0) {
-				File outputfilearff = new File(
-						gate.util.Files.fileFromURL(saveDirectory), corpusoutputdirectory);
-				
-				if(CorpusWriterArff.getArffPipe(outputfilearff)==null){
-					logger.warn("LearningFramework: No pipe found in corpus output directory! "
-							+ "Begin by exporting arff training data without using pipe "
-							+ "so as to create one which you can then use to export test "
-							+ "data.");
-					break;
-				}
-				
-				exportCorpus = new CorpusWriterArffNumericClass(this.conf, this.instanceName, this.inputASName, 
-						outputfilearff, mode, classType, classFeature, identifierFeature, 
-						CorpusWriterArff.getArffPipe(outputfilearff));
-				//exportCorpus.initializeOutputStream();
-			}
-
-			//Every document
 			exportCorpus.add(document);
-
-			//Do this once only, on the last document.
-			if(corpus.indexOf(document)==(corpus.size()-1)) {
-				exportCorpus.conclude();
-			}
 			break;
 		} 
 	}
@@ -965,6 +679,224 @@ Serializable {
 	@Override
 	public synchronized void interrupt() {
 		super.interrupt();
+	}
+
+	@Override
+	public void controllerExecutionAborted(Controller arg0, Throwable arg1)
+			throws ExecutionException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void controllerExecutionFinished(Controller arg0)
+			throws ExecutionException {
+		switch(this.getOperation()){
+		case TRAIN:	
+			if(trainingLearner!=null) {	
+				//Ready to go
+				logger.info("LearningFramework: Training " 
+						+ trainingLearner.whatIsIt().toString() + " ...");
+
+				trainingLearner.train(conf, trainingCorpus);
+				this.applicationLearner = trainingLearner;
+				logger.info("LearningFramework: Training complete!");				
+			}
+			break;
+		case APPLY_CURRENT_MODEL:	
+			break;
+		case EVALUATE_X_FOLD:
+			if(evaluationLearner!=null) {	
+				//Ready to evaluate
+				logger.info("LearningFramework: Evaluating ..");
+				evaluationLearner.evaluateXFold(testCorpus, this.foldsForXVal);
+			}
+			break;
+		case EVALUATE_HOLDOUT:	
+			if(evaluationLearner!=null) {	
+				//Ready to evaluate
+				logger.info("LearningFramework: Evaluating ..");
+				evaluationLearner.evaluateHoldout(
+						testCorpus, this.trainingproportion);
+			}
+			break;
+		case EXPORT_ARFF:
+		case EXPORT_ARFF_THRU_CURRENT_PIPE:
+		case EXPORT_ARFF_NUMERIC_CLASS:
+		case EXPORT_ARFF_NUMERIC_CLASS_THRU_CURRENT_PIPE:
+			exportCorpus.conclude();
+			break;
+		}
+	}
+
+	@Override
+	public void controllerExecutionStarted(Controller arg0)
+			throws ExecutionException {
+		switch(this.getOperation()){
+		case TRAIN:
+			if(trainingAlgo==null){
+				logger.warn("LearningFramework: Please select an algorithm!");
+				trainingLearner=null;
+				interrupt();
+				break;
+			} else {
+				trainingLearner = this.createLearner(this.trainingAlgo, this.savedModelDirectoryFile);
+
+				switch(this.getTrainingAlgo()){
+				case LIBSVM: //Yes we are making a mallet corpus writer for use with libsvm ..
+				case MALLET_CL_C45:
+				case MALLET_CL_DECISION_TREE:
+				case MALLET_CL_MAX_ENT:
+				case MALLET_CL_NAIVE_BAYES_EM:
+				case MALLET_CL_NAIVE_BAYES:
+				case MALLET_CL_WINNOW:
+					File trainfilemallet = new File(
+							gate.util.Files.fileFromURL(saveDirectory), trainfilenamemallet);
+					trainingCorpus = new CorpusWriterMallet(this.conf, this.instanceName, 
+							this.inputASName, trainfilemallet, mode, classType, 
+							classFeature, identifierFeature);
+					break;
+				case MALLET_SEQ_CRF:
+					File trainfilemalletseq = new File(
+							gate.util.Files.fileFromURL(saveDirectory), trainfilenamemalletseq);
+					trainingCorpus = new CorpusWriterMalletSeq(this.conf, this.instanceName, 
+							this.inputASName, trainfilemalletseq, this.sequenceSpan, 
+							mode, classType, classFeature, identifierFeature);
+					break;
+				case WEKA_CL_NUM_ADDITIVE_REGRESSION:
+					File trainfileweka = new File(
+							gate.util.Files.fileFromURL(saveDirectory), trainfilenamearff);
+					trainingCorpus = new CorpusWriterArffNumericClass(this.conf, this.instanceName, 
+							this.inputASName, trainfileweka, 
+							mode, classType, classFeature, identifierFeature, null);
+					break;
+				case WEKA_CL_NAIVE_BAYES:
+				case WEKA_CL_J48:
+				case WEKA_CL_RANDOM_TREE:
+				case WEKA_CL_IBK:
+					trainfileweka = new File(
+							gate.util.Files.fileFromURL(saveDirectory), trainfilenamearff);
+					trainingCorpus = new CorpusWriterArff(this.conf, this.instanceName, 
+							this.inputASName, trainfileweka, 
+							mode, classType, classFeature, identifierFeature, null);
+					break;
+				}
+
+				logger.info("LearningFramework: Preparing training data ...");
+			}
+			break;
+		case APPLY_CURRENT_MODEL:
+			//this.applicationLearner = Engine.restoreLearner(savedModelDirectoryFile);
+			if(this.applicationLearner==null){
+				logger.warn("LearningFramework: Begin by training a model!");
+				interrupt();
+				break;
+			} else {
+				logger.info("LearningFramework: Applying " 
+						+ this.applicationLearner.whatIsIt().toString());
+				if(applicationLearner.getMode()!=this.getMode()){
+					logger.warn("LearningFramework: Warning! Applying "
+							+ "model trained in " + applicationLearner.getMode() 
+							+ " mode in " + this.getMode() + " mode!");
+				}
+			}
+			break;
+		case EVALUATE_X_FOLD:
+		case EVALUATE_HOLDOUT:
+			if(trainingAlgo==null){
+				logger.warn("LearningFramework: Please select an algorithm!");
+				evaluationLearner=null;
+				interrupt();
+				break;
+			} else {
+				evaluationLearner = this.createLearner(this.trainingAlgo, this.evaluationModelDirectoryFile);
+
+				switch(this.getTrainingAlgo()){
+				case LIBSVM: //Yes we are making a mallet corpus writer for use with libsvm ..
+				case MALLET_CL_C45:
+				case MALLET_CL_DECISION_TREE:
+				case MALLET_CL_MAX_ENT:
+				case MALLET_CL_NAIVE_BAYES_EM:
+				case MALLET_CL_NAIVE_BAYES:
+				case MALLET_CL_WINNOW:
+					File testfilemallet = new File(
+							gate.util.Files.fileFromURL(saveDirectory), testfilenamemallet);
+					testCorpus = new CorpusWriterMallet(this.conf, this.instanceName, 
+							this.inputASName, testfilemallet, mode, classType, 
+							classFeature, identifierFeature);
+					break;
+				case MALLET_SEQ_CRF:
+					File testfilemalletseq = new File(
+							gate.util.Files.fileFromURL(saveDirectory), testfilenamemalletseq);
+					testCorpus = new CorpusWriterMalletSeq(this.conf, this.instanceName, 
+							this.inputASName, testfilemalletseq, this.sequenceSpan, 
+							mode, classType, classFeature, identifierFeature);
+					break;
+				case WEKA_CL_NUM_ADDITIVE_REGRESSION:
+					File testfileweka = new File(
+							gate.util.Files.fileFromURL(saveDirectory), testfilenamearff);
+					testCorpus = new CorpusWriterArffNumericClass(this.conf, this.instanceName, 
+							this.inputASName, testfileweka, mode, classType, classFeature, 
+							identifierFeature, null);
+					break;
+				case WEKA_CL_NAIVE_BAYES:
+				case WEKA_CL_J48:
+				case WEKA_CL_RANDOM_TREE:
+				case WEKA_CL_IBK:
+					testfileweka = new File(
+							gate.util.Files.fileFromURL(saveDirectory), testfilenamearff);
+					testCorpus = new CorpusWriterArff(this.conf, this.instanceName, 
+							this.inputASName, testfileweka, mode, classType, classFeature, 
+							identifierFeature, null);
+					break;
+				}
+			}
+			break;
+		case EXPORT_ARFF:
+			File outputfilearff = new File(
+					gate.util.Files.fileFromURL(saveDirectory), corpusoutputdirectory);
+			exportCorpus = new CorpusWriterArff(this.conf, this.instanceName, this.inputASName, 
+					outputfilearff, mode, classType, classFeature, identifierFeature, null);
+			break;
+		case EXPORT_ARFF_THRU_CURRENT_PIPE:
+			File outputfilearff2 = new File(
+					gate.util.Files.fileFromURL(saveDirectory), corpusoutputdirectory);
+			
+			if(CorpusWriterArff.getArffPipe(outputfilearff2)==null){
+				logger.warn("LearningFramework: No pipe found in corpus output directory! "
+						+ "Begin by exporting arff training data without using pipe "
+						+ "so as to create one which you can then use to export test "
+						+ "data.");
+				break;
+			}
+			
+			exportCorpus = new CorpusWriterArff(this.conf, this.instanceName, this.inputASName, 
+					outputfilearff2, mode, classType, classFeature, identifierFeature, 
+					CorpusWriterArff.getArffPipe(outputfilearff2));
+			break;
+		case EXPORT_ARFF_NUMERIC_CLASS:
+			File outputfilearff3 = new File(
+					gate.util.Files.fileFromURL(saveDirectory), corpusoutputdirectory);
+			exportCorpus = new CorpusWriterArffNumericClass(this.conf, this.instanceName, this.inputASName, 
+					outputfilearff3, mode, classType, classFeature, identifierFeature, null);
+			break;
+		case EXPORT_ARFF_NUMERIC_CLASS_THRU_CURRENT_PIPE:
+			File outputfilearff4 = new File(
+					gate.util.Files.fileFromURL(saveDirectory), corpusoutputdirectory);
+			
+			if(CorpusWriterArff.getArffPipe(outputfilearff4)==null){
+				logger.warn("LearningFramework: No pipe found in corpus output directory! "
+						+ "Begin by exporting arff training data without using pipe "
+						+ "so as to create one which you can then use to export test "
+						+ "data.");
+				break;
+			}
+			
+			exportCorpus = new CorpusWriterArffNumericClass(this.conf, this.instanceName, this.inputASName, 
+					outputfilearff4, mode, classType, classFeature, identifierFeature, 
+					CorpusWriterArff.getArffPipe(outputfilearff4));
+			break;
+		}
 	}
 
 }
