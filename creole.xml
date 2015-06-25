@@ -3,7 +3,7 @@
   ID="LearningFrameworkV1.0"
   VERSION="1.0"
   DESCRIPTION="Learning Framework"
-  HELPURL=""
+  HELPURL="https://raw.githubusercontent.com/GenevieveGorrell/gateplugin-LearningFramework/version_1_0/README"
 >
   <JAR scan="true">learningframework.jar</JAR>
 <!--  
