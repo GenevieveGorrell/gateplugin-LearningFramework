@@ -10,7 +10,7 @@ rm -rf "$destdir"
 mkdir -p $destdir/$name
 rm -f $name-*.zip
 rm -f $name-*.tgz
-git archive --format zip --output ${name}-${version}-src.zip --prefix=$name/ master
+git archive --format zip --output ${name}-${version}-src.zip --prefix=$name/ version_1_0
 pushd $destdir
 unzip $curdir/${name}-${version}-src.zip
 cd $name
