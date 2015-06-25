@@ -1,7 +1,7 @@
 <!-- creole.xml for LearningFramework PR -->
 <CREOLE-DIRECTORY
   ID="gate.LearningFrameworkV1_0"
-  VERSION="1.0"
+  VERSION="1.1"
   DESCRIPTION="Learning Framework"
   HELPURL="https://raw.githubusercontent.com/GenevieveGorrell/gateplugin-LearningFramework/version_1_0/README"
 >
