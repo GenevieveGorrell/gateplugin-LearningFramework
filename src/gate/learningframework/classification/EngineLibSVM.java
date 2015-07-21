@@ -358,19 +358,23 @@ public class EngineLibSVM  extends Engine {
 
 			int bestLabel = (new Double(svm.svm_predict(this.svmModel, vec))).intValue();
 
-
-			double[] confidences = new double[numberOfLabels];
+			double bestConf = 0.0;
 			
 			if(svm.svm_check_probability_model(this.svmModel)==1){
+				double[] confidences = new double[numberOfLabels];
 				double v = svm.svm_predict_probability(
 						this.svmModel, vec, confidences);
-			} else {
-				svm.svm_predict_values(this.svmModel, vec, confidences);
-			}
 
-			//Note to self--is it possible that labels won't always be in order?
-			//If so, this won't work! But I think (hope) they always will be!
-			double bestConf = confidences[bestLabel];
+				//Note to self--is it possible that labels won't always be in order?
+				//If so, this won't work! But I think (hope) they always will be!
+				bestConf = confidences[bestLabel];
+			} else {
+				double[] confidences = new double[numberOfLabels*(numberOfLabels - 1)/2];
+				svm.svm_predict_values(this.svmModel, vec, confidences);
+				//For now we are not providing decision values for non-prob
+				//models because it is complex, see here: 
+				//http://www.csie.ntu.edu.tw/~r94100/libsvm-2.8/README
+			}
 			
 			String labelstr = (String)this.pipe.getTargetAlphabet().lookupObject(bestLabel);
 			GateClassification gc = new GateClassification(
