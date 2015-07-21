@@ -315,8 +315,6 @@ public class EngineLibSVM  extends Engine {
 				//models because it is complex, see here: 
 				//http://www.csie.ntu.edu.tw/~r94100/libsvm-2.8/README
 			}
-
-			
 			String labelstr = (String)this.pipe.getTargetAlphabet().lookupObject(bestLabel);
 			GateClassification gc = new GateClassification(
 					instanceAnnotation, labelstr, bestConf);
