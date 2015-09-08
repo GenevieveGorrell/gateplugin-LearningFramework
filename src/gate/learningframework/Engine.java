@@ -170,6 +170,9 @@ public abstract class Engine {
 				case WEKA_CL_J48:
 				case WEKA_CL_RANDOM_TREE:
 				case WEKA_CL_IBK:
+				case WEKA_CL_MULTILAYER_PERCEPTRON:
+				case WEKA_CL_JRIP:
+				case WEKA_CL_NBTREE:
 					learner = new EngineWeka(savedModelDirectoryFile, mode, engine, true);
 					break;
 				}

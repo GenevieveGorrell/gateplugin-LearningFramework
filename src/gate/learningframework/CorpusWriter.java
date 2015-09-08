@@ -154,7 +154,7 @@ public abstract class CorpusWriter {
 		//We need to add the scaling step to the pipe.
 		double[] sums = new double[instances.getDataAlphabet().size()];
 		double[] sumsofsquares = new double[instances.getDataAlphabet().size()];
-		double[] numvals = new double[instances.getDataAlphabet().size()];
+		//double[] numvals = new double[instances.getDataAlphabet().size()];
 		double[] means = new double[instances.getDataAlphabet().size()];
 		double[] variances = new double[instances.getDataAlphabet().size()];
 		
@@ -167,15 +167,15 @@ public abstract class CorpusWriter {
 				double value = values[j];
 				sums[index]+=value;
 				sumsofsquares[index]+=(value*value);
-				numvals[index]++;
+				//numvals[index]++;
 			}
 		}
 		
 		//Now use the accumulators to prepare means and variances
 		//for each feature in the alphabet, to be used for scaling.
 		for(int i=0;i<sums.length;i++){
-			means[i] = sums[i]/numvals[i];
-			variances[i] = sumsofsquares[i]/numvals[i];
+			means[i] = sums[i]/instances.getDataAlphabet().size();
+			variances[i] = sumsofsquares[i]/instances.getDataAlphabet().size();
 		}
 		
 		//We make a new pipe and apply it to all the instances

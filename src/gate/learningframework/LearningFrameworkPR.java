@@ -466,6 +466,9 @@ Serializable {
 			case WEKA_CL_J48:
 			case WEKA_CL_RANDOM_TREE:
 			case WEKA_CL_IBK:
+			case WEKA_CL_MULTILAYER_PERCEPTRON:
+			case WEKA_CL_JRIP:
+			case WEKA_CL_NBTREE:
 				return new EngineWeka(
 						savedModelFile, mode, learnerParams, spec, false);
 			}
@@ -520,6 +523,9 @@ Serializable {
 					case WEKA_CL_J48:
 					case WEKA_CL_RANDOM_TREE:
 					case WEKA_CL_IBK:
+					case WEKA_CL_MULTILAYER_PERCEPTRON:
+					case WEKA_CL_JRIP:
+					case WEKA_CL_NBTREE:
 						trainfileweka = new File(
 								gate.util.Files.fileFromURL(saveDirectory), trainfilenamearff);
 						trainingCorpus = new CorpusWriterArff(this.conf, this.instanceName, 
@@ -592,6 +598,9 @@ Serializable {
 				case WEKA_CL_J48:
 				case WEKA_CL_RANDOM_TREE:
 				case WEKA_CL_IBK:
+				case WEKA_CL_MULTILAYER_PERCEPTRON:
+				case WEKA_CL_JRIP:
+				case WEKA_CL_NBTREE:
 					gcs = ((EngineWeka)applicationLearner).classify(
 							this.instanceName, this.inputASName, doc);
 					break;
@@ -646,6 +655,9 @@ Serializable {
 					case WEKA_CL_J48:
 					case WEKA_CL_RANDOM_TREE:
 					case WEKA_CL_IBK:
+					case WEKA_CL_MULTILAYER_PERCEPTRON:
+					case WEKA_CL_JRIP:
+					case WEKA_CL_NBTREE:
 						testfileweka = new File(
 								gate.util.Files.fileFromURL(saveDirectory), testfilenamearff);
 						testCorpus = new CorpusWriterArff(this.conf, this.instanceName, 
@@ -662,7 +674,7 @@ Serializable {
 
 			//Do this once only, on the last document.
 			if(corpus.indexOf(document)==(corpus.size()-1) && evaluationLearner!=null) {
-				this.trainingCorpus.conclude();
+				this.testCorpus.conclude();
 				//Ready to evaluate
 				logger.info("LearningFramework: Evaluating ..");
 				evaluationLearner.evaluateXFold(testCorpus, this.foldsForXVal);
@@ -710,6 +722,9 @@ Serializable {
 					case WEKA_CL_J48:
 					case WEKA_CL_RANDOM_TREE:
 					case WEKA_CL_IBK:
+					case WEKA_CL_MULTILAYER_PERCEPTRON:
+					case WEKA_CL_JRIP:
+					case WEKA_CL_NBTREE:
 						testfileweka = new File(
 								gate.util.Files.fileFromURL(saveDirectory), testfilenamearff);
 						testCorpus = new CorpusWriterArff(this.conf, this.instanceName, 
@@ -726,7 +741,7 @@ Serializable {
 
 			//Do this once only, on the last document.
 			if(corpus.indexOf(document)==(corpus.size()-1) && evaluationLearner!=null) {	
-				this.trainingCorpus.conclude();
+				this.testCorpus.conclude();
 				//Ready to evaluate
 				logger.info("LearningFramework: Evaluating ..");
 				evaluationLearner.evaluateHoldout(

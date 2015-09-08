@@ -36,9 +36,12 @@ import cc.mallet.types.Instance;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
 import weka.classifiers.bayes.NaiveBayes;
+import weka.classifiers.functions.MultilayerPerceptron;
 import weka.classifiers.lazy.IBk;
 import weka.classifiers.meta.AdditiveRegression;
+import weka.classifiers.rules.JRip;
 import weka.classifiers.trees.J48;
+import weka.classifiers.trees.NBTree;
 import weka.classifiers.trees.RandomTree;
 import weka.core.Instances;
 import weka.core.Utils;
@@ -76,7 +79,6 @@ public class EngineWeka extends Engine {
 	}
 
 	public void loadClassifier(){
-
 		File clf = new File(this.getOutputDirectory(), classifiername);
 		File pf = new File(this.getOutputDirectory(), pipename);
 		if(clf.exists() && pf.exists()){
@@ -138,6 +140,15 @@ public class EngineWeka extends Engine {
 		case "WEKA_CL_IBK":
 			classifier = new IBk();
 			break;
+		case "WEKA_CL_NBTREE":
+			classifier = new NBTree();
+			break;
+		case "WEKA_CL_MULTILAYER_PERCEPTRON":
+			classifier = new MultilayerPerceptron();
+			break;
+		case "WEKA_CL_JRIP":
+			classifier = new JRip();
+			break;
 		}
 		if(params!=null && !params.isEmpty()){
 			String[] p = params.split("\\s+");
@@ -172,6 +183,9 @@ public class EngineWeka extends Engine {
 		case "WEKA_CL_J48":
 		case "WEKA_CL_RANDOM_TREE":
 		case "WEKA_CL_IBK":
+		case "WEKA_CL_MULTILAYER_PERCEPTRON":
+		case "WEKA_CL_JRIP":
+		case "WEKA_CL_NBTREE":
 			CorpusWriterArff trArff = (CorpusWriterArff)trainingCorpus;
 			instances = trArff.getWekaInstances();
 			this.pipe = trArff.getPipe();
@@ -287,6 +301,9 @@ public class EngineWeka extends Engine {
 			case "WEKA_CL_J48":
 			case "WEKA_CL_RANDOM_TREE":
 			case "WEKA_CL_IBK":
+			case "WEKA_CL_MULTILAYER_PERCEPTRON":
+			case "WEKA_CL_JRIP":
+			case "WEKA_CL_NBTREE":
 				double[] predictionDistribution = new double[0];
 				try {
 					predictionDistribution = this.classifier.distributionForInstance(wekaInstance);
@@ -345,6 +362,9 @@ public class EngineWeka extends Engine {
 		case "WEKA_CL_J48":
 		case "WEKA_CL_RANDOM_TREE":
 		case "WEKA_CL_IBK":
+		case "WEKA_CL_MULTILAYER_PERCEPTRON":
+		case "WEKA_CL_JRIP":
+		case "WEKA_CL_NBTREE":
 			CorpusWriterArff trArff2 = (CorpusWriterArff)evalCorpus;
 			Instances newData2 = trArff2.getWekaInstances();
 			try {
@@ -386,6 +406,9 @@ public class EngineWeka extends Engine {
 		case "WEKA_CL_J48":
 		case "WEKA_CL_RANDOM_TREE":
 		case "WEKA_CL_IBK":
+		case "WEKA_CL_MULTILAYER_PERCEPTRON":
+		case "WEKA_CL_JRIP":
+		case "WEKA_CL_NBTREE":
 			CorpusWriterArff trArff2 = (CorpusWriterArff)evalCorpus;
 			Instances all2 = trArff2.getWekaInstances();
 			Instances[] split2 = trArff2.splitWekaInstances(all2, trainingproportion);
