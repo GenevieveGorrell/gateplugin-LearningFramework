@@ -51,16 +51,12 @@ import cc.mallet.types.Label;
 import cc.mallet.types.SparseVector;
 
 public class CorpusWriterMallet extends CorpusWriter{
-
-	private InstanceList instances;
-	
-	private SerialPipes pipe;
 	
 	public CorpusWriterMallet(FeatureSpecification conf, String inst, String inpas, 
 			File outputFile, Mode mode, String classType, String classFeature,
-			String identifierFeature){
+			String identifierFeature, boolean scaleFeatures){
 		super(conf, inst, inpas, outputFile, mode, classType, classFeature, 
-				identifierFeature);
+				identifierFeature, scaleFeatures);
 		
 		/*
 		 * Mallet requires data to be passed through a pipe to create an instance.
@@ -449,7 +445,7 @@ public class CorpusWriterMallet extends CorpusWriter{
 	}
 	
 	public void conclude(){
-		//Doesn't need to do anything for Mallet output
+		if(scaleFeatures) normalize();
 	}
 
 	public InstanceList getInstances() {

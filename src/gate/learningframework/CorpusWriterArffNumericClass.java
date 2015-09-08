@@ -46,9 +46,9 @@ public class CorpusWriterArffNumericClass extends CorpusWriterArff {
 	public CorpusWriterArffNumericClass(FeatureSpecification conf,
 			String inst, String inpas, File outputDirectory, Mode mode,
 			String classType, String classFeature, String identifierFeature,
-			SerialPipes savedPipe) {
+			SerialPipes savedPipe, boolean scaleFeatures) {
 		super(conf, inst, inpas, outputDirectory, mode, classType, classFeature,
-				identifierFeature, null);
+				identifierFeature, null, scaleFeatures);
 		
 		ArrayList<Pipe> pipeList = new ArrayList<Pipe>();
 
@@ -77,6 +77,10 @@ public class CorpusWriterArffNumericClass extends CorpusWriterArff {
 	 * but trivial.
 	 */
 	public void conclude(){
+		if(scaleFeatures) normalize();
+	}
+	
+	public void writeToFile(){		
 		this.initializeOutputStream(outputfile);
 		//First the header
 		this.getOutputStream(outputfile).print("@relation gate\n\n");

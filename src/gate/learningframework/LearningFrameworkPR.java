@@ -163,6 +163,13 @@ Serializable {
 	 */
 	private String learnerParams;
 
+	/**
+	 * Should we scale the features? Feature normalization can help
+	 * a lot. The approach used is standard--mean to zero and variance
+	 * to one for all features making them more comparable.
+	 */
+	private boolean scaleFeatures;
+
 
 
 	@RunTime
@@ -368,6 +375,19 @@ Serializable {
 		return this.learnerParams;
 	}
 
+	@RunTime
+	@Optional
+	@CreoleParameter(defaultValue = "false", comment = "Scale features or not? "
+			+ "Feature scaling makes features more comparable, and often improves "
+			+ "the result.")
+	public void setScaleFeatures(Boolean sf) {
+		this.scaleFeatures = sf.booleanValue();
+	}
+
+	public Boolean getScaleFeatures() {
+		return new Boolean(this.scaleFeatures);
+	}
+
 
 
 
@@ -480,21 +500,21 @@ Serializable {
 								gate.util.Files.fileFromURL(saveDirectory), trainfilenamemallet);
 						trainingCorpus = new CorpusWriterMallet(this.conf, this.instanceName, 
 								this.inputASName, trainfilemallet, mode, classType, 
-								classFeature, identifierFeature);
+								classFeature, identifierFeature, scaleFeatures);
 						break;
 					case MALLET_SEQ_CRF:
 						File trainfilemalletseq = new File(
 								gate.util.Files.fileFromURL(saveDirectory), trainfilenamemalletseq);
 						trainingCorpus = new CorpusWriterMalletSeq(this.conf, this.instanceName, 
 								this.inputASName, trainfilemalletseq, this.sequenceSpan, 
-								mode, classType, classFeature, identifierFeature);
+								mode, classType, classFeature, identifierFeature, scaleFeatures);
 						break;
 					case WEKA_CL_NUM_ADDITIVE_REGRESSION:
 						File trainfileweka = new File(
 								gate.util.Files.fileFromURL(saveDirectory), trainfilenamearff);
 						trainingCorpus = new CorpusWriterArffNumericClass(this.conf, this.instanceName, 
-								this.inputASName, trainfileweka, 
-								mode, classType, classFeature, identifierFeature, null);
+								this.inputASName, trainfileweka, mode, classType, 
+								classFeature, identifierFeature, null, scaleFeatures);
 						break;
 					case WEKA_CL_NAIVE_BAYES:
 					case WEKA_CL_J48:
@@ -503,8 +523,8 @@ Serializable {
 						trainfileweka = new File(
 								gate.util.Files.fileFromURL(saveDirectory), trainfilenamearff);
 						trainingCorpus = new CorpusWriterArff(this.conf, this.instanceName, 
-								this.inputASName, trainfileweka, 
-								mode, classType, classFeature, identifierFeature, null);
+								this.inputASName, trainfileweka, mode, classType, 
+								classFeature, identifierFeature, null, scaleFeatures);
 						break;
 					}
 
@@ -517,7 +537,8 @@ Serializable {
 			}
 
 			//Do this once only, on the last document.
-			if(corpus.indexOf(document)==(corpus.size()-1) && trainingLearner!=null) {	
+			if(corpus.indexOf(document)==(corpus.size()-1) && trainingLearner!=null) {
+				this.trainingCorpus.conclude();
 				//Ready to go
 				logger.info("LearningFramework: Training " 
 						+ trainingLearner.whatIsIt().toString() + " ...");
@@ -605,21 +626,21 @@ Serializable {
 								gate.util.Files.fileFromURL(saveDirectory), testfilenamemallet);
 						testCorpus = new CorpusWriterMallet(this.conf, this.instanceName, 
 								this.inputASName, testfilemallet, mode, classType, 
-								classFeature, identifierFeature);
+								classFeature, identifierFeature, scaleFeatures);
 						break;
 					case MALLET_SEQ_CRF:
 						File testfilemalletseq = new File(
 								gate.util.Files.fileFromURL(saveDirectory), testfilenamemalletseq);
 						testCorpus = new CorpusWriterMalletSeq(this.conf, this.instanceName, 
 								this.inputASName, testfilemalletseq, this.sequenceSpan, 
-								mode, classType, classFeature, identifierFeature);
+								mode, classType, classFeature, identifierFeature, scaleFeatures);
 						break;
 					case WEKA_CL_NUM_ADDITIVE_REGRESSION:
 						File testfileweka = new File(
 								gate.util.Files.fileFromURL(saveDirectory), testfilenamearff);
 						testCorpus = new CorpusWriterArffNumericClass(this.conf, this.instanceName, 
 								this.inputASName, testfileweka, mode, classType, classFeature, 
-								identifierFeature, null);
+								identifierFeature, null, scaleFeatures);
 						break;
 					case WEKA_CL_NAIVE_BAYES:
 					case WEKA_CL_J48:
@@ -629,7 +650,7 @@ Serializable {
 								gate.util.Files.fileFromURL(saveDirectory), testfilenamearff);
 						testCorpus = new CorpusWriterArff(this.conf, this.instanceName, 
 								this.inputASName, testfileweka, mode, classType, classFeature, 
-								identifierFeature, null);
+								identifierFeature, null, scaleFeatures);
 						break;
 					}
 				}
@@ -640,7 +661,8 @@ Serializable {
 			}
 
 			//Do this once only, on the last document.
-			if(corpus.indexOf(document)==(corpus.size()-1) && evaluationLearner!=null) {	
+			if(corpus.indexOf(document)==(corpus.size()-1) && evaluationLearner!=null) {
+				this.trainingCorpus.conclude();
 				//Ready to evaluate
 				logger.info("LearningFramework: Evaluating ..");
 				evaluationLearner.evaluateXFold(testCorpus, this.foldsForXVal);
@@ -668,21 +690,21 @@ Serializable {
 								gate.util.Files.fileFromURL(saveDirectory), testfilenamemallet);
 						testCorpus = new CorpusWriterMallet(this.conf, this.instanceName, 
 								this.inputASName, testfilemallet, mode, classType, 
-								classFeature, identifierFeature);
+								classFeature, identifierFeature, scaleFeatures);
 						break;
 					case MALLET_SEQ_CRF:
 						File testfilemalletseq = new File(
 								gate.util.Files.fileFromURL(saveDirectory), testfilenamemalletseq);
 						testCorpus = new CorpusWriterMalletSeq(this.conf, this.instanceName, 
 								this.inputASName, testfilemalletseq, this.sequenceSpan, 
-								mode, classType, classFeature, identifierFeature);
+								mode, classType, classFeature, identifierFeature, scaleFeatures);
 						break;
 					case WEKA_CL_NUM_ADDITIVE_REGRESSION:
 						File testfileweka = new File(
 								gate.util.Files.fileFromURL(saveDirectory), testfilenamearff);
 						testCorpus = new CorpusWriterArffNumericClass(this.conf, this.instanceName, 
 								this.inputASName, testfileweka, mode, classType, classFeature, 
-								identifierFeature, null);
+								identifierFeature, null, scaleFeatures);
 						break;
 					case WEKA_CL_NAIVE_BAYES:
 					case WEKA_CL_J48:
@@ -692,7 +714,7 @@ Serializable {
 								gate.util.Files.fileFromURL(saveDirectory), testfilenamearff);
 						testCorpus = new CorpusWriterArff(this.conf, this.instanceName, 
 								this.inputASName, testfileweka, mode, classType, classFeature, 
-								identifierFeature, null);
+								identifierFeature, null, scaleFeatures);
 						break;
 					}
 				}
@@ -704,6 +726,7 @@ Serializable {
 
 			//Do this once only, on the last document.
 			if(corpus.indexOf(document)==(corpus.size()-1) && evaluationLearner!=null) {	
+				this.trainingCorpus.conclude();
 				//Ready to evaluate
 				logger.info("LearningFramework: Evaluating ..");
 				evaluationLearner.evaluateHoldout(
@@ -716,7 +739,8 @@ Serializable {
 				File outputfilearff = new File(
 						gate.util.Files.fileFromURL(saveDirectory), corpusoutputdirectory);
 				exportCorpus = new CorpusWriterArff(this.conf, this.instanceName, this.inputASName, 
-						outputfilearff, mode, classType, classFeature, identifierFeature, null);
+						outputfilearff, mode, classType, classFeature, identifierFeature, null, 
+						scaleFeatures);
 				//exportCorpus.initializeOutputStream();
 			}
 
@@ -726,6 +750,7 @@ Serializable {
 			//Do this once only, on the last document.
 			if(corpus.indexOf(document)==(corpus.size()-1)) {
 				exportCorpus.conclude();
+				((CorpusWriterArff)exportCorpus).writeToFile();
 			}
 			break;
 		case EXPORT_ARFF_THRU_CURRENT_PIPE:
@@ -744,7 +769,7 @@ Serializable {
 				
 				exportCorpus = new CorpusWriterArff(this.conf, this.instanceName, this.inputASName, 
 						outputfilearff, mode, classType, classFeature, identifierFeature, 
-						CorpusWriterArff.getArffPipe(outputfilearff));
+						CorpusWriterArff.getArffPipe(outputfilearff), false);
 				//exportCorpus.initializeOutputStream();
 			}
 
@@ -754,6 +779,7 @@ Serializable {
 			//Do this once only, on the last document.
 			if(corpus.indexOf(document)==(corpus.size()-1)) {
 				exportCorpus.conclude();
+				((CorpusWriterArff)exportCorpus).writeToFile();
 			}
 			break;
 		case EXPORT_ARFF_NUMERIC_CLASS:
@@ -762,7 +788,8 @@ Serializable {
 				File outputfilearff = new File(
 						gate.util.Files.fileFromURL(saveDirectory), corpusoutputdirectory);
 				exportCorpus = new CorpusWriterArffNumericClass(this.conf, this.instanceName, this.inputASName, 
-						outputfilearff, mode, classType, classFeature, identifierFeature, null);
+						outputfilearff, mode, classType, classFeature, identifierFeature, null, 
+						scaleFeatures);
 				//exportCorpus.initializeOutputStream();
 			}
 
@@ -772,6 +799,7 @@ Serializable {
 			//Do this once only, on the last document.
 			if(corpus.indexOf(document)==(corpus.size()-1)) {
 				exportCorpus.conclude();
+				((CorpusWriterArffNumericClass)exportCorpus).writeToFile();
 			}
 			break;
 		case EXPORT_ARFF_NUMERIC_CLASS_THRU_CURRENT_PIPE:
@@ -790,7 +818,7 @@ Serializable {
 				
 				exportCorpus = new CorpusWriterArffNumericClass(this.conf, this.instanceName, this.inputASName, 
 						outputfilearff, mode, classType, classFeature, identifierFeature, 
-						CorpusWriterArff.getArffPipe(outputfilearff));
+						CorpusWriterArff.getArffPipe(outputfilearff), false);
 				//exportCorpus.initializeOutputStream();
 			}
 
@@ -800,6 +828,7 @@ Serializable {
 			//Do this once only, on the last document.
 			if(corpus.indexOf(document)==(corpus.size()-1)) {
 				exportCorpus.conclude();
+				((CorpusWriterArffNumericClass)exportCorpus).writeToFile();
 			}
 			break;
 		} 

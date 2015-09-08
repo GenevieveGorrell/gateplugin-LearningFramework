@@ -92,7 +92,8 @@ public class EngineMallet extends Engine {
 		//from train time.
 		if(restore){
 			File clf = new File(this.getOutputDirectory(), classifiername);
-			if(clf.exists()){	
+			File pf = new File(this.getOutputDirectory(), pipename);
+			if(clf.exists() && pf.exists()){	
 				try {
 					this.classifier = loadClassifier(clf);
 				} catch(Exception e){
@@ -115,6 +116,14 @@ public class EngineMallet extends Engine {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} 
+				try {
+					ObjectInputStream ois =
+							new ObjectInputStream (new FileInputStream(pf));
+					pipe = (Pipe) ois.readObject();
+					ois.close();
+				} catch(Exception e){
+					e.printStackTrace();
+				}
 			} else {
 				//If we can't restore the classifier, no point trying to restore
 				//anything else. It's a failed restore. Ah well.
@@ -348,8 +357,8 @@ public class EngineMallet extends Engine {
 		}
 
 		CorpusWriterMallet trMal = (CorpusWriterMallet)trainingCorpus;
-		//InstanceList instances = trMal.getInstancesFromFile(pipe);
 		InstanceList instances = trMal.getInstances();
+		this.pipe = trMal.pipe;
 
 		if(instances==null){
 			logger.warn("LearningFramework: No training instances!");
@@ -377,6 +386,18 @@ public class EngineMallet extends Engine {
 					e.printStackTrace();
 				}
 
+				//Save the pipe explicitly because I've had some problems with
+				//the version that is saved with the classifier
+				try {
+					ObjectOutputStream oos = new ObjectOutputStream
+							(new FileOutputStream(this.getOutputDirectory()
+									+ "/" + pipename));
+					oos.writeObject(this.pipe);
+					oos.close();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
 				//We also save a copy of the configuration file, so the user can
 				//change their copy without stuffing up their ability to apply this
 				//model. We also save some information necessary to restore the model.
@@ -420,7 +441,7 @@ public class EngineMallet extends Engine {
 			//Instance needs to go through the pipe for this classifier, so that
 			//it gets mapped using the same alphabet, and the text is in the
 			//expected format.
-			instance = this.classifier.getInstancePipe().instanceFrom(instance);
+			instance = this.pipe.instanceFrom(instance);
 
 			Classification classification = classifier.classify(instance);
 			String bestLabel = classification.getLabeling().getBestLabel().toString();

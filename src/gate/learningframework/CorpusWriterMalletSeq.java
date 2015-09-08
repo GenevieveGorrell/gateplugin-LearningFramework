@@ -56,15 +56,12 @@ public class CorpusWriterMalletSeq extends CorpusWriter{
 	//learners want to do an entire sequence, for example, a whole sentence
 	//of tokens. So we need to define sequence span.
 	private String sequenceSpan;
-
-	private InstanceList instances; 
-	
-	private SerialPipes pipe;
 	
 	public CorpusWriterMalletSeq(FeatureSpecification conf, String inst, String inpas, 
 			File outputFile, String sequenceSpan, Mode mode, String classType, 
-			String classFeature, String identifierFeature){
-		super(conf, inst, inpas, outputFile, mode, classType, classFeature, identifierFeature);
+			String classFeature, String identifierFeature, boolean scaleFeatures){
+		super(conf, inst, inpas, outputFile, mode, classType, classFeature, identifierFeature,
+				scaleFeatures);
 		this.sequenceSpan = sequenceSpan;
 
 		/*
@@ -213,7 +210,12 @@ public class CorpusWriterMalletSeq extends CorpusWriter{
 	}
 
 	public void conclude(){
-		//Doesn't need to do anything for Mallet output
+		//Would ideally offer feature scaling here but I haven't implemented
+		//it for the more complex FeatureVectorSequence so far.
+		if(scaleFeatures){
+			logger.warn("LearningFramework: Feature scaling not implemented for sequence"
+					+ " learners, sorry.");
+		}
 	}
 
 	public InstanceList getInstances() {

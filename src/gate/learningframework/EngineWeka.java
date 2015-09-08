@@ -58,17 +58,6 @@ public class EngineWeka extends Engine {
 
 	private String params;
 
-	/**
-	 * The name of the pipe location. Since we are using
-	 * Mallet for feature prep but not for classification,
-	 * we have to explicitly save the pipe rather than relying
-	 * on Mallet to save it with the classifier.
-	 */
-	private Pipe pipe = null;
-
-	private static String pipename = new String("my.pipe");
-
-
 	public EngineWeka(File savedModel, Mode mode, String params, String engine, boolean restore){	
 		this(savedModel, mode, engine, restore);
 		this.params = params;

@@ -28,6 +28,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
+import cc.mallet.pipe.Pipe;
 import gate.Annotation;
 import gate.AnnotationSet;
 import gate.Document;
@@ -48,7 +49,19 @@ public abstract class Engine {
 	private File outputDirectory;
 	
 	private Mode mode;
-	
+
+	/**
+	 * The name of the pipe location. Since we are using
+	 * Mallet for feature prep but not always for classification,
+	 * we have to explicitly save the pipe rather than relying
+	 * on Mallet to save it with the classifier. In any case
+	 * the version saved with the classifier doesn't always seem
+	 * reliable.
+	 */
+	public Pipe pipe = null;
+
+	public static String pipename = new String("my.pipe");
+
 	public abstract void train(FeatureSpecification conf, CorpusWriter trainingCorpus);
 	
 	//public abstract List<GateClassification> classify(

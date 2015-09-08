@@ -51,7 +51,7 @@ public class FeatureValueString2FeatureVectorSequence extends Pipe implements Se
 
 	public Instance pipe(Instance carrier) {
 		if (! (carrier.getData() instanceof CharSequence)) {
-			throw new IllegalArgumentException("Target must be of type CharSequence");
+			throw new IllegalArgumentException("Data must be of type CharSequence");
 		}
 
 		lexer.setCharSequence(carrier.getData().toString());
