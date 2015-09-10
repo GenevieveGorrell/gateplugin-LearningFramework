@@ -31,6 +31,7 @@ import java.io.ObjectOutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -225,6 +226,29 @@ public class EngineLibSVM  extends Engine {
 		}
 
 		svm_parameter param = makeParam(trMal.getInstances().getDataAlphabet().size());
+		
+		//Reorder the weights--when the user chose their weights they did so on the
+		//basis of alphabetical order. The classes didn't come in that way though so
+		//we need to reorder the weights the way the user meant.
+		Object[] labels = trMal.getInstances().getTargetAlphabet().toArray();
+		if(param.weight.length!=0 && labels.length!=param.weight.length){
+			logger.warn("LearningFramework: Number of weights not the same as number of classes!");
+		} else {
+			Arrays.sort(labels);
+			double[] sortedweights = new double[param.weight.length];
+			for(int i=0;i<param.weight.length;i++){
+				//This is the class that the user meant to assign weight i to
+				Object label = labels[i];
+				//This is where it is according to Mallet
+				int oldindex = trMal.getInstances().getTargetAlphabet().lookupIndex(label);
+				//So weight i needs to go to the position of oldindex
+				sortedweights[oldindex] = param.weight[i];
+				logger.info("LearningFramework: class " + label.toString() + " takes weight "
+						+ param.weight[i]);
+			}
+			param.weight = sortedweights;
+		}
+		
 		
 		//Train is a static method on svm
 		libsvm.svm.svm_set_print_string_function(print_func);
