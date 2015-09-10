@@ -163,6 +163,7 @@ The full range of parameters are supported, which can be specified in the "learn
 -b probability_estimates: whether to train a SVC or SVR model for probability estimates, 0 or 1 (default 0)
 -wi weight: set the parameter C of class i to weight*C, for C-SVC (default 1)
 
+More on weights--set weights for example like so: "-w0 1 -w1 2.5 -w2 2.5 -w3 4". Assign them assuming classes are in alphabetical/natural order. Weight assignments will be fed back to the logger so you can check them. If you assign the wrong number of weights for your classes, all the weights will be rejected. It's your responsibility to know how many classes you have in your training corpus.
 
 Mallet CRF:
 
