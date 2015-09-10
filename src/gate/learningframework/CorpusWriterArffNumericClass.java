@@ -76,10 +76,6 @@ public class CorpusWriterArffNumericClass extends CorpusWriterArff {
 	 * The header isn't sparse. We have to write them all out which is tedious
 	 * but trivial.
 	 */
-	public void conclude(){
-		if(scaleFeatures) normalize();
-	}
-	
 	public void writeToFile(){		
 		this.initializeOutputStream(outputfile);
 		//First the header

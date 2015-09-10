@@ -68,14 +68,9 @@ import cc.mallet.util.MalletLogger;
 
 public class EngineMallet extends Engine {
 
-	private Classifier classifier = null;
-
-	/**
-	 * The name of the classifier location.
-	 */
-	private static String classifiername = new String("my.classifier");
-	
 	private String params;
+
+	public Classifier classifier = null;
 
 	public EngineMallet(File savedModel, Mode mode, String params, String engine, boolean restore){	
 		this(savedModel, mode, engine, restore);
@@ -83,7 +78,6 @@ public class EngineMallet extends Engine {
 	}
 
 	public EngineMallet(File savedModel, Mode mode, String engine, boolean restore){
-
 		this.setOutputDirectory(savedModel);
 		this.setEngine(engine);
 		this.setMode(mode);
@@ -91,66 +85,7 @@ public class EngineMallet extends Engine {
 		//Restore the classifier and the saved copy of the configuration file
 		//from train time.
 		if(restore){
-			File clf = new File(this.getOutputDirectory(), classifiername);
-			File pf = new File(this.getOutputDirectory(), pipename);
-			if(clf.exists() && pf.exists()){	
-				try {
-					this.classifier = loadClassifier(clf);
-				} catch(Exception e){
-					e.printStackTrace();
-				}
-
-				URL confURL = null;
-				try {
-					confURL = new URL(
-							this.getOutputDirectory().toURI().toURL(), 
-							Engine.getSavedConf());
-				} catch (MalformedURLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-
-				try {
-					this.setSavedConfFile(new FeatureSpecification(confURL));
-				} catch (ResourceInstantiationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} 
-				try {
-					ObjectInputStream ois =
-							new ObjectInputStream (new FileInputStream(pf));
-					pipe = (Pipe) ois.readObject();
-					ois.close();
-				} catch(Exception e){
-					e.printStackTrace();
-				}
-			} else {
-				//If we can't restore the classifier, no point trying to restore
-				//anything else. It's a failed restore. Ah well.
-			}
-		}
-	}
-
-	/**
-	 * The standard way to save classifiers and Mallet data 
-	 * for repeated use is through Java serialization. 
-	 * Here we load a serialized classifier from a file.
-	 * 
-	 */
-	public Classifier loadClassifier(File serializedFile)
-			throws FileNotFoundException, IOException, ClassNotFoundException {
-
-		if(serializedFile.exists()){
-			Classifier classifier;
-
-			ObjectInputStream ois =
-					new ObjectInputStream (new FileInputStream(serializedFile));
-			classifier = (Classifier) ois.readObject();
-			ois.close();
-
-			return classifier;
-		} else {
-			return null;
+			this.classifier = (Classifier)this.loadClassifier();
 		}
 	}
 
@@ -358,7 +293,6 @@ public class EngineMallet extends Engine {
 
 		CorpusWriterMallet trMal = (CorpusWriterMallet)trainingCorpus;
 		InstanceList instances = trMal.getInstances();
-		this.pipe = trMal.pipe;
 
 		if(instances==null){
 			logger.warn("LearningFramework: No training instances!");
@@ -374,38 +308,9 @@ public class EngineMallet extends Engine {
 			if(trainer!=null){
 				this.classifier = trainer.train(instances);
 
-				//Save the classifier so we don't have to retrain if we
-				//restart GATE
-				try {
-					ObjectOutputStream oos = new ObjectOutputStream
-							(new FileOutputStream(this.getOutputDirectory()
-									+ "/" + classifiername));
-					oos.writeObject(classifier);
-					oos.close();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-
-				//Save the pipe explicitly because I've had some problems with
-				//the version that is saved with the classifier
-				try {
-					ObjectOutputStream oos = new ObjectOutputStream
-							(new FileOutputStream(this.getOutputDirectory()
-									+ "/" + pipename));
-					oos.writeObject(this.pipe);
-					oos.close();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				
-				//We also save a copy of the configuration file, so the user can
-				//change their copy without stuffing up their ability to apply this
-				//model. We also save some information necessary to restore the model.
-				this.storeConf(conf);
-				this.writeInfo(
-						instances.size(),
+				this.save(conf, this.classifier, instances.size(),
 						instances.getDataAlphabet().size(),
-						instances.getTargetAlphabet().size());
+						instances.getTargetAlphabet().size(), trMal.pipe);
 			}
 		}
 	}

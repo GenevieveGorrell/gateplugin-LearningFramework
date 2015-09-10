@@ -15,9 +15,16 @@
 
 package gate.learningframework;
 
+//import static gate.learningframework.Engine.classifiername;
+//import static gate.learningframework.Engine.pipename;
+
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -28,6 +35,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
+import weka.classifiers.Classifier;
 import cc.mallet.pipe.Pipe;
 import gate.Annotation;
 import gate.AnnotationSet;
@@ -51,6 +59,11 @@ public abstract class Engine {
 	private Mode mode;
 
 	/**
+	 * The name of the classifier location.
+	 */
+	private static String classifiername = new String("my.classifier");
+	
+	/**
 	 * The name of the pipe location. Since we are using
 	 * Mallet for feature prep but not always for classification,
 	 * we have to explicitly save the pipe rather than relying
@@ -60,8 +73,83 @@ public abstract class Engine {
 	 */
 	public Pipe pipe = null;
 
-	public static String pipename = new String("my.pipe");
+	private static String pipename = new String("my.pipe");
 
+	public Object loadClassifier(){
+		File clf = new File(this.getOutputDirectory(), classifiername);
+		File pf = new File(this.getOutputDirectory(), pipename);
+		Object classifier = null;
+		if(clf.exists() && pf.exists()){
+			try {
+				ObjectInputStream ois =
+						new ObjectInputStream (new FileInputStream(clf));
+				classifier = ois.readObject();
+				ois.close();
+			} catch(Exception e){
+				e.printStackTrace();
+			}
+
+			URL confURL = null;
+			try {
+				confURL = new URL(
+						this.getOutputDirectory().toURI().toURL(), 
+						Engine.getSavedConf());
+			} catch (MalformedURLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+			try {
+				this.setSavedConfFile(new FeatureSpecification(confURL));
+			} catch (ResourceInstantiationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+			try {
+				ObjectInputStream ois =
+						new ObjectInputStream (new FileInputStream(pf));
+				pipe = (Pipe) ois.readObject();
+				ois.close();
+			} catch(Exception e){
+				e.printStackTrace();
+			}
+		}
+		return classifier;
+	}
+
+	public void save(FeatureSpecification conf, Object classifier,
+			int exnum, int dataalph, int targalph, Pipe pipe){
+		//Save the classifier so we don't have to retrain if we
+		//restart GATE
+		try {
+			ObjectOutputStream oos = new ObjectOutputStream
+					(new FileOutputStream(this.getOutputDirectory()
+							+ "/" + classifiername));
+			oos.writeObject(classifier);
+			oos.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		//Save the pipe explicitly with all engines, for greater control
+		try {
+			ObjectOutputStream oos = new ObjectOutputStream
+					(new FileOutputStream(this.getOutputDirectory()
+							+ "/" + pipename));
+			oos.writeObject(pipe);
+			oos.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		//We also save a copy of the configuration file, so the user can
+		//change their copy without stuffing up their ability to apply this
+		//model. We also save some information necessary to restore the model.
+		this.storeConf(conf);
+		this.writeInfo(exnum, dataalph, targalph);
+		this.pipe = pipe;
+	}
+	
 	public abstract void train(FeatureSpecification conf, CorpusWriter trainingCorpus);
 	
 	//public abstract List<GateClassification> classify(

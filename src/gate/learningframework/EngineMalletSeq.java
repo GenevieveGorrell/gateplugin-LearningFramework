@@ -52,70 +52,16 @@ import gate.creole.ResourceInstantiationException;
 
 public class EngineMalletSeq extends Engine {
 
-	/**
-	 * The name of the classifier location.
-	 */
-	private static String modelname = new String("my.model");
-
-	/**
-	 * The name of the saved pipe location.
-	 */
-	//private static String pipename = new String("my.pipe");
-
 	private CRF crf;
 
-	//private Pipe pipe;
-	
 	public EngineMalletSeq(File savedModel, Mode mode, boolean restore){
 		this.setOutputDirectory(savedModel);
 		this.setMode(mode);
 
 		if(restore){
-			File info = new File(this.getOutputDirectory(), Engine.info);
-			if(info.exists()){	
-				try {
-					loadCRF();
-				} catch(Exception e){
-					e.printStackTrace();
-				}
-			} else {
-				//If we can't restore the classifier, no point trying to restore
-				//anything else. It's a failed restore. Ah well.
-			}
+			this.crf = (CRF)this.loadClassifier();
 		}
 
-	}
-
-	public void loadCRF()
-			throws FileNotFoundException, IOException, ClassNotFoundException {
-
-		File serializedFile = new File(this.getOutputDirectory(), modelname);
-		
-		//Restore the model
-		if(serializedFile.exists()){
-			ObjectInputStream ois =
-					new ObjectInputStream (new FileInputStream(serializedFile));
-			this.crf = (CRF) ois.readObject();
-			ois.close();
-		}
-
-		//Restore the saved copy of the configuration file, for use in application.
-		URL confURL = null;
-		try {
-			confURL = new URL(
-					this.getOutputDirectory().toURI().toURL(), 
-					Engine.getSavedConf());
-		} catch (MalformedURLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-		try {
-			this.setSavedConfFile(new FeatureSpecification(confURL));
-		} catch (ResourceInstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
 	}
 
 	public void train(FeatureSpecification conf, CorpusWriter trainingCorpus){
@@ -159,24 +105,9 @@ public class EngineMalletSeq extends Engine {
 		crfTrainer.setMaxResets(0);
 		crfTrainer.train(trainingData, Integer.MAX_VALUE);
 
-
-		//Conclude by saving the trained model along with
-		//a copy of the configuration file and an info file
-		try {
-			ObjectOutputStream oos = new ObjectOutputStream
-					(new FileOutputStream(
-							new File(this.getOutputDirectory(), modelname)));
-			oos.writeObject(crf);
-			oos.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		this.storeConf(conf);
-		this.writeInfo(
-				trainingData.size(),
+		this.save(conf, this.crf, trainingData.size(),
 				trainingData.getDataAlphabet().size(),
-				trainingData.getTargetAlphabet().size());
+				trainingData.getTargetAlphabet().size(), trainingData.getPipe());
 	}
 
 	/**

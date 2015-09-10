@@ -444,10 +444,6 @@ public class CorpusWriterMallet extends CorpusWriter{
 		return nodearray;
 	}
 	
-	public void conclude(){
-		if(scaleFeatures) normalize();
-	}
-
 	public InstanceList getInstances() {
 		return instances;
 	}

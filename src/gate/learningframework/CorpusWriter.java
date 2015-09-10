@@ -149,7 +149,7 @@ public abstract class CorpusWriter {
 	public void conclude(){
 		if(scaleFeatures) normalize();
 	}
-	
+
 	public void normalize(){
 		//We need to add the scaling step to the pipe.
 		double[] sums = new double[instances.getDataAlphabet().size()];

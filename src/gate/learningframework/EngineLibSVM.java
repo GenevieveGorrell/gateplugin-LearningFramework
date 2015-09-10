@@ -52,21 +52,6 @@ public class EngineLibSVM  extends Engine {
 
 	private svm_model svmModel = null;
 
-	/**
-	 * The name of the classifier location.
-	 */
-	private static String svmname = new String("my.svm");
-
-	/**
-	 * The name of the pipe location. Since we are using
-	 * Mallet for feature prep but not for classification,
-	 * we have to explicitly save the pipe rather than relying
-	 * on Mallet to save it with the classifier.
-	 */
-	private Pipe pipe = null;
-
-	private static String pipename = new String("my.pipe");
-
 	private String params = null;
 
 	private static svm_print_interface svm_print_null = new svm_print_interface(){
@@ -82,7 +67,7 @@ public class EngineLibSVM  extends Engine {
 		//Restore the classifier and the saved copy of the configuration file
 		//from train time.
 		if(restore){	
-			this.loadClassifier();
+			this.svmModel = (svm_model)this.loadClassifier();
 		}
 	}
 
@@ -94,53 +79,7 @@ public class EngineLibSVM  extends Engine {
 		//Restore the classifier and the saved copy of the configuration file
 		//from train time.
 		if(restore){	
-			this.loadClassifier();
-		}
-	}
-
-	/**
-	 * The standard way to save classifiers and Mallet data 
-	 * for repeated use is through Java serialization. 
-	 * Here we load a serialized classifier from a file.
-	 * 
-	 */
-	public void loadClassifier(){
-		File clf = new File(this.getOutputDirectory(), svmname);
-		File pf = new File(this.getOutputDirectory(), pipename);
-		if(clf.exists() && pf.exists()){
-			try {
-				ObjectInputStream ois =
-						new ObjectInputStream (new FileInputStream(clf));
-				svmModel = (svm_model) ois.readObject();
-				ois.close();
-			} catch(Exception e){
-				e.printStackTrace();
-			}
-
-			URL confURL = null;
-			try {
-				confURL = new URL(
-						this.getOutputDirectory().toURI().toURL(), 
-						Engine.getSavedConf());
-			} catch (MalformedURLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-
-			try {
-				this.setSavedConfFile(new FeatureSpecification(confURL));
-			} catch (ResourceInstantiationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} 
-			try {
-				ObjectInputStream ois =
-						new ObjectInputStream (new FileInputStream(pf));
-				pipe = (Pipe) ois.readObject();
-				ois.close();
-			} catch(Exception e){
-				e.printStackTrace();
-			}
+			this.svmModel = (svm_model)this.loadClassifier();
 		}
 	}
 
@@ -273,9 +212,6 @@ public class EngineLibSVM  extends Engine {
 		//Mallet feature prep stuff is so helpful so we'll start there
 		CorpusWriterMallet trMal = (CorpusWriterMallet)trainingCorpus;
 
-		//Need the pipe for later
-		this.pipe = trMal.getInstances().getPipe();
-
 		svm_problem prob = trMal.getLibSVMProblem();
 
 		if(prob.l==0){
@@ -297,38 +233,10 @@ public class EngineLibSVM  extends Engine {
 		
 		//printModel(trMal);
 
-		//Save the classifier so we don't have to retrain if we
-		//restart GATE
-		try {
-			ObjectOutputStream oos = new ObjectOutputStream
-					(new FileOutputStream(this.getOutputDirectory()
-							+ "/" + svmname));
-			oos.writeObject(svmModel);
-			oos.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		//Save the pipe--we aren't using Mallet for classification,
-		//but we are using Mallet for data prep so we need the pipe.
-		try {
-			ObjectOutputStream oos = new ObjectOutputStream
-					(new FileOutputStream(this.getOutputDirectory()
-							+ "/" + pipename));
-			oos.writeObject(trMal.getInstances().getPipe());
-			oos.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		//We also save a copy of the configuration file, so the user can
-		//change their copy without stuffing up their ability to apply this
-		//model. We also save some information necessary to restore the model.
-		this.storeConf(conf);
-		this.writeInfo(
-				trMal.getInstances().size(),
+		this.save(conf, this.svmModel, trMal.getInstances().size(),
 				trMal.getInstances().getDataAlphabet().size(),
-				trMal.getInstances().getTargetAlphabet().size());
+				trMal.getInstances().getTargetAlphabet().size(), 
+				trMal.pipe);
 	}
 
 
