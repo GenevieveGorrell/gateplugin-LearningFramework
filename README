@@ -82,6 +82,8 @@ Unlike the Batch Learning PR, the Learning Framework takes much more information
 
 -saveDirectory--indicates the location to which models should be saved, or the location from which to load the model you wish to apply. Allows you to switch between models at runtime.
 
+-scaleFeatures--brings features into scale with each other by normalizing the variance to 1 and the mean to zero, which in many cases improves the result a lot. Note however that the current implementation is an approximation in that it ignores zero value features. Feature scaling involves, in part, subtracting the mean value for the feature from each value. In the case of a sparse feature, which is mostly zeros, the mean is most likely very small, and subtracting it from all values would desparsify the matrix by turning all the zeros into this negated small number. This would blow up the memory required. In the case of a dense feature, all values are correctly scaled. The cases in which this approximation may be inadequate are in the middle ground between sparse and dense. Future work may include a more principled approach such as an explicit threshold below which a value is considered close enough to zero to discard.
+
 -sequenceSpan--for sequence learning, the smallest meaningful sequence. This needs to be the name of an annotation type that appears in the document. "Sentence" would be common, for example in the context of an NER task where "Token" is instance. Training instances will be constructed for the entire sequence, as required by Mallet. Ignored for non-sequence learners.
 
 -trainingAlgo--indicates the algorithm to use for training.
