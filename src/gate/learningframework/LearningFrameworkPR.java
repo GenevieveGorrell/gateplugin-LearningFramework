@@ -469,6 +469,7 @@ Serializable {
 			case WEKA_CL_MULTILAYER_PERCEPTRON:
 			case WEKA_CL_JRIP:
 			case WEKA_CL_NBTREE:
+			case WEKA_CL_RANDOM_FOREST:
 				return new EngineWeka(
 						savedModelFile, mode, learnerParams, spec, false);
 			}
@@ -526,6 +527,7 @@ Serializable {
 					case WEKA_CL_MULTILAYER_PERCEPTRON:
 					case WEKA_CL_JRIP:
 					case WEKA_CL_NBTREE:
+					case WEKA_CL_RANDOM_FOREST:
 						trainfileweka = new File(
 								gate.util.Files.fileFromURL(saveDirectory), trainfilenamearff);
 						trainingCorpus = new CorpusWriterArff(this.conf, this.instanceName, 
@@ -601,6 +603,7 @@ Serializable {
 				case WEKA_CL_MULTILAYER_PERCEPTRON:
 				case WEKA_CL_JRIP:
 				case WEKA_CL_NBTREE:
+				case WEKA_CL_RANDOM_FOREST:
 					gcs = ((EngineWeka)applicationLearner).classify(
 							this.instanceName, this.inputASName, doc);
 					break;
@@ -658,6 +661,7 @@ Serializable {
 					case WEKA_CL_MULTILAYER_PERCEPTRON:
 					case WEKA_CL_JRIP:
 					case WEKA_CL_NBTREE:
+					case WEKA_CL_RANDOM_FOREST:
 						testfileweka = new File(
 								gate.util.Files.fileFromURL(saveDirectory), testfilenamearff);
 						testCorpus = new CorpusWriterArff(this.conf, this.instanceName, 
@@ -725,6 +729,7 @@ Serializable {
 					case WEKA_CL_MULTILAYER_PERCEPTRON:
 					case WEKA_CL_JRIP:
 					case WEKA_CL_NBTREE:
+					case WEKA_CL_RANDOM_FOREST:
 						testfileweka = new File(
 								gate.util.Files.fileFromURL(saveDirectory), testfilenamearff);
 						testCorpus = new CorpusWriterArff(this.conf, this.instanceName, 
