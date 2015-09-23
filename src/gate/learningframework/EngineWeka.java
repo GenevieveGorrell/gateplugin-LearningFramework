@@ -254,11 +254,14 @@ public class EngineWeka extends Engine {
 					e.printStackTrace();
 				}
 				double bestprob = 0.0;
-				
+				List<String> classList = new ArrayList<String>();
+				List<Double> confidenceList = new ArrayList<Double>();
 				for(int i = 0; i < predictionDistribution.length; i++){
 					double thislabel = i;
 					double thisprob = predictionDistribution[i];
-					
+					String labelstr = (String)this.pipe.getTargetAlphabet().lookupObject((new Double(thislabel)).intValue());
+					classList.add(labelstr);
+					confidenceList.add(thisprob);
 					if(thisprob>bestprob){
 						bestlabel = thislabel;
 						bestprob = thisprob;
@@ -269,7 +272,7 @@ public class EngineWeka extends Engine {
 						(String)this.pipe.getTargetAlphabet().lookupObject((new Double(bestlabel)).intValue());
 				
 				GateClassification gc = new GateClassification(
-						instanceAnnotation, cl, bestprob);
+						instanceAnnotation, cl, bestprob, classList, confidenceList);
 
 				gcs.add(gc);
 			}

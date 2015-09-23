@@ -881,6 +881,11 @@ Serializable {
 				fm.putAll(gc.getInstance().getFeatures());
 				fm.put(outputClassFeature, gc.getClassAssigned());
 				fm.put(outputProbFeature, gc.getConfidenceScore());
+				if(gc.classList!=null && gc.confidenceList!=null){
+					fm.put(outputClassFeature + "_list", gc.classList);
+					fm.put(outputProbFeature + "_list", gc.confidenceList);
+				}
+				
 				//fm.put(this.conf.getIdentifier(), identifier);
 				if(gc.getSeqSpanID()!=null){
 					fm.put(outputSequenceSpanIDFeature, gc.getSeqSpanID());
