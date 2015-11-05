@@ -243,7 +243,7 @@ public class FeatureExtractor {
 				return type + ":" + feature + "=" + df;
 			} catch (NumberFormatException e){
 				logger.warn("LearningFramework: Failed to format numeric feature "
-						+ feat + " as double. Treating as string.");
+						+ feature + "=" + feat + " as double. Treating as string.");
 				return type + ":" + feature + ":" + feat;
 			}
 		}
@@ -417,7 +417,7 @@ public class FeatureExtractor {
 									+ df;
 						} catch (NumberFormatException e){
 							logger.warn("LearningFramework: Failed to format numeric feature "
-									+ feat + " as double. Treating as string.");
+									+ feature + "=" + feat + " as double. Treating as string.");
 							textToReturn = textToReturn + separator + type + ":" 
 									+ feature + ":r" + i + ":"
 									+ feat;
