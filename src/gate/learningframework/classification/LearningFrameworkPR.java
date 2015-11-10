@@ -53,6 +53,7 @@ import gate.learningframework.corpora.CorpusWriterArffNumericClass;
 import gate.learningframework.corpora.CorpusWriterMallet;
 import gate.learningframework.corpora.CorpusWriterMalletSeq;
 import gate.learningframework.corpora.FeatureSpecification;
+import gate.util.GateRuntimeException;
 import gate.util.InvalidOffsetException;
 
 
@@ -171,7 +172,16 @@ Serializable, ControllerAwarePR {
 	 */
 	private String learnerParams;
 
+        /**
+         * A flag that indicates that the PR has just been started. Used in execute()
+         * to run code that needs to run once before any documents are processed. 
+         */
+        protected boolean justStarted = false;
 
+        /**
+         * A flag that indicates that at least one document was processed.
+         */
+        protected boolean haveSomeDocuments = false;
 
 	@RunTime
 	@CreoleParameter(comment = "The feature specification file.")
@@ -462,7 +472,14 @@ Serializable, ControllerAwarePR {
 	}
 	
 	@Override
-	public void execute() throws ExecutionException {	 
+	public void execute() throws ExecutionException {
+          
+                if(justStarted) {
+                  justStarted = false;
+                  runAfterJustStarted();
+                }
+                haveSomeDocuments = true;
+                
 		Document doc = getDocument();
 
 		switch(this.getOperation()){
@@ -475,33 +492,57 @@ Serializable, ControllerAwarePR {
 			if(applicationLearner!=null){
 				List<GateClassification> gcs = null;
 
-				switch(applicationLearner.whatIsIt()){
-				case LIBSVM:
-					gcs = ((EngineLibSVM)applicationLearner).classify(
-							this.instanceName, this.inputASName, doc);
-					break;
-				case MALLET_CL_C45:
-				case MALLET_CL_DECISION_TREE:
-				case MALLET_CL_MAX_ENT:
-				case MALLET_CL_NAIVE_BAYES_EM:
-				case MALLET_CL_NAIVE_BAYES:
-				case MALLET_CL_WINNOW:
-					gcs = ((EngineMallet)applicationLearner).classify(
-							this.instanceName, this.inputASName, doc);
-					break;
-				case MALLET_SEQ_CRF:
-					gcs = ((EngineMalletSeq)applicationLearner).classify(
-							this.instanceName, this.inputASName, doc, this.sequenceSpan);
-					break;
-				case WEKA_CL_NUM_ADDITIVE_REGRESSION:
-				case WEKA_CL_NAIVE_BAYES:
-				case WEKA_CL_J48:
-				case WEKA_CL_RANDOM_TREE:
-				case WEKA_CL_IBK:
-					gcs = ((EngineWeka)applicationLearner).classify(
-							this.instanceName, this.inputASName, doc);
-					break;
-				}
+                                // TODO: (JP) this should really check the actual type of the learner,
+                                // rather than what kind of learning is currently set as a parameter,
+                                // because the learner we read from the savedModel directory could
+                                // be entirely different. Also, we could then inform about the actual
+                                // learning class used.
+                                // At the moment, if an unknown model was loaded from a directory,
+                                // the whatIsIt will return null, so we handle this separately.
+                                if (applicationLearner.whatIsIt() == null) {
+                                  if(applicationLearner instanceof EngineWeka) {
+                                    gcs = ((EngineWeka) applicationLearner).classify(
+                                        this.instanceName, this.inputASName, doc);
+                                  } else if(applicationLearner instanceof EngineMallet && 
+                                            ((EngineMallet)applicationLearner).getMode() == Mode.CLASSIFICATION) {
+                                    gcs = ((EngineMallet) applicationLearner).classify(
+                                        this.instanceName, this.inputASName, doc);
+                                  } else if(applicationLearner instanceof EngineMallet && 
+                                            ((EngineMallet)applicationLearner).getMode() == Mode.NAMED_ENTITY_RECOGNITION) {
+                                    gcs = ((EngineMalletSeq) applicationLearner).classify(
+                                        this.instanceName, this.inputASName, doc, this.sequenceSpan);
+                                  } else {
+                                    throw new GateRuntimeException("Found a strange instance of an engine");
+                                  }
+                          } else {
+                            switch (applicationLearner.whatIsIt()) {
+                              case LIBSVM:
+                                gcs = ((EngineLibSVM) applicationLearner).classify(
+                                        this.instanceName, this.inputASName, doc);
+                                break;
+                              case MALLET_CL_C45:
+                              case MALLET_CL_DECISION_TREE:
+                              case MALLET_CL_MAX_ENT:
+                              case MALLET_CL_NAIVE_BAYES_EM:
+                              case MALLET_CL_NAIVE_BAYES:
+                              case MALLET_CL_WINNOW:
+                                gcs = ((EngineMallet) applicationLearner).classify(
+                                        this.instanceName, this.inputASName, doc);
+                                break;
+                              case MALLET_SEQ_CRF:
+                                gcs = ((EngineMalletSeq) applicationLearner).classify(
+                                        this.instanceName, this.inputASName, doc, this.sequenceSpan);
+                                break;
+                              case WEKA_CL_NUM_ADDITIVE_REGRESSION:
+                              case WEKA_CL_NAIVE_BAYES:
+                              case WEKA_CL_J48:
+                              case WEKA_CL_RANDOM_TREE:
+                              case WEKA_CL_IBK:
+                                gcs = ((EngineWeka) applicationLearner).classify(
+                                        this.instanceName, this.inputASName, doc);
+                                break;
+                            }
+                          }
 
 				addClassificationAnnotations(doc, gcs);
 				if(this.getMode()==Mode.NAMED_ENTITY_RECOGNITION){
@@ -684,19 +725,24 @@ Serializable, ControllerAwarePR {
 	@Override
 	public void controllerExecutionAborted(Controller arg0, Throwable arg1)
 			throws ExecutionException {
-		// TODO Auto-generated method stub
-		
+                // reset the flags for the next time the controller is run
+		justStarted = false;
+                haveSomeDocuments = false;
 	}
 
 	@Override
 	public void controllerExecutionFinished(Controller arg0)
 			throws ExecutionException {
+                // reset the flags for the next time the controller is run
+                justStarted = false;
+                haveSomeDocuments = false;
+                
 		switch(this.getOperation()){
 		case TRAIN:	
 			if(trainingLearner!=null) {	
 				//Ready to go
 				logger.info("LearningFramework: Training " 
-						+ trainingLearner.whatIsIt().toString() + " ...");
+						+ trainingLearner.whatIsItString() + " ...");
 
 				trainingLearner.train(conf, trainingCorpus);
 				this.applicationLearner = trainingLearner;
@@ -732,6 +778,10 @@ Serializable, ControllerAwarePR {
 	@Override
 	public void controllerExecutionStarted(Controller arg0)
 			throws ExecutionException {
+          justStarted = true;
+        }
+        
+        protected void runAfterJustStarted() {
 		switch(this.getOperation()){
 		case TRAIN:
 			if(trainingAlgo==null){
@@ -793,7 +843,7 @@ Serializable, ControllerAwarePR {
 				break;
 			} else {
 				logger.info("LearningFramework: Applying " 
-						+ this.applicationLearner.whatIsIt().toString());
+						+ this.applicationLearner.whatIsItString());
 				if(applicationLearner.getMode()!=this.getMode()){
 					logger.warn("LearningFramework: Warning! Applying "
 							+ "model trained in " + applicationLearner.getMode() 

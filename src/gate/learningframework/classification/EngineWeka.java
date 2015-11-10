@@ -17,9 +17,7 @@ package gate.learningframework.classification;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.MalformedURLException;
@@ -29,10 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-import libsvm.svm_model;
-import cc.mallet.classify.Classification;
 import cc.mallet.pipe.Pipe;
-import cc.mallet.types.Instance;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
 import weka.classifiers.bayes.NaiveBayes;
@@ -41,7 +36,6 @@ import weka.classifiers.meta.AdditiveRegression;
 import weka.classifiers.trees.J48;
 import weka.classifiers.trees.RandomTree;
 import weka.core.Instances;
-import weka.core.Utils;
 import gate.Annotation;
 import gate.AnnotationSet;
 import gate.Document;
@@ -51,6 +45,7 @@ import gate.learningframework.corpora.CorpusWriterArff;
 import gate.learningframework.corpora.CorpusWriterArffNumericClass;
 import gate.learningframework.corpora.CorpusWriterMallet;
 import gate.learningframework.corpora.FeatureSpecification;
+import weka.core.OptionHandler;
 
 public class EngineWeka extends Engine {
 
@@ -59,7 +54,7 @@ public class EngineWeka extends Engine {
 	/**
 	 * The name of the classifier location.
 	 */
-	private static String classifiername = new String("my.classifier");
+	private static String classifiername = "my.classifier";
 
 	private String params;
 
@@ -71,7 +66,7 @@ public class EngineWeka extends Engine {
 	 */
 	private Pipe pipe = null;
 
-	private static String pipename = new String("my.pipe");
+	private static String pipename = "my.pipe";
 
 
 	public EngineWeka(File savedModel, Mode mode, String params, String engine, boolean restore){	
@@ -100,6 +95,7 @@ public class EngineWeka extends Engine {
 				ObjectInputStream ois =
 						new ObjectInputStream (new FileInputStream(clf));
 				classifier = (Classifier) ois.readObject();
+                                logger.info("Loaded Weka classifier "+classifier.getClass().getName());
 				ois.close();
 			} catch(Exception e){
 				e.printStackTrace();
@@ -158,7 +154,7 @@ public class EngineWeka extends Engine {
 		if(params!=null && !params.isEmpty()){
 			String[] p = params.split("\\s+");
 			try {
-				classifier.setOptions(p);
+				((OptionHandler)classifier).setOptions(p);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -178,20 +174,14 @@ public class EngineWeka extends Engine {
 
 		weka.core.Instances instances = null;
 		
-		switch(this.getEngine()){
-		case "WEKA_CL_NUM_ADDITIVE_REGRESSION":
+		if(algorithm==Algorithm.WEKA_CL_NUM_ADDITIVE_REGRESSION){
 			CorpusWriterArffNumericClass trMal = (CorpusWriterArffNumericClass)trainingCorpus;
 			instances = trMal.getWekaInstances();
 			this.pipe = trMal.getPipe();
-			break;
-		case "WEKA_CL_NAIVE_BAYES":
-		case "WEKA_CL_J48":
-		case "WEKA_CL_RANDOM_TREE":
-		case "WEKA_CL_IBK":
+                } else {
 			CorpusWriterArff trArff = (CorpusWriterArff)trainingCorpus;
 			instances = trArff.getWekaInstances();
 			this.pipe = trArff.getPipe();
-			break;
 		}
 		
 
@@ -284,9 +274,7 @@ public class EngineWeka extends Engine {
 			weka.core.Instance wekaInstance = 
 					CorpusWriterArff.malletInstance2WekaInstanceNoTarget(
 							malletInstance, dataset);
-			
-			switch(this.getEngine()){
-			case "WEKA_CL_NUM_ADDITIVE_REGRESSION":
+			if(algorithm == Algorithm.WEKA_CL_NUM_ADDITIVE_REGRESSION){
 				try {
 					double result = classifier.classifyInstance(wekaInstance);
 					
@@ -298,11 +286,7 @@ public class EngineWeka extends Engine {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				break;
-			case "WEKA_CL_NAIVE_BAYES":
-			case "WEKA_CL_J48":
-			case "WEKA_CL_RANDOM_TREE":
-			case "WEKA_CL_IBK":
+                        } else {
 				double[] predictionDistribution = new double[0];
 				try {
 					predictionDistribution = this.classifier.distributionForInstance(wekaInstance);
@@ -337,14 +321,13 @@ public class EngineWeka extends Engine {
 						instanceAnnotation, cl, bestprob);
 
 				gcs.add(gc);
-			}
+                        }
 		}
 		return gcs;
 	}
 
 	public void evaluateXFold(CorpusWriter evalCorpus, int folds){
-		switch(this.getEngine()){
-		case "WEKA_CL_NUM_ADDITIVE_REGRESSION":
+		if(algorithm==Algorithm.WEKA_CL_NUM_ADDITIVE_REGRESSION){
 			CorpusWriterArffNumericClass trArff = (CorpusWriterArffNumericClass)evalCorpus;
 			Instances newData = trArff.getWekaInstances();
 			try {
@@ -356,11 +339,7 @@ public class EngineWeka extends Engine {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			break;
-		case "WEKA_CL_NAIVE_BAYES":
-		case "WEKA_CL_J48":
-		case "WEKA_CL_RANDOM_TREE":
-		case "WEKA_CL_IBK":
+                } else {
 			CorpusWriterArff trArff2 = (CorpusWriterArff)evalCorpus;
 			Instances newData2 = trArff2.getWekaInstances();
 			try {
@@ -373,14 +352,12 @@ public class EngineWeka extends Engine {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			break;
 		}
 	}
 
 	public void evaluateHoldout(CorpusWriter evalCorpus, 
 			float trainingproportion){
-		switch(this.getEngine()){
-		case "WEKA_CL_NUM_ADDITIVE_REGRESSION":
+		if(algorithm == Algorithm.WEKA_CL_NUM_ADDITIVE_REGRESSION){
 			CorpusWriterArffNumericClass trArff = (CorpusWriterArffNumericClass)evalCorpus;
 			Instances all = trArff.getWekaInstances();
 			Instances[] split = trArff.splitWekaInstances(all, trainingproportion);
@@ -398,10 +375,7 @@ public class EngineWeka extends Engine {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		case "WEKA_CL_NAIVE_BAYES":
-		case "WEKA_CL_J48":
-		case "WEKA_CL_RANDOM_TREE":
-		case "WEKA_CL_IBK":
+                } else {
 			CorpusWriterArff trArff2 = (CorpusWriterArff)evalCorpus;
 			Instances all2 = trArff2.getWekaInstances();
 			Instances[] split2 = trArff2.splitWekaInstances(all2, trainingproportion);
@@ -421,7 +395,14 @@ public class EngineWeka extends Engine {
 		}
 	}
 
-	public Algorithm whatIsIt(){
-		return Algorithm.valueOf(this.getEngine());
-	}
+        
+        @Override
+        public String whatIsItString() {
+          if(algorithm == null) {
+            return classifier.getClass().getCanonicalName();
+          } else {
+            return algorithm.toString();
+          }
+        }        
+        
 }

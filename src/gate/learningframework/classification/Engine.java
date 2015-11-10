@@ -34,12 +34,15 @@ import gate.Document;
 import gate.creole.ResourceInstantiationException;
 import gate.learningframework.corpora.CorpusWriter;
 import gate.learningframework.corpora.FeatureSpecification;
+import gate.util.GateRuntimeException;
 
 public abstract class Engine {
 
 	static final Logger logger = Logger.getLogger("Engine");
 	
 	private String engine;
+        
+        protected Algorithm algorithm;
 	
 	public static String info = "info";
 
@@ -57,7 +60,9 @@ public abstract class Engine {
 	//		List<Annotation> instanceAnnotations, 
 	//		AnnotationSet inputAS, Document doc);
 	
-	public abstract Algorithm whatIsIt();
+	public Algorithm whatIsIt() { return algorithm; }
+        
+        public abstract String whatIsItString();
 	
 	public abstract void evaluateXFold(CorpusWriter evalCorpus, int folds);
 
@@ -136,32 +141,57 @@ public abstract class Engine {
 			}
 			if(infostrings!=null && infostrings.size()>2){
 				String engine = infostrings.get(0).trim();
-				Algorithm algo = Algorithm.valueOf(engine);
-				String modestr = infostrings.get(2).trim();
-				Mode mode = Mode.valueOf(modestr);
-				switch(algo){
-				case LIBSVM:
-					learner = new EngineLibSVM(savedModelDirectoryFile, mode, true);
-					break;
-				case MALLET_CL_C45:
-				case MALLET_CL_DECISION_TREE:
-				case MALLET_CL_MAX_ENT:
-				case MALLET_CL_NAIVE_BAYES_EM:
-				case MALLET_CL_NAIVE_BAYES:
-				case MALLET_CL_WINNOW:
-					learner = new EngineMallet(savedModelDirectoryFile, mode, engine, true);
-					break;
-				case MALLET_SEQ_CRF:
-					learner = new EngineMalletSeq(savedModelDirectoryFile, mode, true);
-					break;
-				case WEKA_CL_NUM_ADDITIVE_REGRESSION:
-				case WEKA_CL_NAIVE_BAYES:
-				case WEKA_CL_J48:
-				case WEKA_CL_RANDOM_TREE:
-				case WEKA_CL_IBK:
-					learner = new EngineWeka(savedModelDirectoryFile, mode, engine, true);
-					break;
-				}
+                                // JP TODO
+                                Algorithm algo = null;
+                                try {
+				  algo = Algorithm.valueOf(engine);
+                                } catch(Exception ex) {
+                                  // ignore
+                                  // TODO: maybe should log a message to inform we got an
+                                  // unknown algorithm
+                                  System.err.println("WARNING: unknown algorithm in info file");
+                                }
+                                String modestr = infostrings.get(2).trim();
+                                Mode mode = Mode.valueOf(modestr);
+                                if(algo == null) {
+                                  // the algorithm is not know, but if it is a supported kind of algorithm
+                                  // still load it and go on with using it.
+                                  if(engine.startsWith("WEKA_CL")) {
+                                    System.err.println("DEBUG: trying to load an unknown weka cl model");
+                                    learner = new EngineWeka(savedModelDirectoryFile, mode, engine, true);
+                                  } else if(engine.startsWith("MALLET_CL")) {
+                                    learner = new EngineMallet(savedModelDirectoryFile, mode, engine, true);
+                                  } else if(engine.startsWith("MALLET_SEQ")) {
+                                    learner = new EngineMalletSeq(savedModelDirectoryFile, mode, true);
+                                  } else {
+                                    throw new GateRuntimeException("Cannot load the model, engine not known: "+engine);
+                                  }
+                                } else {
+                                  switch (algo) {
+                                    case LIBSVM:
+                                      learner = new EngineLibSVM(savedModelDirectoryFile, mode, true);
+                                      break;
+                                    case MALLET_CL_C45:
+                                    case MALLET_CL_DECISION_TREE:
+                                    case MALLET_CL_MAX_ENT:
+                                    case MALLET_CL_NAIVE_BAYES_EM:
+                                    case MALLET_CL_NAIVE_BAYES:
+                                    case MALLET_CL_WINNOW:
+                                      learner = new EngineMallet(savedModelDirectoryFile, mode, engine, true);
+                                      break;
+                                    case MALLET_SEQ_CRF:
+                                      learner = new EngineMalletSeq(savedModelDirectoryFile, mode, true);
+                                      break;
+                                    case WEKA_CL_NUM_ADDITIVE_REGRESSION:
+                                    case WEKA_CL_NAIVE_BAYES:
+                                    case WEKA_CL_J48:
+                                    case WEKA_CL_RANDOM_TREE:
+                                    case WEKA_CL_IBK:
+                                      System.err.println("DEBUG: trying to load a known weka cl model");
+                                      learner = new EngineWeka(savedModelDirectoryFile, mode, engine, true);
+                                      break;
+                                  }
+                                }
 			}
 		} else {
 			//No learner to restore
@@ -191,6 +221,12 @@ public abstract class Engine {
 
 	public void setEngine(String engine) {
 		this.engine = engine;
+                algorithm = null;
+                try {
+                  algorithm = Algorithm.valueOf(engine);
+                } catch (Exception ex) {
+                  //ignore
+                }
 	}
 
 	public static String getSavedConf() {
@@ -212,4 +248,6 @@ public abstract class Engine {
 	public void setMode(Mode mode) {
 		this.mode = mode;
 	}
+        
+
 }

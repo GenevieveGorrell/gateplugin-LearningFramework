@@ -36,9 +36,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import java.util.regex.Pattern;
-
-import org.apache.commons.io.FileUtils;
 
 import cc.mallet.classify.BalancedWinnowTrainer;
 import cc.mallet.classify.C45Trainer;
@@ -47,27 +44,13 @@ import cc.mallet.classify.Classifier;
 import cc.mallet.classify.ClassifierTrainer;
 import cc.mallet.classify.DecisionTreeTrainer;
 import cc.mallet.classify.MCMaxEntTrainer;
-import cc.mallet.classify.MaxEntGERangeTrainer;
-import cc.mallet.classify.MaxEntGETrainer;
-import cc.mallet.classify.MaxEntPRTrainer;
 import cc.mallet.classify.MaxEntTrainer;
 import cc.mallet.classify.NaiveBayesEMTrainer;
 import cc.mallet.classify.NaiveBayesTrainer;
 import cc.mallet.classify.WinnowTrainer;
-import cc.mallet.pipe.CharSequence2TokenSequence;
-import cc.mallet.pipe.FeatureSequence2FeatureVector;
-import cc.mallet.pipe.Input2CharSequence;
-import cc.mallet.pipe.Pipe;
-import cc.mallet.pipe.PrintInputAndTarget;
-import cc.mallet.pipe.SerialPipes;
-import cc.mallet.pipe.Target2Label;
-import cc.mallet.pipe.TokenSequence2FeatureSequence;
-import cc.mallet.pipe.TokenSequenceLowercase;
-import cc.mallet.pipe.TokenSequenceRemoveStopwords;
 import cc.mallet.types.InstanceList.CrossValidationIterator;
 import cc.mallet.types.Instance;
 import cc.mallet.types.InstanceList;
-import cc.mallet.util.MalletLogger;
 
 public class EngineMallet extends Engine {
 
@@ -76,7 +59,7 @@ public class EngineMallet extends Engine {
 	/**
 	 * The name of the classifier location.
 	 */
-	private static String classifiername = new String("my.classifier");
+	private static String classifiername = "my.classifier";
 	
 	private String params;
 
@@ -476,8 +459,14 @@ public class EngineMallet extends Engine {
 		logger.info("LearningFramework: Holdout accuracy training on " 
 				+ trainingproportion + " of the data: " + accuracy);
 	}
+
+  @Override
+  public String whatIsItString() {
+    if(algorithm != null) {
+      return algorithm.toString();
+    } else {
+      return classifier.getClass().getCanonicalName();
+    }
+  }
 	
-	public Algorithm whatIsIt(){
-		return Algorithm.valueOf(this.getEngine());
-	}
 }
