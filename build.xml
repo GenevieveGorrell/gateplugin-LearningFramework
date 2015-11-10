@@ -56,10 +56,12 @@
     <javac classpathref="compile.classpath"
            srcdir="${src.dir}"
            destdir="${classes.dir}"
+           deprecation="true"
            debug="true"
            debuglevel="lines,source"
            source="1.7" 
-           target="1.7" />
+           target="1.7">
+     </javac>
   </target>
 
   <!-- Build JavaDoc documentation -->
