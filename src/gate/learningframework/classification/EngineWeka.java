@@ -300,10 +300,17 @@ public class EngineWeka extends Engine {
 					bestlabel = classifier.classifyInstance(wekaInstance);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					e.printStackTrace(System.err);
 				}
 				double bestprob = 0.0;
 				
+                                if(predictionDistribution.length < 2) {
+                                  if(predictionDistribution.length == 1)  {
+                                    bestprob = predictionDistribution[0];
+                                  } else {
+                                    bestprob = Double.NaN;
+                                  }
+                                } else {
 				for(int i = 0; i < predictionDistribution.length; i++){
 					double thislabel = i;
 					double thisprob = predictionDistribution[i];
@@ -313,6 +320,7 @@ public class EngineWeka extends Engine {
 						bestprob = thisprob;
 					}
 				}
+                                }
 				
 				String cl = 
 						(String)this.pipe.getTargetAlphabet().lookupObject((new Double(bestlabel)).intValue());
