@@ -25,7 +25,6 @@ import gate.learningframework.corpora.FeatureSpecification;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -34,7 +33,6 @@ import java.io.ObjectOutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -44,12 +42,8 @@ import libsvm.svm_node;
 import libsvm.svm_parameter;
 import libsvm.svm_print_interface;
 import libsvm.svm_problem;
-import cc.mallet.classify.Classification;
-import cc.mallet.classify.Classifier;
 import cc.mallet.pipe.Pipe;
 import cc.mallet.types.Instance;
-import cc.mallet.types.InstanceList;
-import cc.mallet.types.SparseVector;
 
 public class EngineLibSVM  extends Engine {
 
@@ -474,4 +468,10 @@ public class EngineLibSVM  extends Engine {
 			}
 		}
 	}
+        
+  @Override
+  public String whatIsItString() {
+    return "LIBSVM";
+  }
+        
 }

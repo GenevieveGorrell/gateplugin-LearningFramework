@@ -29,25 +29,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-import cc.mallet.classify.Classifier;
-import cc.mallet.classify.ClassifierTrainer;
 import cc.mallet.fst.CRF;
 import cc.mallet.fst.CRFOptimizableByLabelLikelihood;
 import cc.mallet.fst.CRFTrainerByValueGradients;
 import cc.mallet.fst.SumLatticeDefault;
 import cc.mallet.optimize.Optimizable;
-import cc.mallet.pipe.Pipe;
-import cc.mallet.pipe.SerialPipes;
-import cc.mallet.types.FeatureVector;
 import cc.mallet.types.FeatureVectorSequence;
 import cc.mallet.types.Instance;
 import cc.mallet.types.InstanceList;
-import cc.mallet.types.LabelVector;
 import cc.mallet.types.InstanceList.CrossValidationIterator;
 import gate.Annotation;
 import gate.AnnotationSet;
 import gate.Document;
-import gate.Utils;
 import gate.creole.ResourceInstantiationException;
 import gate.learningframework.corpora.CorpusWriter;
 import gate.learningframework.corpora.CorpusWriterMalletSeq;
@@ -328,8 +321,14 @@ public class EngineMalletSeq extends Engine {
 		logger.info("LearningFramework: Holdout accuracy training on " 
 				+ trainingproportion + " of the data: " + localCrf.averageTokenAccuracy(testdata));
 	}
+        
+  @Override
+  public String whatIsItString() {
+    if(algorithm != null) {
+      return algorithm.toString();
+    } else {
+      return crf.getClass().getCanonicalName();
+    }
+  }
 	
-	public Algorithm whatIsIt(){
-		return Algorithm.MALLET_SEQ_CRF;
-	}
 }
