@@ -226,11 +226,34 @@ public class CorpusWriterArff extends CorpusWriter{
 				clvalues = new HashSet<String>();
 				this.nominalAttributeMap.put(clkey, clvalues);
 			}
-			clvalues.add((String)inst.getTarget());
-			
+			clvalues.add((String) inst.getTarget());
+
+			if (this.instances.getAlphabet().growthStopped()) {
+				String[] fields = inst.getData().toString().split("\\s+");
+				StringBuilder sanitisedFields = new StringBuilder();
+
+				for (String field : fields) {
+					if (this.instances.getAlphabet().contains(field)) {
+						sanitisedFields.append(field + "\n");
+					}
+				}
+
+				inst.setData(sanitisedFields.toString());
+			}
+
+			if (this.instances.getTargetAlphabet().growthStopped()) {
+				if (!this.instances.getTargetAlphabet().contains(inst.getTarget())) {
+					throw new RuntimeException("Saw a target in data that was not available in pipeline");
+				}
+			}
+
+
 			//Always add instances to the instance list through the pipe.
 			try{
-				this.instances.addThruPipe(inst);
+				if (!inst.getData().toString().isEmpty()) {
+					this.instances.addThruPipe(inst);
+					System.out.println("Success");
+				}
 			} catch(Exception e){
 				e.printStackTrace();
 			}
