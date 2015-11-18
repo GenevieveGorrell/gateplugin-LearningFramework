@@ -18,19 +18,12 @@ package gate.learningframework;
 import gate.Annotation;
 import gate.AnnotationSet;
 import gate.Document;
-import gate.learningframework.FeatureSpecification.Attribute;
-import gate.learningframework.FeatureSpecification.Datatype;
-import gate.learningframework.FeatureSpecification.Ngram;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,7 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.SortedSet;
 
 import weka.core.FastVector;
 import weka.core.Instances;
@@ -267,7 +259,7 @@ public class CorpusWriterArff extends CorpusWriter{
 		int[] indices = data.getIndices();
 		double[] vals = data.getValues();
 
-		weka.core.Instance wekaInstance = new weka.core.Instance(dataset.numAttributes());
+		weka.core.Instance wekaInstance =  new weka.core.SparseInstance(dataset.numAttributes());
 
 		//Initialize to 0 otherwise Weka will assume missing where
 		//Mallet assumes a known negative for missing atts in the sparse

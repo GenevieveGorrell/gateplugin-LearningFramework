@@ -35,11 +35,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
-import weka.classifiers.Classifier;
 import cc.mallet.pipe.Pipe;
-import gate.Annotation;
-import gate.AnnotationSet;
-import gate.Document;
 import gate.creole.ResourceInstantiationException;
 
 public abstract class Engine {
@@ -260,7 +256,6 @@ public abstract class Engine {
 				case WEKA_CL_IBK:
 				case WEKA_CL_MULTILAYER_PERCEPTRON:
 				case WEKA_CL_JRIP:
-				case WEKA_CL_NBTREE:
 				case WEKA_CL_RANDOM_FOREST:
 					learner = new EngineWeka(savedModelDirectoryFile, mode, engine, true);
 					break;

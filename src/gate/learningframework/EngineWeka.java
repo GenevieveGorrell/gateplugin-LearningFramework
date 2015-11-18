@@ -16,23 +16,12 @@
 package gate.learningframework;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-import libsvm.svm_model;
-import cc.mallet.classify.Classification;
 import cc.mallet.pipe.Pipe;
-import cc.mallet.types.Instance;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
 import weka.classifiers.bayes.NaiveBayes;
@@ -41,15 +30,13 @@ import weka.classifiers.lazy.IBk;
 import weka.classifiers.meta.AdditiveRegression;
 import weka.classifiers.rules.JRip;
 import weka.classifiers.trees.J48;
-import weka.classifiers.trees.NBTree;
 import weka.classifiers.trees.RandomForest;
 import weka.classifiers.trees.RandomTree;
 import weka.core.Instances;
-import weka.core.Utils;
 import gate.Annotation;
 import gate.AnnotationSet;
 import gate.Document;
-import gate.creole.ResourceInstantiationException;
+import weka.core.OptionHandler;
 
 public class EngineWeka extends Engine {
 
@@ -96,9 +83,6 @@ public class EngineWeka extends Engine {
 		case "WEKA_CL_IBK":
 			classifier = new IBk();
 			break;
-		case "WEKA_CL_NBTREE":
-			classifier = new NBTree();
-			break;
 		case "WEKA_CL_MULTILAYER_PERCEPTRON":
 			classifier = new MultilayerPerceptron();
 			break;
@@ -112,7 +96,7 @@ public class EngineWeka extends Engine {
 		if(params!=null && !params.isEmpty()){
 			String[] p = params.split("\\s+");
 			try {
-				classifier.setOptions(p);
+        ((OptionHandler)classifier).setOptions(p);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
