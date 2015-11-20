@@ -187,6 +187,8 @@ public abstract class Engine {
                                     case WEKA_CL_J48:
                                     case WEKA_CL_RANDOM_TREE:
                                     case WEKA_CL_IBK:
+                                    case WEKA_CL_RANDOM_FOREST:
+                                    case WEKA_CL_LOGISTIC_REGRESSION:
                                       System.err.println("DEBUG: trying to load a known weka cl model");
                                       learner = new EngineWeka(savedModelDirectoryFile, mode, engine, true);
                                       break;
