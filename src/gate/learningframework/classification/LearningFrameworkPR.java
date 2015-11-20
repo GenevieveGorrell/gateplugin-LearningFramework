@@ -464,6 +464,8 @@ Serializable, ControllerAwarePR {
 			case WEKA_CL_J48:
 			case WEKA_CL_RANDOM_TREE:
 			case WEKA_CL_IBK:
+			case WEKA_CL_LOGISTIC_REGRESSION:
+			case WEKA_CL_RANDOM_FOREST:
 				return new EngineWeka(
 						savedModelFile, mode, learnerParams, spec, false);
 			}
@@ -538,6 +540,8 @@ Serializable, ControllerAwarePR {
                               case WEKA_CL_J48:
                               case WEKA_CL_RANDOM_TREE:
                               case WEKA_CL_IBK:
+                        			case WEKA_CL_LOGISTIC_REGRESSION:
+                              case WEKA_CL_RANDOM_FOREST:
                                 gcs = ((EngineWeka) applicationLearner).classify(
                                         this.instanceName, this.inputASName, doc);
                                 break;
@@ -824,6 +828,8 @@ Serializable, ControllerAwarePR {
 				case WEKA_CL_J48:
 				case WEKA_CL_RANDOM_TREE:
 				case WEKA_CL_IBK:
+  			case WEKA_CL_LOGISTIC_REGRESSION:
+	  		case WEKA_CL_RANDOM_FOREST:
 					trainfileweka = new File(
 							gate.util.Files.fileFromURL(saveDirectory), trainfilenamearff);
 					trainingCorpus = new CorpusWriterArff(this.conf, this.instanceName, 
@@ -893,6 +899,8 @@ Serializable, ControllerAwarePR {
 				case WEKA_CL_J48:
 				case WEKA_CL_RANDOM_TREE:
 				case WEKA_CL_IBK:
+  			case WEKA_CL_LOGISTIC_REGRESSION:
+	   		case WEKA_CL_RANDOM_FOREST:
 					testfileweka = new File(
 							gate.util.Files.fileFromURL(saveDirectory), testfilenamearff);
 					testCorpus = new CorpusWriterArff(this.conf, this.instanceName, 

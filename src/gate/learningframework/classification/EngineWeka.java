@@ -45,6 +45,8 @@ import gate.learningframework.corpora.CorpusWriterArff;
 import gate.learningframework.corpora.CorpusWriterArffNumericClass;
 import gate.learningframework.corpora.CorpusWriterMallet;
 import gate.learningframework.corpora.FeatureSpecification;
+import weka.classifiers.functions.Logistic;
+import weka.classifiers.trees.RandomForest;
 import weka.core.OptionHandler;
 
 public class EngineWeka extends Engine {
@@ -150,6 +152,12 @@ public class EngineWeka extends Engine {
 		case "WEKA_CL_IBK":
 			classifier = new IBk();
 			break;
+    case "WEKA_CL_LOGISTIC_REGRESSION":
+      classifier = new Logistic();
+      break;
+		case "WEKA_CL_RANDOM_FOREST":
+      classifier = new RandomForest();
+      break;
 		}
 		if(params!=null && !params.isEmpty()){
 			String[] p = params.split("\\s+");
