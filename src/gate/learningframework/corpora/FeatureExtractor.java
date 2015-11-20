@@ -243,8 +243,8 @@ public class FeatureExtractor {
 				return type + ":" + feature + "=" + df;
 			} catch (NumberFormatException e){
 				logger.warn("LearningFramework: Failed to format numeric feature "
-						+ feature + "=" + feat + " as double. Treating as string.");
-				return type + ":" + feature + ":" + feat;
+						+ feature + "=" + feat + " as double. Treating as 0.0");
+				return type + ":" + feature + "=" + 0.0;
 			}
 		}
 	}
