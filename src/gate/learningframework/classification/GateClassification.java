@@ -15,6 +15,8 @@
 
 package gate.learningframework.classification;
 
+import java.util.List;
+
 import gate.Annotation;
 
 public class GateClassification {
@@ -22,6 +24,8 @@ public class GateClassification {
 	private String classAssigned;
 	private Double confidenceScore;
 	private Integer seqSpanID;
+  private List<String> classList;
+  private List<Double> confidenceList;
 	
 	public GateClassification(Annotation instance, String classAssigned,
 			Double confidenceScore) {
@@ -31,6 +35,15 @@ public class GateClassification {
 	}
 
 	public GateClassification(Annotation instance, String classAssigned,
+			Double confidenceScore, List<String> classes, List<Double> confidences) {
+		this.instance = instance;
+		this.classAssigned = classAssigned;
+		this.confidenceScore = confidenceScore;
+    this.classList = classes;
+    this.confidenceList = confidences;
+	}
+
+  public GateClassification(Annotation instance, String classAssigned,
 			Double confidenceScore, Integer sequenceSpanID) {
 		this.instance = instance;
 		this.classAssigned = classAssigned;
@@ -60,6 +73,9 @@ public class GateClassification {
 	public Integer getSeqSpanID() {
 		return seqSpanID;
 	}
+  
+  public List<String> getClassList() { return classList; }
+  public List<Double> getConfidenceList() { return confidenceList; }
 
 	public void setSeqSpanID(Integer sequenceSpanID) {
 		this.seqSpanID = sequenceSpanID;

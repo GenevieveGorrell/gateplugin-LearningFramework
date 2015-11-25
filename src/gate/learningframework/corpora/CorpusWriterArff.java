@@ -240,7 +240,8 @@ public class CorpusWriterArff extends CorpusWriter{
 		int[] indices = data.getIndices();
 		double[] vals = data.getValues();
 
-		weka.core.Instance wekaInstance = new weka.core.SparseInstance(dataset.numAttributes());
+    // We use DenseInstance here since later we have to initialize with zero anyway.
+		weka.core.Instance wekaInstance = new weka.core.DenseInstance(dataset.numAttributes());
 
 		//Initialize to 0 otherwise Weka will assume missing where
 		//Mallet assumes a known negative for missing atts in the sparse

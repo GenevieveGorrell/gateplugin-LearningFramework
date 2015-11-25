@@ -45,6 +45,8 @@ import gate.learningframework.corpora.CorpusWriterArff;
 import gate.learningframework.corpora.CorpusWriterArffNumericClass;
 import gate.learningframework.corpora.CorpusWriterMallet;
 import gate.learningframework.corpora.FeatureSpecification;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import weka.classifiers.functions.Logistic;
 import weka.classifiers.trees.RandomForest;
 import weka.core.OptionHandler;
@@ -186,7 +188,7 @@ public class EngineWeka extends Engine {
 			CorpusWriterArffNumericClass trMal = (CorpusWriterArffNumericClass)trainingCorpus;
 			instances = trMal.getWekaInstances();
 			this.pipe = trMal.getPipe();
-                } else {
+    } else {
 			CorpusWriterArff trArff = (CorpusWriterArff)trainingCorpus;
 			instances = trArff.getWekaInstances();
 			this.pipe = trArff.getPipe();
@@ -294,47 +296,56 @@ public class EngineWeka extends Engine {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-                        } else {
+       } else {
+        // Weka AbstractClassifier already handles the situation correctly when 
+        // distributionForInstance is not implemented by the classifier: in that case
+        // is calls classifyInstance and returns an array of size numClasses where
+        // the entry of the target class is set to 1.0 except when the classification is a missing
+        // value, then all class probabilities will be 0.0
+        // If distributionForInstance is implemented for the algorithm, we should get
+        // the probabilities or all zeros for missing class from the algorithm.
 				double[] predictionDistribution = new double[0];
-				try {
-					predictionDistribution = this.classifier.distributionForInstance(wekaInstance);
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-
-				double bestlabel = 0;
-				try {
-					bestlabel = classifier.classifyInstance(wekaInstance);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace(System.err);
-				}
+        try {
+          predictionDistribution = classifier.distributionForInstance(wekaInstance);
+        } catch (Exception ex) {
+          ex.printStackTrace(System.err);
+        }
 				double bestprob = 0.0;
-				
-                                if(predictionDistribution.length < 2) {
-                                  if(predictionDistribution.length == 1)  {
-                                    bestprob = predictionDistribution[0];
-                                  } else {
-                                    bestprob = Double.NaN;
-                                  }
-                                } else {
+        int bestlabel = 0;
+        List<String> classList = new ArrayList<String>();
+				List<Double> confidenceList = new ArrayList<Double>();
 				for(int i = 0; i < predictionDistribution.length; i++){
-					double thislabel = i;
+					int thislabel = i;
 					double thisprob = predictionDistribution[i];
-					
+					String labelstr = (String)this.pipe.getTargetAlphabet().lookupObject((new Double(thislabel)).intValue());
+					classList.add(labelstr);
+					confidenceList.add(thisprob);
 					if(thisprob>bestprob){
 						bestlabel = thislabel;
 						bestprob = thisprob;
 					}
-				}
-                                }
+				} // end for i < predictionDistribution.length
+        // For Random Forest with a binary problem, what seems to happen is that we always only
+        // get one probability back. In that case, we will do the following for now:
+        // if there are only two classes, we will assign class 0 if prob > 0.5 otherwise class 1
+        // if there are more than two classes I have no idea what to do so we throw an exception
+        // TODO: no idea how we can be actually sure what the meaning of indices 0 and 1 is????
+        if(predictionDistribution.length==1) {
+          // TODO: no idea how to find out the number of classes, so we always do the 0/1 stuff for now
+          //int labels = pipe.getTargetAlphabet().toArray().length;
+          //System.err.println("Single prob="+bestprob+" labels="+labels);
+          if(bestprob > 0.5) {
+            bestlabel = 0;
+          } else {
+            bestlabel = 1;
+          }
+        }
 				
 				String cl = 
-						(String)this.pipe.getTargetAlphabet().lookupObject((new Double(bestlabel)).intValue());
+						(String)this.pipe.getTargetAlphabet().lookupObject(bestlabel);
 				
 				GateClassification gc = new GateClassification(
-						instanceAnnotation, cl, bestprob);
+						instanceAnnotation, cl, bestprob, classList, confidenceList);
 
 				gcs.add(gc);
                         }

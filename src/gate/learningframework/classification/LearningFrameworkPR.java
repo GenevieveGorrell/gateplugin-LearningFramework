@@ -597,6 +597,10 @@ Serializable, ControllerAwarePR {
 				fm.putAll(gc.getInstance().getFeatures());
 				fm.put(outputClassFeature, gc.getClassAssigned());
 				fm.put(outputProbFeature, gc.getConfidenceScore());
+        if(gc.getClassList()!=null && gc.getConfidenceList()!=null){
+					fm.put(outputClassFeature + "_list", gc.getClassList());
+					fm.put(outputProbFeature + "_list", gc.getConfidenceList());
+				}
 				//fm.put(this.conf.getIdentifier(), identifier);
 				if(gc.getSeqSpanID()!=null){
 					fm.put(outputSequenceSpanIDFeature, gc.getSeqSpanID());
