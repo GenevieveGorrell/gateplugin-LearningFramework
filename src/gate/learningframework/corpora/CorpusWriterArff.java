@@ -45,6 +45,7 @@ import cc.mallet.pipe.Target2Label;
 import cc.mallet.types.FeatureVector;
 import cc.mallet.types.Instance;
 import cc.mallet.types.InstanceList;
+import weka.core.Attribute;
 
 public class CorpusWriterArff extends CorpusWriter{
 
@@ -242,6 +243,9 @@ public class CorpusWriterArff extends CorpusWriter{
 
     // We use DenseInstance here since later we have to initialize with zero anyway.
 		weka.core.Instance wekaInstance = new weka.core.DenseInstance(dataset.numAttributes());
+    
+    // NOTE: this returns "numeric" for Random Forest!!!
+    //System.err.println("DATASET class type="+Attribute.typeToString(dataset.classAttribute().type()));
 
 		//Initialize to 0 otherwise Weka will assume missing where
 		//Mallet assumes a known negative for missing atts in the sparse

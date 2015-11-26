@@ -49,6 +49,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import weka.classifiers.functions.Logistic;
 import weka.classifiers.trees.RandomForest;
+import weka.core.Attribute;
 import weka.core.OptionHandler;
 
 public class EngineWeka extends Engine {
@@ -262,9 +263,12 @@ public class EngineWeka extends Engine {
 		//Every instance needs a Weka dataset. We can economize by just
 		//making one, now. It's a kind of fake dataset just because
 		//Weka wants to know what the feature set is.
-		Instances dataset = 
-				CorpusWriterArffNumericClass.malletPipeToWekaDataset(this.pipe);
-		
+		Instances dataset = null;
+    if(algorithm == Algorithm.WEKA_CL_NUM_ADDITIVE_REGRESSION) {
+		  dataset = CorpusWriterArffNumericClass.malletPipeToWekaDataset(this.pipe);
+    } else {
+			dataset = CorpusWriterArff.malletPipeToWekaDataset(this.pipe);
+    }		
 		while(it.hasNext()){
 			Annotation instanceAnnotation = it.next();
 			
@@ -297,6 +301,7 @@ public class EngineWeka extends Engine {
 					e.printStackTrace();
 				}
        } else {
+        
         // Weka AbstractClassifier already handles the situation correctly when 
         // distributionForInstance is not implemented by the classifier: in that case
         // is calls classifyInstance and returns an array of size numClasses where
@@ -306,9 +311,15 @@ public class EngineWeka extends Engine {
         // the probabilities or all zeros for missing class from the algorithm.
 				double[] predictionDistribution = new double[0];
         try {
+          //System.err.println("classifying instance "+wekaInstance.toString());
           predictionDistribution = classifier.distributionForInstance(wekaInstance);
         } catch (Exception ex) {
           ex.printStackTrace(System.err);
+        }
+        // This is classification, we should always get a distribution list > 1
+        if(predictionDistribution.length < 2) {
+          throw new RuntimeException("Classifier returned less than 2 probabilities: "+predictionDistribution.length+
+                  "for instance"+wekaInstance);
         }
 				double bestprob = 0.0;
         int bestlabel = 0;
@@ -325,21 +336,6 @@ public class EngineWeka extends Engine {
 						bestprob = thisprob;
 					}
 				} // end for i < predictionDistribution.length
-        // For Random Forest with a binary problem, what seems to happen is that we always only
-        // get one probability back. In that case, we will do the following for now:
-        // if there are only two classes, we will assign class 0 if prob > 0.5 otherwise class 1
-        // if there are more than two classes I have no idea what to do so we throw an exception
-        // TODO: no idea how we can be actually sure what the meaning of indices 0 and 1 is????
-        if(predictionDistribution.length==1) {
-          // TODO: no idea how to find out the number of classes, so we always do the 0/1 stuff for now
-          //int labels = pipe.getTargetAlphabet().toArray().length;
-          //System.err.println("Single prob="+bestprob+" labels="+labels);
-          if(bestprob > 0.5) {
-            bestlabel = 0;
-          } else {
-            bestlabel = 1;
-          }
-        }
 				
 				String cl = 
 						(String)this.pipe.getTargetAlphabet().lookupObject(bestlabel);
