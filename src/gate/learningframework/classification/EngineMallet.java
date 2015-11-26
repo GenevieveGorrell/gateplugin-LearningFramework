@@ -59,7 +59,7 @@ public class EngineMallet extends Engine {
 	/**
 	 * The name of the classifier location.
 	 */
-	private static String classifiername = "my.classifier";
+	private static String classifiername = "my.model";
 	
 	private String params;
 

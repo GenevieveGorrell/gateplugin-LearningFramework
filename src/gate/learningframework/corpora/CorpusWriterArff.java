@@ -140,8 +140,12 @@ public class CorpusWriterArff extends CorpusWriter{
 		//The class attribute is nominal
 		this.getOutputStream(outputfile).print("@attribute class {");
 
+    // JP: this was the old code for writing the class labels to the ARFF file,
+    // but this has the problem that by sorting alphabetically, the class labels
+    // may not be in the same order as everywhere else.
+    // Below is an attempt to do this using the pipe...
+    /*
 		String clkey = this.getClassType() + "-" + this.getClassFeature();
-		
 		Set<String> clvalues = this.nominalAttributeMap.get(clkey);
 		List<String> ordered = new ArrayList<String>();
 		ordered.addAll(clvalues);
@@ -153,6 +157,17 @@ public class CorpusWriterArff extends CorpusWriter{
 		while(oit.hasNext()){
 			this.getOutputStream(outputfile).print(", " + oit.next());
 		}
+   */
+    // get the class labels in order from the pipe and write, separated by commas
+    // TODO: not sure is we should quote this, sometimes, or always?
+		Object[] cls = pipe.getTargetAlphabet().toArray();
+    boolean first = true;
+    for(Object cl : cls) {
+      if(first) { first = false; } else { getOutputStream(outputfile).print(", "); }
+      getOutputStream(outputfile).print(cl);
+    }
+    
+    
 		this.getOutputStream(outputfile).print("}\n\n");
 		
 		//Now the data

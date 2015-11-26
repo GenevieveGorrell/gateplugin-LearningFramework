@@ -52,7 +52,7 @@ public class EngineLibSVM  extends Engine {
 	/**
 	 * The name of the classifier location.
 	 */
-	private static String svmname = new String("my.svm");
+	private static String svmname = new String("my.model");
 
 	/**
 	 * The name of the pipe location. Since we are using

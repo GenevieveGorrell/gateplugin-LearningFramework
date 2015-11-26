@@ -51,7 +51,7 @@ public class EngineMalletSeq extends Engine {
 	/**
 	 * The name of the classifier location.
 	 */
-	private static String modelname = new String("my.model");
+	private static String modelname = "my.model";
 
 	/**
 	 * The name of the saved pipe location.

@@ -45,11 +45,8 @@ import gate.learningframework.corpora.CorpusWriterArff;
 import gate.learningframework.corpora.CorpusWriterArffNumericClass;
 import gate.learningframework.corpora.CorpusWriterMallet;
 import gate.learningframework.corpora.FeatureSpecification;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import weka.classifiers.functions.Logistic;
 import weka.classifiers.trees.RandomForest;
-import weka.core.Attribute;
 import weka.core.OptionHandler;
 
 public class EngineWeka extends Engine {
@@ -59,7 +56,7 @@ public class EngineWeka extends Engine {
 	/**
 	 * The name of the classifier location.
 	 */
-	private static String classifiername = "my.classifier";
+	private static String classifiername = "my.model";
 
 	private String params;
 
@@ -323,12 +320,24 @@ public class EngineWeka extends Engine {
         }
 				double bestprob = 0.0;
         int bestlabel = 0;
+        
+        /*
+        System.err.print("DEBUG: got classes from pipe: ");
+    		Object[] cls = pipe.getTargetAlphabet().toArray();
+        boolean first = true;
+        for(Object cl : cls) {
+          if(first) { first = false; } else { System.err.print(", "); }
+          System.err.print(">"+cl+"<");
+        }
+        System.err.println();
+        */
+        
         List<String> classList = new ArrayList<String>();
 				List<Double> confidenceList = new ArrayList<Double>();
 				for(int i = 0; i < predictionDistribution.length; i++){
 					int thislabel = i;
 					double thisprob = predictionDistribution[i];
-					String labelstr = (String)this.pipe.getTargetAlphabet().lookupObject((new Double(thislabel)).intValue());
+					String labelstr = (String)this.pipe.getTargetAlphabet().lookupObject(thislabel);
 					classList.add(labelstr);
 					confidenceList.add(thisprob);
 					if(thisprob>bestprob){

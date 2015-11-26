@@ -16,14 +16,11 @@
 package gate.learningframework.corpora;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
 import java.io.PrintStream;
 
 import org.apache.log4j.Logger;
 
-import cc.mallet.pipe.Pipe;
 import cc.mallet.types.FeatureVector;
 import gate.Document;
 import gate.learningframework.classification.Mode;
@@ -84,7 +81,7 @@ public abstract class CorpusWriter {
 	
 	static String outputfilenamearff = "output.arff";
 	static String outputfilenamearffpipe = "output-thru-pipe.arff";
-	static String pipefilenamearff = "arff.pipe";
+	static String pipefilenamearff = "my.pipe";
 	
 	String outputfile = outputfilenamearff;
 	
