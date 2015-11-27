@@ -15,6 +15,7 @@
 
 package gate.learningframework.corpora;
 
+import cc.mallet.pipe.SerialPipes;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
@@ -22,6 +23,7 @@ import java.io.PrintStream;
 import org.apache.log4j.Logger;
 
 import cc.mallet.types.FeatureVector;
+import cc.mallet.types.InstanceList;
 import gate.Document;
 import gate.learningframework.classification.Mode;
 
@@ -181,4 +183,13 @@ public abstract class CorpusWriter {
 	public void setIdentifierFeature(String identifierFeature) {
 		this.identifierFeature = identifierFeature;
 	}
+  
+  protected SerialPipes pipe;
+  public SerialPipes getPipe() { return pipe; }
+  public void setPipe(SerialPipes pipe) { this.pipe = pipe; }
+  
+  protected InstanceList instances;
+  public InstanceList getInstances() { return instances; }
+  public void setInstances(InstanceList is) { instances = is; }
+  
 }

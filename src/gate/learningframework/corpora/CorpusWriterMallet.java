@@ -55,7 +55,6 @@ public class CorpusWriterMallet extends CorpusWriter{
 
 	private InstanceList instances;
 	
-	private SerialPipes pipe;
 	
 	public CorpusWriterMallet(FeatureSpecification conf, String inst, String inpas, 
 			File outputFile, Mode mode, String classType, String classFeature,
@@ -82,9 +81,9 @@ public class CorpusWriterMallet extends CorpusWriter{
 		pipeList.add(new Target2Label());
 
 		//pipeList.add(new PrintInputAndTarget());
-		this.pipe = new SerialPipes(pipeList);
+		pipe = new SerialPipes(pipeList);
 		
-		this.instances = new InstanceList(this.pipe);
+		this.instances = new InstanceList(pipe);
 	}
 
 	/**

@@ -127,9 +127,9 @@ public class EngineMalletSeq extends Engine {
 		InstanceList trainingData = tc.getInstances();
 
 		//Sanity check--how does the data look?
-		logger.info("LearningFramework: Instances: " + trainingData.size());
-		logger.info("LearningFramework: Data labels: " + trainingData.getDataAlphabet().size());
-		logger.info("LearningFramework: Target labels: " + trainingData.getTargetAlphabet().size());
+		//logger.info("LearningFramework: Instances: " + trainingData.size());
+		//logger.info("LearningFramework: Data labels: " + trainingData.getDataAlphabet().size());
+		//logger.info("LearningFramework: Target labels: " + trainingData.getTargetAlphabet().size());
 
 		//Including the pipe at this stage means we have it available to
 		//put data through at apply time.

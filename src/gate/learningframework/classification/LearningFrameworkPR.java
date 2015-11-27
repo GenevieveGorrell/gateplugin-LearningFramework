@@ -16,21 +16,16 @@
 package gate.learningframework.classification;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.ObjectInputStream;
 import java.io.Serializable;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import libsvm.svm_model;
 
 import org.apache.log4j.Logger;
 
-import cc.mallet.pipe.Pipe;
 import gate.AnnotationSet;
 import gate.Annotation;
 import gate.Controller;
@@ -206,14 +201,6 @@ Serializable, ControllerAwarePR {
 	@CreoleParameter(comment = "The directory to which data will be saved, including models and corpora.")
 	public void setSaveDirectory(URL output) {
 		this.saveDirectory = output;
-
-		savedModelDirectoryFile = new File(
-				gate.util.Files.fileFromURL(saveDirectory), savedModelDirectory);
-
-		evaluationModelDirectoryFile = new File(
-				gate.util.Files.fileFromURL(saveDirectory), evaluationModelDirectory);
-
-		this.applicationLearner = Engine.restoreLearner(savedModelDirectoryFile);
 	}
 
 	public URL getSaveDirectory() {
@@ -548,6 +535,7 @@ Serializable, ControllerAwarePR {
                             }
                           }
 
+                                
 				addClassificationAnnotations(doc, gcs);
 				if(this.getMode()==Mode.NAMED_ENTITY_RECOGNITION){
 					//We need to make the surrounding annotations
@@ -749,9 +737,19 @@ Serializable, ControllerAwarePR {
 		case TRAIN:	
 			if(trainingLearner!=null) {	
 				//Ready to go
-				logger.info("LearningFramework: Training " 
+        // JP: Using the logger does not always make the info show, so using System.out here 
+        // just to be safe.
+				System.out.println("LearningFramework: Training " 
 						+ trainingLearner.whatIsItString() + " ...");
-
+        System.out.println("Training set classes: "+
+                trainingCorpus.getPipe().getTargetAlphabet().toString().replaceAll("\\n", " "));
+        System.out.println("Training set size: "+trainingCorpus.getInstances().size());
+  			System.out.println("LearningFramework: Instances: " + trainingCorpus.getInstances().size());
+        if(trainingCorpus.getInstances().getDataAlphabet().size() > 20) {
+          System.out.println("LearningFramework: Attributes " + trainingCorpus.getInstances().getDataAlphabet().size());
+        } else {
+			    System.out.println("LearningFramework: Attributes " + trainingCorpus.getInstances().getDataAlphabet().toString().replaceAll("\\n"," "));
+        }
 				trainingLearner.train(conf, trainingCorpus);
 				this.applicationLearner = trainingLearner;
 				logger.info("LearningFramework: Training complete!");				
@@ -790,6 +788,18 @@ Serializable, ControllerAwarePR {
         }
         
         protected void runAfterJustStarted() {
+          
+    // JP: this was moved from the saveDirectory setter to avoid problems
+    // but we should really make sure that the learning is reloaded only 
+    // if the URL has changed since the last time (if ever) it was loaded.
+		savedModelDirectoryFile = new File(
+				gate.util.Files.fileFromURL(saveDirectory), savedModelDirectory);
+
+		evaluationModelDirectoryFile = new File(
+				gate.util.Files.fileFromURL(saveDirectory), evaluationModelDirectory);
+
+		applicationLearner = Engine.restoreLearner(savedModelDirectoryFile);
+          
 		switch(this.getOperation()){
 		case TRAIN:
 			if(trainingAlgo==null){
@@ -852,8 +862,15 @@ Serializable, ControllerAwarePR {
 				interrupt();
 				break;
 			} else {
-				logger.info("LearningFramework: Applying " 
-						+ this.applicationLearner.whatIsItString());
+				System.out.println("LearningFramework: Applying model " 
+						+ applicationLearner.whatIsItString() + " ...");
+        if(applicationLearner.getPipe()==null) {
+          System.out.println("Model classes: UNKNOWN, no pipe");
+        } else {
+          System.out.println("Model classes: "+
+                  applicationLearner.getPipe().getTargetAlphabet().toString().replaceAll("\\n", " "));
+        }
+      
 				if(applicationLearner.getMode()!=this.getMode()){
 					logger.warn("LearningFramework: Warning! Applying "
 							+ "model trained in " + applicationLearner.getMode() 

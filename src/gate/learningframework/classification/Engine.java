@@ -15,6 +15,7 @@
 
 package gate.learningframework.classification;
 
+import cc.mallet.pipe.Pipe;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -28,9 +29,6 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
-import gate.Annotation;
-import gate.AnnotationSet;
-import gate.Document;
 import gate.creole.ResourceInstantiationException;
 import gate.learningframework.corpora.CorpusWriter;
 import gate.learningframework.corpora.FeatureSpecification;
@@ -250,6 +248,9 @@ public abstract class Engine {
 	public void setMode(Mode mode) {
 		this.mode = mode;
 	}
-        
+    
+  protected Pipe pipe = null;
+  public Pipe getPipe() { return pipe; }
+  public void setPipe(Pipe p) { pipe = p; }
 
 }

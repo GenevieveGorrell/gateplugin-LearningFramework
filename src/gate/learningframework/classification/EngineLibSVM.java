@@ -52,7 +52,7 @@ public class EngineLibSVM  extends Engine {
 	/**
 	 * The name of the classifier location.
 	 */
-	private static String svmname = new String("my.model");
+	private static String svmname = "my.model";
 
 	/**
 	 * The name of the pipe location. Since we are using
@@ -60,9 +60,10 @@ public class EngineLibSVM  extends Engine {
 	 * we have to explicitly save the pipe rather than relying
 	 * on Mallet to save it with the classifier.
 	 */
-	private Pipe pipe = null;
+	// JP: bumped up to parent
+  //private Pipe pipe = null;
 
-	private static String pipename = new String("my.pipe");
+	private static String pipename = "my.pipe";
 
 	private String params = null;
 
@@ -264,7 +265,7 @@ public class EngineLibSVM  extends Engine {
 		CorpusWriterMallet trMal = (CorpusWriterMallet)trainingCorpus;
 
 		//Need the pipe for later
-		this.pipe = trMal.getInstances().getPipe();
+		pipe = trMal.getInstances().getPipe();
 
 		svm_problem prob = trMal.getLibSVMProblem();
 
@@ -272,9 +273,10 @@ public class EngineLibSVM  extends Engine {
 			logger.warn("LearningFramework: No training instances!");
 		} else {
 			//Sanity check--how does the data look?
-			logger.info("LearningFramework: Instances: " + trMal.getInstances().size());
-			logger.info("LearningFramework: Data labels: " + trMal.getInstances().getDataAlphabet().size());
-			logger.info("LearningFramework: Target labels: " + trMal.getInstances().getTargetAlphabet().size());
+      // JP: we do this in the caller, no need to do it here any more
+			//logger.info("LearningFramework: Instances: " + trMal.getInstances().size());
+			//logger.info("LearningFramework: Data labels: " + trMal.getInstances().getDataAlphabet().size());
+			//logger.info("LearningFramework: Target labels: " + trMal.getInstances().getTargetAlphabet().size());
 
 		}
 
@@ -345,7 +347,7 @@ public class EngineLibSVM  extends Engine {
 			//Instance needs to go through the pipe, so that
 			//it gets mapped using the same alphabet, and the text is in the
 			//expected format.
-			instance = this.pipe.instanceFrom(instance);
+			instance = pipe.instanceFrom(instance);
 
 			//Now convert to svm format
 			svm_node[] vec = CorpusWriterMallet.getLibSVMVectorForInst(instance);
@@ -370,7 +372,7 @@ public class EngineLibSVM  extends Engine {
 				//http://www.csie.ntu.edu.tw/~r94100/libsvm-2.8/README
 			}
 			
-			String labelstr = (String)this.pipe.getTargetAlphabet().lookupObject(bestLabel);
+			String labelstr = (String)pipe.getTargetAlphabet().lookupObject(bestLabel);
 			GateClassification gc = new GateClassification(
 					instanceAnnotation, labelstr, bestConf);
 

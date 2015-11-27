@@ -24,32 +24,16 @@ import gate.learningframework.corpora.FeatureSpecification.AttributeList;
 import gate.learningframework.corpora.FeatureSpecification.Ngram;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import bsh.This;
-import cc.mallet.pipe.CharSequence2TokenSequence;
-import cc.mallet.pipe.FeatureSequence2FeatureVector;
 import cc.mallet.pipe.Input2CharSequence;
 import cc.mallet.pipe.Pipe;
 import cc.mallet.pipe.SerialPipes;
-import cc.mallet.pipe.Target2Label;
-import cc.mallet.pipe.Target2LabelSequence;
-import cc.mallet.pipe.TargetStringToFeatures;
-import cc.mallet.pipe.TokenSequence2FeatureSequence;
-import cc.mallet.pipe.iterator.CsvIterator;
-import cc.mallet.types.FeatureSequence;
-import cc.mallet.types.FeatureVector;
-import cc.mallet.types.FeatureVectorSequence;
 import cc.mallet.types.Instance;
 import cc.mallet.types.InstanceList;
-import cc.mallet.types.Label;
-import cc.mallet.types.LabelSequence;
 
 public class CorpusWriterMalletSeq extends CorpusWriter{
 
@@ -60,7 +44,6 @@ public class CorpusWriterMalletSeq extends CorpusWriter{
 
 	private InstanceList instances; 
 	
-	private SerialPipes pipe;
 	
 	public CorpusWriterMalletSeq(FeatureSpecification conf, String inst, String inpas, 
 			File outputFile, String sequenceSpan, Mode mode, String classType, 
@@ -96,9 +79,9 @@ public class CorpusWriterMalletSeq extends CorpusWriter{
 		pipeList.add(new TargetStringToFeatureSequence(tokenPattern));
 
 		//pipeList.add(new PrintInputAndTarget());
-		this.pipe = new SerialPipes(pipeList);
+		pipe = new SerialPipes(pipeList);
 		
-		this.instances = new InstanceList(this.pipe);
+		this.instances = new InstanceList(pipe);
 	}
 
 	/**

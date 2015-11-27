@@ -66,7 +66,7 @@ public class EngineWeka extends Engine {
 	 * we have to explicitly save the pipe rather than relying
 	 * on Mallet to save it with the classifier.
 	 */
-	private Pipe pipe = null;
+	//private Pipe pipe = null;
 
 	private static String pipename = "my.pipe";
 
@@ -97,7 +97,7 @@ public class EngineWeka extends Engine {
 				ObjectInputStream ois =
 						new ObjectInputStream (new FileInputStream(clf));
 				classifier = (Classifier) ois.readObject();
-                                logger.info("Loaded Weka classifier "+classifier.getClass().getName());
+                                System.out.println("Loaded Weka classifier "+classifier.getClass().getName());
 				ois.close();
 			} catch(Exception e){
 				e.printStackTrace();
@@ -124,6 +124,7 @@ public class EngineWeka extends Engine {
 						new ObjectInputStream (new FileInputStream(pf));
 				pipe = (Pipe) ois.readObject();
 				ois.close();
+        //System.out.println("Read pipe: "+pipe);
 			} catch(Exception e){
 				e.printStackTrace();
 			}
@@ -185,11 +186,11 @@ public class EngineWeka extends Engine {
 		if(algorithm==Algorithm.WEKA_CL_NUM_ADDITIVE_REGRESSION){
 			CorpusWriterArffNumericClass trMal = (CorpusWriterArffNumericClass)trainingCorpus;
 			instances = trMal.getWekaInstances();
-			this.pipe = trMal.getPipe();
+			pipe = trMal.getPipe();
     } else {
 			CorpusWriterArff trArff = (CorpusWriterArff)trainingCorpus;
 			instances = trArff.getWekaInstances();
-			this.pipe = trArff.getPipe();
+			pipe = trArff.getPipe();
 		}
 		
 
@@ -198,9 +199,9 @@ public class EngineWeka extends Engine {
 		} else {
 
 			//Sanity check--what data do we have?
-			logger.info("LearningFramework: Instances: " + instances.numInstances());
-			logger.info("LearningFramework: Data labels: " + instances.numAttributes());
-			logger.info("LearningFramework: Target labels: " + instances.numClasses());
+			//logger.info("LearningFramework: Instances: " + instances.numInstances());
+			//logger.info("LearningFramework: Data labels: " + instances.numAttributes());
+			//logger.info("LearningFramework: Target labels: " + instances.numClasses());
 
 			this.classifier = this.getTrainer();
 
@@ -229,7 +230,7 @@ public class EngineWeka extends Engine {
 					ObjectOutputStream oos = new ObjectOutputStream
 							(new FileOutputStream(this.getOutputDirectory()
 									+ "/" + pipename));
-					oos.writeObject(this.pipe);
+					oos.writeObject(pipe);
 					oos.close();
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -262,9 +263,9 @@ public class EngineWeka extends Engine {
 		//Weka wants to know what the feature set is.
 		Instances dataset = null;
     if(algorithm == Algorithm.WEKA_CL_NUM_ADDITIVE_REGRESSION) {
-		  dataset = CorpusWriterArffNumericClass.malletPipeToWekaDataset(this.pipe);
+		  dataset = CorpusWriterArffNumericClass.malletPipeToWekaDataset(pipe);
     } else {
-			dataset = CorpusWriterArff.malletPipeToWekaDataset(this.pipe);
+			dataset = CorpusWriterArff.malletPipeToWekaDataset(pipe);
     }		
 		while(it.hasNext()){
 			Annotation instanceAnnotation = it.next();
@@ -280,7 +281,7 @@ public class EngineWeka extends Engine {
 			//Instance needs to go through the pipe for this classifier, so that
 			//it gets mapped using the same alphabet, and the text is in the
 			//expected format.
-			malletInstance = this.pipe.instanceFrom(malletInstance);
+			malletInstance = pipe.instanceFrom(malletInstance);
 
 			weka.core.Instance wekaInstance = 
 					CorpusWriterArff.malletInstance2WekaInstanceNoTarget(
@@ -337,7 +338,7 @@ public class EngineWeka extends Engine {
 				for(int i = 0; i < predictionDistribution.length; i++){
 					int thislabel = i;
 					double thisprob = predictionDistribution[i];
-					String labelstr = (String)this.pipe.getTargetAlphabet().lookupObject(thislabel);
+					String labelstr = (String)pipe.getTargetAlphabet().lookupObject(thislabel);
 					classList.add(labelstr);
 					confidenceList.add(thisprob);
 					if(thisprob>bestprob){
@@ -347,7 +348,7 @@ public class EngineWeka extends Engine {
 				} // end for i < predictionDistribution.length
 				
 				String cl = 
-						(String)this.pipe.getTargetAlphabet().lookupObject(bestlabel);
+						(String)pipe.getTargetAlphabet().lookupObject(bestlabel);
 				
 				GateClassification gc = new GateClassification(
 						instanceAnnotation, cl, bestprob, classList, confidenceList);

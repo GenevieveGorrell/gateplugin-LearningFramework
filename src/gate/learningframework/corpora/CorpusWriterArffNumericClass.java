@@ -24,12 +24,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import weka.core.FastVector;
 import weka.core.Instances;
@@ -37,7 +33,6 @@ import cc.mallet.pipe.FeatureValueString2FeatureVector;
 import cc.mallet.pipe.Input2CharSequence;
 import cc.mallet.pipe.Pipe;
 import cc.mallet.pipe.SerialPipes;
-import cc.mallet.pipe.Target2Label;
 import cc.mallet.types.FeatureVector;
 import cc.mallet.types.Instance;
 import cc.mallet.types.InstanceList;
@@ -63,8 +58,8 @@ public class CorpusWriterArffNumericClass extends CorpusWriterArff {
 		} else {
 			pipeList = savedPipe.pipes();
 
-			this.pipe = new SerialPipes(pipeList);
-			this.pipe.getDataAlphabet().stopGrowth();
+			pipe = new SerialPipes(pipeList);
+			pipe.getDataAlphabet().stopGrowth();
 			
 			outputfile = outputfilenamearffpipe;
 		}
@@ -131,7 +126,7 @@ public class CorpusWriterArffNumericClass extends CorpusWriterArff {
 			File pf = new File(this.getOutputDirectory(), pipefilenamearff);
 			ObjectOutputStream oos = new ObjectOutputStream
 					(new FileOutputStream(pf));
-			oos.writeObject(this.pipe);
+			oos.writeObject(pipe);
 			oos.close();
 		} catch (Exception e) {
 			e.printStackTrace();

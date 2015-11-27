@@ -342,9 +342,9 @@ public class EngineMallet extends Engine {
 		} else {
 
 			//Sanity check--what data do we have?
-			logger.info("LearningFramework: Instances: " + instances.size());
-			logger.info("LearningFramework: Data labels: " + instances.getDataAlphabet().size());
-			logger.info("LearningFramework: Target labels: " + instances.getTargetAlphabet().size());
+			//logger.info("LearningFramework: Instances: " + instances.size());
+			//logger.info("LearningFramework: Data labels: " + instances.getDataAlphabet().size());
+			//logger.info("LearningFramework: Target labels: " + instances.getTargetAlphabet().size());
 
 			ClassifierTrainer trainer = this.getTrainer();
 			

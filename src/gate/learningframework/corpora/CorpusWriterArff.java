@@ -26,7 +26,6 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -45,13 +44,13 @@ import cc.mallet.pipe.Target2Label;
 import cc.mallet.types.FeatureVector;
 import cc.mallet.types.Instance;
 import cc.mallet.types.InstanceList;
-import weka.core.Attribute;
 
 public class CorpusWriterArff extends CorpusWriter{
 
 	private InstanceList instances;
 	
-	SerialPipes pipe;
+	// JP: moved to parent
+  //SerialPipes pipe;
 
 	public CorpusWriterArff(FeatureSpecification conf, String inst, String inpas, 
 			File outputDirectory, Mode mode, String classType, String classFeature,
@@ -87,25 +86,25 @@ public class CorpusWriterArff extends CorpusWriter{
 			pipeList.add(new Target2Label());
 			
 			//pipeList.add(new PrintInputAndTarget());
-			this.pipe = new SerialPipes(pipeList);
+			pipe = new SerialPipes(pipeList);
 		} else { //Reusing existing pipe
 			pipeList = savedPipe.pipes();
 
-			this.pipe = new SerialPipes(pipeList);
-			this.pipe.getDataAlphabet().stopGrowth();
+			pipe = new SerialPipes(pipeList);
+			pipe.getDataAlphabet().stopGrowth();
 			
-			if(this.pipe.getTargetAlphabet()==null){
+			if(pipe.getTargetAlphabet()==null){
 				logger.warn("LearningFramework: Target alphabet missing, perhaps "
 						+ "because this pipe was created on data with a numerical "
 						+ "target?");
 			} else {
-				this.pipe.getTargetAlphabet().stopGrowth();
+				pipe.getTargetAlphabet().stopGrowth();
 			}
 			
 			outputfile = outputfilenamearffpipe;
 		}
 
-		this.instances = new InstanceList(this.pipe);
+		this.instances = new InstanceList(pipe);
 	}
 
 	//For ARFF, we need to list all the possible attribute values in the header,
@@ -205,7 +204,7 @@ public class CorpusWriterArff extends CorpusWriter{
 			File pf = new File(this.getOutputDirectory(), pipefilenamearff);
 			ObjectOutputStream oos = new ObjectOutputStream
 					(new FileOutputStream(pf));
-			oos.writeObject(this.pipe);
+			oos.writeObject(pipe);
 			oos.close();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -384,13 +383,14 @@ public class CorpusWriterArff extends CorpusWriter{
 		this.instances = instances;
 	}
 
-	public SerialPipes getPipe() {
-		return pipe;
-	}
+  // JP: moved to parent
+	//public SerialPipes getPipe() {
+	//	return pipe;
+	//}
 
-	public void setPipe(SerialPipes pipe) {
-		this.pipe = pipe;
-	}
+	//public void setPipe(SerialPipes pipe) {
+	//	pipe = pipe;
+	//}
 
 	public Map<String, Set<String>> getNominalAttributeMap() {
 		return nominalAttributeMap;
