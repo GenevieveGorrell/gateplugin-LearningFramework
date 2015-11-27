@@ -789,7 +789,7 @@ Serializable, ControllerAwarePR {
         svm_problem prob = ((CorpusWriterMallet) exportCorpus).getLibSVMProblem();
         PrintStream out = null;
         File savedir = gate.util.Files.fileFromURL(saveDirectory);
-        File expdir = new File(savedir, "exported");
+        File expdir = new File(savedir, "exportedLibSVM");
         expdir.mkdir();
         try {
           out = new PrintStream(new File(expdir, "data.libsvm"));
