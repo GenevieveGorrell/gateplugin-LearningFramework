@@ -50,6 +50,11 @@ import gate.learningframework.corpora.CorpusWriterMalletSeq;
 import gate.learningframework.corpora.FeatureSpecification;
 import gate.util.GateRuntimeException;
 import gate.util.InvalidOffsetException;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
+import java.io.PrintStream;
+import libsvm.svm_problem;
 
 
 /**
@@ -553,6 +558,7 @@ Serializable, ControllerAwarePR {
 		case EXPORT_ARFF_THRU_CURRENT_PIPE:
 		case EXPORT_ARFF_NUMERIC_CLASS:
 		case EXPORT_ARFF_NUMERIC_CLASS_THRU_CURRENT_PIPE:
+    case EXPORT_LIBSVM:
 			exportCorpus.add(document);
 			break;
 		} 
@@ -778,7 +784,40 @@ Serializable, ControllerAwarePR {
 		case EXPORT_ARFF_NUMERIC_CLASS_THRU_CURRENT_PIPE:
 			exportCorpus.conclude();
 			break;
-		}
+      case EXPORT_LIBSVM:
+        // JP: this should get moved to some better place
+        svm_problem prob = ((CorpusWriterMallet) exportCorpus).getLibSVMProblem();
+        PrintStream out = null;
+        File savedir = gate.util.Files.fileFromURL(saveDirectory);
+        File expdir = new File(savedir, "exported");
+        expdir.mkdir();
+        try {
+          out = new PrintStream(new File(expdir, "data.libsvm"));
+          for (int i = 0; i < prob.l; i++) {
+            out.print(prob.y[i]);
+            for (int j = 0; j < prob.x[i].length; j++) {
+              out.print(" ");
+              out.print(prob.x[i][j].index);
+              out.print(":");
+              out.print(prob.x[i][j].value);
+            }
+            out.println();
+          }
+          out.close();
+        } catch (FileNotFoundException ex) {
+          System.err.println("Could not write training instances to svm format file");
+          ex.printStackTrace(System.out);
+        }
+        try {
+          ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(expdir
+                  + "/my.pipe"));
+          oos.writeObject(exportCorpus.getInstances().getPipe());
+          oos.close();
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+        break;
+    }
 	}
 
 	@Override
@@ -931,6 +970,13 @@ Serializable, ControllerAwarePR {
 				}
 			}
 			break;
+    case EXPORT_LIBSVM:
+      File trainfilemallet = new File(
+							gate.util.Files.fileFromURL(saveDirectory), corpusoutputdirectory);
+		  exportCorpus = new CorpusWriterMallet(conf, instanceName, 
+							inputASName, trainfilemallet, mode, classType, 
+							classFeature, identifierFeature);            
+      break;
 		case EXPORT_ARFF:
 			File outputfilearff = new File(
 					gate.util.Files.fileFromURL(saveDirectory), corpusoutputdirectory);

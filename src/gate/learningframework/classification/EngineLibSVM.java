@@ -44,6 +44,10 @@ import libsvm.svm_print_interface;
 import libsvm.svm_problem;
 import cc.mallet.pipe.Pipe;
 import cc.mallet.types.Instance;
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class EngineLibSVM  extends Engine {
 
@@ -107,10 +111,13 @@ public class EngineLibSVM  extends Engine {
 		File pf = new File(this.getOutputDirectory(), pipename);
 		if(clf.exists() && pf.exists()){
 			try {
-				ObjectInputStream ois =
-						new ObjectInputStream (new FileInputStream(clf));
-				svmModel = (svm_model) ois.readObject();
-				ois.close();
+        // JP: use the svmlib methods for saving and restoring models, that way 
+        // we should be able to use externally trained models
+				//ObjectInputStream ois =
+				//		new ObjectInputStream (new FileInputStream(clf));
+				//svmModel = (svm_model) ois.readObject();
+				// ois.close();        
+        svmModel = svm.svm_load_model(clf.getAbsolutePath());
 			} catch(Exception e){
 				e.printStackTrace();
 			}
@@ -292,26 +299,18 @@ public class EngineLibSVM  extends Engine {
 		//Save the classifier so we don't have to retrain if we
 		//restart GATE
 		try {
-			ObjectOutputStream oos = new ObjectOutputStream
-					(new FileOutputStream(this.getOutputDirectory()
-							+ "/" + svmname));
-			oos.writeObject(svmModel);
-			oos.close();
+      // JP: use the svmlib method to save the model
+			//ObjectOutputStream oos = new ObjectOutputStream
+			//		(new FileOutputStream(this.getOutputDirectory()
+			//				+ "/" + svmname));
+			//oos.writeObject(svmModel);
+			//oos.close();
+      svm.svm_save_model(new File(getOutputDirectory(),svmname).getAbsolutePath(), svmModel);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		//Save the pipe--we aren't using Mallet for classification,
-		//but we are using Mallet for data prep so we need the pipe.
-		try {
-			ObjectOutputStream oos = new ObjectOutputStream
-					(new FileOutputStream(this.getOutputDirectory()
-							+ "/" + pipename));
-			oos.writeObject(trMal.getInstances().getPipe());
-			oos.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+    savePipe(trMal); 
 
 		//We also save a copy of the configuration file, so the user can
 		//change their copy without stuffing up their ability to apply this
@@ -324,6 +323,24 @@ public class EngineLibSVM  extends Engine {
 	}
 
 
+  // JP: this should get factored to a place where it can be used even if we do not have an Engine,
+  // e.g. when saving the pipe when exporting data
+  public void savePipe(CorpusWriterMallet trMal) {
+		//Save the pipe--we aren't using Mallet for classification,
+		//but we are using Mallet for data prep so we need the pipe.
+		try {
+			ObjectOutputStream oos = new ObjectOutputStream
+					(new FileOutputStream(this.getOutputDirectory()
+							+ "/" + pipename));
+			oos.writeObject(trMal.getInstances().getPipe());
+			oos.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    
+  }
+  
+  
 	public List<GateClassification> classify(String instanceAnn, 
 			String inputASname, Document doc){
 		List<GateClassification> gcs = new ArrayList<GateClassification>();
