@@ -47,7 +47,8 @@ import cc.mallet.types.InstanceList;
 
 public class CorpusWriterArff extends CorpusWriter{
 
-	private InstanceList instances;
+	// JP: moved to parent
+  //private InstanceList instances;
 	
 	// JP: moved to parent
   //SerialPipes pipe;

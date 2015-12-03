@@ -35,17 +35,12 @@ import java.util.regex.Pattern;
 
 import libsvm.svm_node;
 import libsvm.svm_problem;
-import cc.mallet.pipe.CharSequence2TokenSequence;
-import cc.mallet.pipe.FeatureSequence2FeatureVector;
 import cc.mallet.pipe.FeatureValueString2FeatureVector;
 import cc.mallet.pipe.Input2CharSequence;
 import cc.mallet.pipe.Pipe;
 import cc.mallet.pipe.SerialPipes;
 import cc.mallet.pipe.Target2Label;
-import cc.mallet.pipe.TokenSequence2FeatureSequence;
 import cc.mallet.pipe.iterator.CsvIterator;
-import cc.mallet.types.FeatureVector;
-import cc.mallet.types.FeatureVectorSequence;
 import cc.mallet.types.Instance;
 import cc.mallet.types.InstanceList;
 import cc.mallet.types.Label;

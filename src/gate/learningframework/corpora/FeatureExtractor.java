@@ -242,6 +242,12 @@ public class FeatureExtractor {
 				double df = Double.parseDouble(feat);
 				return type + ":" + feature + "=" + df;
 			} catch (NumberFormatException e){
+        // JP: this was previously saying that it would "treat it as string" and it 
+        // returned: type + ":" + feature + ":" + feat;
+        // In the cases I observed the value of feat got printed as "null" so it was 
+        // either null or the literal string "null" 
+        // We have to look at this again in the light of the fact that "null" is used to
+        // represent missing values!!
 				logger.warn("LearningFramework: Failed to format numeric feature "
 						+ feature + "=" + feat + " as double. Treating as 0.0");
 				return type + ":" + feature + "=" + 0.0;
