@@ -205,6 +205,7 @@ Serializable, ControllerAwarePR {
 	@RunTime
 	@CreoleParameter(comment = "The directory to which data will be saved, including models and corpora.")
 	public void setSaveDirectory(URL output) {
+    //System.out.println("LF DEBUG: setting saveDirectory to "+output);
 		this.saveDirectory = output;
 	}
 
@@ -837,7 +838,9 @@ Serializable, ControllerAwarePR {
 		evaluationModelDirectoryFile = new File(
 				gate.util.Files.fileFromURL(saveDirectory), evaluationModelDirectory);
 
+    //System.out.println("LF-Info: loading model from "+savedModelDirectoryFile.getAbsolutePath()+" saveDirectory is "+saveDirectory);
 		applicationLearner = Engine.restoreLearner(savedModelDirectoryFile);
+    //System.out.println("LF-Info: model loaded is now "+applicationLearner);
           
 		switch(this.getOperation()){
 		case TRAIN:
@@ -895,9 +898,10 @@ Serializable, ControllerAwarePR {
 			}
 			break;
 		case APPLY_CURRENT_MODEL:
-			//this.applicationLearner = Engine.restoreLearner(savedModelDirectoryFile);
+      // TODO JP: OK I do not really understand if we need this here or not, but it seems not
+			// applicationLearner = Engine.restoreLearner(savedModelDirectoryFile);
 			if(this.applicationLearner==null){
-				logger.warn("LearningFramework: Begin by training a model!");
+				logger.warn("LearningFramework: either train a new or load an existing model!");
 				interrupt();
 				break;
 			} else {

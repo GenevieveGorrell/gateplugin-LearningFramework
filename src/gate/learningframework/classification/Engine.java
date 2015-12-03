@@ -125,6 +125,7 @@ public abstract class Engine {
 	public static Engine restoreLearner(File savedModelDirectoryFile){
 		//Restore previously trained model
 		File infofile = new File(savedModelDirectoryFile, Engine.info);
+    System.out.println("LF Info trying to load model for "+infofile.getAbsolutePath());
 		Engine learner = null;
 
 		if(infofile.exists()){
@@ -147,7 +148,7 @@ public abstract class Engine {
                                   // ignore
                                   // TODO: maybe should log a message to inform we got an
                                   // unknown algorithm
-                                  System.err.println("WARNING: unknown algorithm in info file");
+                                  System.err.println("WARNING: trying to load unknown model based on algorithm name prefix");
                                 }
                                 String modestr = infostrings.get(2).trim();
                                 Mode mode = Mode.valueOf(modestr);
@@ -194,7 +195,7 @@ public abstract class Engine {
                                 }
 			}
 		} else {
-			//No learner to restore
+			//System.err.println("LF Warning: no info file, did not look for model to restore! Was looking for "+infofile.getAbsolutePath());
 		}
 		
 		return learner;
