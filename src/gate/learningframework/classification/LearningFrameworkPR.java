@@ -379,13 +379,16 @@ Serializable, ControllerAwarePR {
 		return this.learnerParams;
 	}
 
-  
+  // TODO: eventually, maybe LF_class should be the default for this,
+  // but for now we make empty the default so that the existing 
+  // pipelines work unchanged. Since it is optional, the parameter
+  // does not need to exist in the pipeline either.
   private String outClassFeature;
   @RunTime
 	@Optional
 	@CreoleParameter(comment = "Name of class feature to add to the original "+
-          "instance annotations, if empty new annotation is created",
-          defaultValue = "LF_class")
+          "instance annotations, if empty new annotation is created.",
+          defaultValue = "")
 	public void setOutClassFeature(String name) {
 		outClassFeature = name;
 	}
