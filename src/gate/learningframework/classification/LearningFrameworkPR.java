@@ -379,6 +379,17 @@ Serializable, ControllerAwarePR {
 		return this.learnerParams;
 	}
 
+  
+  private String outClassFeature;
+  @RunTime
+	@Optional
+	@CreoleParameter(comment = "Name of class feature to add to the original "+
+          "instance annotations, if empty new annotation is created",
+          defaultValue = "LF_class")
+	public void setOutClassFeature(String name) {
+		outClassFeature = name;
+	}
+  public String getOutClassFeature() { return outClassFeature; }
 
 
 
@@ -583,26 +594,44 @@ Serializable, ControllerAwarePR {
 		while(gcit.hasNext()){
 			GateClassification gc = gcit.next();
 
+      // JP: TODO: need to check if we always get the correct confidence
+      // score here and if the default makes this do what is expected!
 			if(this.getMode()==Mode.CLASSIFICATION
 					&& gc.getConfidenceScore()<this.getConfidenceThreshold()){
 				//Skip it
 			} else {
 				//We have a valid classification. Now write it onto the document.
-				FeatureMap fm = Factory.newFeatureMap();
-				fm.putAll(gc.getInstance().getFeatures());
-				fm.put(outputClassFeature, gc.getClassAssigned());
-				fm.put(outputProbFeature, gc.getConfidenceScore());
-        if(gc.getClassList()!=null && gc.getConfidenceList()!=null){
-					fm.put(outputClassFeature + "_list", gc.getClassList());
-					fm.put(outputProbFeature + "_list", gc.getConfidenceList());
-				}
-				//fm.put(this.conf.getIdentifier(), identifier);
-				if(gc.getSeqSpanID()!=null){
-					fm.put(outputSequenceSpanIDFeature, gc.getSeqSpanID());
-				}
-				outputAnnSet.add(gc.getInstance().getStartNode(), 
-						gc.getInstance().getEndNode(),
-						gc.getInstance().getType(), fm);
+        // If this is classification and the add feature value is set,
+        // do not create a new annotation and instead just add features
+        // to the instance annotation
+        if(getMode()==Mode.CLASSIFICATION && getOutClassFeature()!=null &&
+                !getOutClassFeature().isEmpty()) {
+          Annotation instance = gc.getInstance();
+          FeatureMap fm = instance.getFeatures();
+				  fm.put(outputClassFeature, gc.getClassAssigned());
+				  fm.put(outputProbFeature, gc.getConfidenceScore());
+          if(gc.getClassList()!=null && gc.getConfidenceList()!=null){
+			  		fm.put(outputClassFeature + "_list", gc.getClassList());
+			  		fm.put(outputProbFeature + "_list", gc.getConfidenceList());
+			  	}
+          fm.put(getOutClassFeature(), gc.getClassAssigned());
+        } else {
+				  FeatureMap fm = Factory.newFeatureMap();
+				  fm.putAll(gc.getInstance().getFeatures());
+				  fm.put(outputClassFeature, gc.getClassAssigned());
+				  fm.put(outputProbFeature, gc.getConfidenceScore());
+          if(gc.getClassList()!=null && gc.getConfidenceList()!=null){
+			  		fm.put(outputClassFeature + "_list", gc.getClassList());
+			  		fm.put(outputProbFeature + "_list", gc.getConfidenceList());
+			  	}
+			  	//fm.put(this.conf.getIdentifier(), identifier);
+		  		if(gc.getSeqSpanID()!=null){
+		  			fm.put(outputSequenceSpanIDFeature, gc.getSeqSpanID());
+	  			}
+		  		outputAnnSet.add(gc.getInstance().getStartNode(), 
+			  			gc.getInstance().getEndNode(),
+				  		gc.getInstance().getType(), fm);
+        } // else if CLASSIFICATION and have out class feature
 			}
 
 		}

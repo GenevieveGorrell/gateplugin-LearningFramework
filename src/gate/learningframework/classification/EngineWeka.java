@@ -267,6 +267,7 @@ public class EngineWeka extends Engine {
     } else {
 			dataset = CorpusWriterArff.malletPipeToWekaDataset(pipe);
     }		
+    // TODO JP: avoid iterator
 		while(it.hasNext()){
 			Annotation instanceAnnotation = it.next();
 			
