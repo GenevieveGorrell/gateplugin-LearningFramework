@@ -607,17 +607,22 @@ Serializable, ControllerAwarePR {
         // If this is classification and the add feature value is set,
         // do not create a new annotation and instead just add features
         // to the instance annotation
+        
+        // TODO: this can be refactored to be more concise!
         if(getMode()==Mode.CLASSIFICATION && getOutClassFeature()!=null &&
                 !getOutClassFeature().isEmpty()) {
           Annotation instance = gc.getInstance();
           FeatureMap fm = instance.getFeatures();
-				  fm.put(outputClassFeature, gc.getClassAssigned());
+          // Instead of the predefined output class feature name use the one specified
+          // as a PR parameter
+          //
+				  // fm.put(outputClassFeature, gc.getClassAssigned());
+          fm.put(getOutClassFeature(), gc.getClassAssigned());
 				  fm.put(outputProbFeature, gc.getConfidenceScore());
           if(gc.getClassList()!=null && gc.getConfidenceList()!=null){
 			  		fm.put(outputClassFeature + "_list", gc.getClassList());
 			  		fm.put(outputProbFeature + "_list", gc.getConfidenceList());
 			  	}
-          fm.put(getOutClassFeature(), gc.getClassAssigned());
         } else {
 				  FeatureMap fm = Factory.newFeatureMap();
 				  fm.putAll(gc.getInstance().getFeatures());
