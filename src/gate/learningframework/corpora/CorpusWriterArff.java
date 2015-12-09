@@ -238,11 +238,37 @@ public class CorpusWriterArff extends CorpusWriter{
 				clvalues = new HashSet<String>();
 				this.nominalAttributeMap.put(clkey, clvalues);
 			}
+
+			// Check that we don't try to use any test labels that weren't seen in training data.
+			if (this.instances.getTargetAlphabet().growthStopped()) {
+				if (!this.instances.getTargetAlphabet().contains(inst.getTarget())) {
+					throw new RuntimeException("Saw a target in data that was not available in pipeline");
+				}
+			}
+
 			clvalues.add((String)inst.getTarget());
-			
+
+			// Remove feature labels that aren't in the alphabet, so the example is output properly.
+			if (this.instances.getAlphabet().growthStopped()) {
+				String[] fields = inst.getData().toString().split("\\s+");
+				StringBuilder sanitisedFields = new StringBuilder();
+
+				for (String field : fields) {
+					String fieldName = field.split("=", 2)[0];
+					if (this.instances.getAlphabet().contains(fieldName)) {
+						sanitisedFields.append(field + "\n");
+					}
+				}
+
+				inst.setData(sanitisedFields.toString());
+			}
+
+
 			//Always add instances to the instance list through the pipe.
 			try{
-				this.instances.addThruPipe(inst);
+				if (!inst.getData().toString().isEmpty()){
+					this.instances.addThruPipe(inst);
+				}
 			} catch(Exception e){
 				e.printStackTrace();
 			}
