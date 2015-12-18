@@ -6,7 +6,7 @@
   HELPURL="https://github.com/GenevieveGorrell/gateplugin-LearningFramework/wiki"
 
 >
-  <JAR scan="true">learningframework.jar</JAR>
+  <JAR scan="true">LearningFramework.jar</JAR>
  
   <JAR>lib/bsh.jar</JAR>
   <JAR>lib/colt-1.2.0.jar</JAR>
