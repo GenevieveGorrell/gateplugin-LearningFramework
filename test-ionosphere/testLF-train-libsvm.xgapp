@@ -2,6 +2,9 @@
   <urlList class="gate.util.persistence.CollectionPersistence">
     <localList>
       <gate.util.persistence.PersistenceManager-URLHolder>
+        <urlString>$relpath$../../../yodie/yodie-pipeline/plugins/Format_FastInfoset</urlString>
+      </gate.util.persistence.PersistenceManager-URLHolder>
+      <gate.util.persistence.PersistenceManager-URLHolder>
         <urlString>$gatehome$plugins/ANNIE</urlString>
       </gate.util.persistence.PersistenceManager-URLHolder>
       <gate.util.persistence.PersistenceManager-URLHolder>
@@ -20,10 +23,20 @@
             <mapType>gate.util.SimpleFeatureMapImpl</mapType>
             <localMap>
               <entry>
-                <string>sourceUrl</string>
-                <gate.util.persistence.PersistenceManager-URLHolder>
-                  <urlString>$relpath$ionosphere_gate.xml</urlString>
-                </gate.util.persistence.PersistenceManager-URLHolder>
+                <string>markupAware</string>
+                <boolean>true</boolean>
+              </entry>
+              <entry>
+                <string>stringContent</string>
+                <string></string>
+              </entry>
+              <entry>
+                <string>encoding</string>
+                <string>UTF-8</string>
+              </entry>
+              <entry>
+                <string>sourceUrlStartOffset</string>
+                <null/>
               </entry>
               <entry>
                 <string>preserveOriginalContent</string>
@@ -34,27 +47,17 @@
                 <boolean>false</boolean>
               </entry>
               <entry>
-                <string>markupAware</string>
-                <boolean>true</boolean>
+                <string>sourceUrl</string>
+                <gate.util.persistence.PersistenceManager-URLHolder>
+                  <urlString>$relpath$ionosphere_gate.xml</urlString>
+                </gate.util.persistence.PersistenceManager-URLHolder>
               </entry>
               <entry>
                 <string>sourceUrlEndOffset</string>
                 <null/>
               </entry>
               <entry>
-                <string>stringContent</string>
-                <string></string>
-              </entry>
-              <entry>
                 <string>mimeType</string>
-                <null/>
-              </entry>
-              <entry>
-                <string>encoding</string>
-                <string>UTF-8</string>
-              </entry>
-              <entry>
-                <string>sourceUrlStartOffset</string>
                 <null/>
               </entry>
             </localMap>
@@ -94,12 +97,20 @@
                   </gate.util.persistence.CollectionPersistence>
                 </entry>
                 <entry>
-                  <string>keepOriginalMarkupsAS</string>
-                  <boolean>true</boolean>
+                  <string>document</string>
+                  <null/>
+                </entry>
+                <entry>
+                  <string>annotationTypes</string>
+                  <null/>
                 </entry>
                 <entry>
                   <string>corpus</string>
                   <null/>
+                </entry>
+                <entry>
+                  <string>keepOriginalMarkupsAS</string>
+                  <boolean>true</boolean>
                 </entry>
                 <entry>
                   <string>setsToRemove</string>
@@ -107,16 +118,8 @@
                     <localList>
                       <string>LearningFramework</string>
                     </localList>
-                    <collectionType>java.util.Arrays$ArrayList</collectionType>
+                    <collectionType>java.util.ArrayList</collectionType>
                   </gate.util.persistence.CollectionPersistence>
-                </entry>
-                <entry>
-                  <string>annotationTypes</string>
-                  <null/>
-                </entry>
-                <entry>
-                  <string>document</string>
-                  <null/>
                 </entry>
               </localMap>
             </runtimeParams>
@@ -134,46 +137,12 @@
         </gate.util.persistence.AnalyserRunningStrategyPersistence>
         <gate.util.persistence.AnalyserRunningStrategyPersistence>
           <runMode>1</runMode>
+          <featureName></featureName>
+          <featureValue></featureValue>
           <pr class="gate.util.persistence.PRPersistence">
             <runtimeParams class="gate.util.persistence.MapPersistence">
               <mapType>gate.util.SimpleFeatureMapImpl</mapType>
               <localMap>
-                <entry>
-                  <string>trainingProportion</string>
-                  <float>0.5</float>
-                </entry>
-                <entry>
-                  <string>instanceName</string>
-                  <string>Mention</string>
-                </entry>
-                <entry>
-                  <string>trainingAlgo</string>
-                  <gate.learningframework.Algorithm>LIBSVM</gate.learningframework.Algorithm>
-                </entry>
-                <entry>
-                  <string>confidenceThreshold</string>
-                  <double>0.0</double>
-                </entry>
-                <entry>
-                  <string>document</string>
-                  <null/>
-                </entry>
-                <entry>
-                  <string>corpus</string>
-                  <null/>
-                </entry>
-                <entry>
-                  <string>inputASName</string>
-                  <null/>
-                </entry>
-                <entry>
-                  <string>sequenceSpan</string>
-                  <null/>
-                </entry>
-                <entry>
-                  <string>mode</string>
-                  <gate.learningframework.Mode>CLASSIFICATION</gate.learningframework.Mode>
-                </entry>
                 <entry>
                   <string>saveDirectory</string>
                   <gate.util.persistence.PersistenceManager-URLHolder>
@@ -181,16 +150,16 @@
                   </gate.util.persistence.PersistenceManager-URLHolder>
                 </entry>
                 <entry>
-                  <string>identifierFeature</string>
+                  <string>sequenceSpan</string>
                   <null/>
                 </entry>
                 <entry>
-                  <string>learnerParams</string>
-                  <null/>
+                  <string>classFeature</string>
+                  <string>class</string>
                 </entry>
                 <entry>
-                  <string>outputASName</string>
-                  <string>LearningFramework</string>
+                  <string>inputASName</string>
+                  <null/>
                 </entry>
                 <entry>
                   <string>featureSpecURL</string>
@@ -199,20 +168,60 @@
                   </gate.util.persistence.PersistenceManager-URLHolder>
                 </entry>
                 <entry>
-                  <string>classFeature</string>
-                  <string>class</string>
-                </entry>
-                <entry>
                   <string>foldsForXVal</string>
                   <int>3</int>
+                </entry>
+                <entry>
+                  <string>classType</string>
+                  <string>Mention</string>
+                </entry>
+                <entry>
+                  <string>confidenceThreshold</string>
+                  <double>0.0</double>
+                </entry>
+                <entry>
+                  <string>trainingProportion</string>
+                  <float>0.5</float>
+                </entry>
+                <entry>
+                  <string>mode</string>
+                  <gate.learningframework.Mode>CLASSIFICATION</gate.learningframework.Mode>
                 </entry>
                 <entry>
                   <string>operation</string>
                   <gate.learningframework.Operation>TRAIN</gate.learningframework.Operation>
                 </entry>
                 <entry>
-                  <string>classType</string>
+                  <string>identifierFeature</string>
+                  <null/>
+                </entry>
+                <entry>
+                  <string>document</string>
+                  <null/>
+                </entry>
+                <entry>
+                  <string>learnerParams</string>
+                  <string>-c 1000 -g 0.02</string>
+                </entry>
+                <entry>
+                  <string>corpus</string>
+                  <null/>
+                </entry>
+                <entry>
+                  <string>instanceName</string>
                   <string>Mention</string>
+                </entry>
+                <entry>
+                  <string>outputASName</string>
+                  <string>LearningFramework</string>
+                </entry>
+                <entry>
+                  <string>scaleFeatures</string>
+                  <boolean>false</boolean>
+                </entry>
+                <entry>
+                  <string>trainingAlgo</string>
+                  <gate.learningframework.Algorithm>LIBSVM</gate.learningframework.Algorithm>
                 </entry>
               </localMap>
             </runtimeParams>
