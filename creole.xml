@@ -1,5 +1,11 @@
 <!-- creole.xml for Learning_Framework -->
-<CREOLE-DIRECTORY>
+<CREOLE-DIRECTORY
+  ID="gate.LearningFramework"
+  VERSION="2.0"
+  DESCRIPTION="Learning Framework"
+  HELPURL="https://github.com/GenevieveGorrell/gateplugin-LearningFramework/wiki"
+
+>
   <JAR scan="true">learningframework.jar</JAR>
  
   <JAR>lib/bsh.jar</JAR>

@@ -1,10 +1,10 @@
-<project name="Learning_Framework" basedir="."  default="build" >
+<project name="LearningFramework" basedir="."  default="build" >
   <!-- Prevent Ant from warning about includeantruntime not being set -->
   <property name="build.sysclasspath" value="ignore" />
 
   <property file="build.properties" />
   <!-- Name of the plugin -->
-  <property name="plugin.name" value="Learning_Framework"/>
+  <property name="plugin.name" value="LearningFramework"/>
 
   <!-- Make environment variables available -->
   <property environment="env" />
@@ -27,7 +27,7 @@
   <property name="classes.dir" location="classes" />
   <property name="doc.dir" location="doc" />
   <property name="javadoc.dir" location="${doc.dir}/javadoc" />
-  <property name="jar.location" location="learningframework.jar" />
+  <property name="jar.location" location="${plugin.name}.jar" />
 
   <!-- Path to compile - includes gate.jar and GATE/lib/*.jar -->
   <path id="gate.classpath">
