@@ -186,7 +186,7 @@
                 </entry>
                 <entry>
                   <string>learnerParams</string>
-                  <null/>
+                  <string>-c 1000 -g 0.02</string>
                 </entry>
                 <entry>
                   <string>outputASName</string>
