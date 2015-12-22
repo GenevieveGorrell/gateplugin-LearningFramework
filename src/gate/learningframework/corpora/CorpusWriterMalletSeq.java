@@ -158,16 +158,16 @@ public class CorpusWriterMalletSeq extends CorpusWriter{
 			if(type!=null){
 				switch(mode){
 				case CLASSIFICATION:
-					classEl = classEl + "#" + FeatureExtractor.extractClassForClassification(
-							type, feature, inputASname, instanceAnnotation, 
-							doc).replace("#", "[hash]");
+					if(feature!=null){
+						classEl = classEl + "#" + FeatureExtractor.extractClassForClassification(
+								type, feature, inputASname, instanceAnnotation, 
+								doc).replace("#", "[hash]");
+					}
 					break;
 				case NAMED_ENTITY_RECOGNITION:
-					if(feature!=null){
-						classEl = classEl + "#" + FeatureExtractor.extractClassNER(
-							type, inputASname, instanceAnnotation, 
-							doc);
-					}
+					classEl = classEl + "#" + FeatureExtractor.extractClassNER(
+						type, inputASname, instanceAnnotation, 
+						doc);
 					break;
 				}
 			} else {
