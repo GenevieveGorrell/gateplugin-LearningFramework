@@ -161,7 +161,7 @@ public abstract class Engine {
                                   } else if(engine.startsWith("MALLET_CL")) {
                                     learner = new EngineMallet(savedModelDirectoryFile, mode, engine, true);
                                   } else if(engine.startsWith("MALLET_SEQ")) {
-                                    learner = new EngineMalletSeq(savedModelDirectoryFile, mode, true);
+                                    learner = new EngineMalletSeq(savedModelDirectoryFile, mode, engine, true);
                                   } else {
                                     throw new GateRuntimeException("Cannot load the model, engine not known: "+engine);
                                   }
@@ -179,7 +179,7 @@ public abstract class Engine {
                                       learner = new EngineMallet(savedModelDirectoryFile, mode, engine, true);
                                       break;
                                     case MALLET_SEQ_CRF:
-                                      learner = new EngineMalletSeq(savedModelDirectoryFile, mode, true);
+                                      learner = new EngineMalletSeq(savedModelDirectoryFile, mode, engine, true);
                                       break;
                                     case WEKA_CL_NUM_ADDITIVE_REGRESSION:
                                     case WEKA_CL_NAIVE_BAYES:

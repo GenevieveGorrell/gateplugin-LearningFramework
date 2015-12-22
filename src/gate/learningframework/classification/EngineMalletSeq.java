@@ -62,9 +62,10 @@ public class EngineMalletSeq extends Engine {
 
 	//private Pipe pipe;
 	
-	public EngineMalletSeq(File savedModel, Mode mode, boolean restore){
+	public EngineMalletSeq(File savedModel, Mode mode, String engine, boolean restore){
 		this.setOutputDirectory(savedModel);
 		this.setMode(mode);
+                setEngine(engine);
 
 		if(restore){
 			File info = new File(this.getOutputDirectory(), Engine.info);
@@ -324,11 +325,8 @@ public class EngineMalletSeq extends Engine {
         
   @Override
   public String whatIsItString() {
-    if(algorithm != null) {
-      return algorithm.toString();
-    } else {
-      return crf.getClass().getCanonicalName();
-    }
+    // TODO: JP: for now this does not allow support for arbitrary other learner classes
+    return algorithm.toString();
   }
 	
 }

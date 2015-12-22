@@ -90,10 +90,11 @@ public class EngineLibSVM  extends Engine {
 		}
 	}
 
-	public EngineLibSVM(File savedModel, Mode mode, String params, boolean restore){
+	public EngineLibSVM(File savedModel, Mode mode, String params, String engine, boolean restore){
 		this.params = params;
 		this.setOutputDirectory(savedModel);
 		this.setMode(mode);
+                setEngine(engine);
 
 		//Restore the classifier and the saved copy of the configuration file
 		//from train time.

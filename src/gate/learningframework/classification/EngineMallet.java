@@ -462,11 +462,8 @@ public class EngineMallet extends Engine {
 
   @Override
   public String whatIsItString() {
-    if(algorithm != null) {
-      return algorithm.toString();
-    } else {
-      return classifier.getClass().getCanonicalName();
-    }
+    // TODO: JP: for now this does not allow support for arbitrary other learner classes
+    return algorithm.toString();
   }
 	
 }

@@ -462,10 +462,10 @@ Serializable, ControllerAwarePR {
 			case MALLET_CL_WINNOW:
 				return new EngineMallet(savedModelFile, mode, learnerParams, spec, false);
 			case MALLET_SEQ_CRF:
-				return new EngineMalletSeq(savedModelFile, mode, false);
+				return new EngineMalletSeq(savedModelFile, mode, spec, false);
 			case LIBSVM:
 				return new EngineLibSVM(
-						savedModelFile, mode, learnerParams, false);
+						savedModelFile, mode, learnerParams, spec, false);
 			case WEKA_CL_NUM_ADDITIVE_REGRESSION:
 			case WEKA_CL_NAIVE_BAYES:
 			case WEKA_CL_J48:
