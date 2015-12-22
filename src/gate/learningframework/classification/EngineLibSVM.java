@@ -43,9 +43,11 @@ import libsvm.svm_parameter;
 import libsvm.svm_print_interface;
 import libsvm.svm_problem;
 import cc.mallet.pipe.Pipe;
+import cc.mallet.types.Alphabet;
 import cc.mallet.types.Instance;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -149,7 +151,7 @@ public class EngineLibSVM  extends Engine {
 		}
 	}
 
-	private svm_parameter makeParam(double num_feats){
+	private svm_parameter makeParam(double num_feats, Alphabet labelAlph){
 		//Default parameters (kernel etc.) are pretty good. For guidelines 
 		//see here: http://www.csie.ntu.edu.tw/~cjlin/papers/guide/guide.pdf
 		//To find out what the defaults are, see here: http://www.csie.ntu.edu.tw/~cjlin/libsvm/
@@ -157,8 +159,8 @@ public class EngineLibSVM  extends Engine {
 		//However it seems as though the defaults aren't set in the Java version
 		//so we're going to set them all to their defaults here, except for
 		//gamma, where we need to wait and see what the user said, and override 
-		//a user setting of zero.
-		
+		//a user setting of zero.		
+          
 		svm_parameter param=new svm_parameter();
 		
 		param.svm_type=param.C_SVC;		
@@ -169,7 +171,7 @@ public class EngineLibSVM  extends Engine {
 		param.C=1;
 		param.nu=0.5;
 		param.p=0.1;
-		param.cache_size=400;
+		param.cache_size=2000;
 		param.eps=0.001;
 		param.shrinking=1;
 		param.probability=0;
@@ -180,7 +182,7 @@ public class EngineLibSVM  extends Engine {
 		param.weight = new double[0];
 		
 		if(params!=null && !params.equals("") && !params.isEmpty()){
-			String[] p = this.params.split("\\s+");
+			String[] p = params.split("\\s+");
 
 			for(int i=0;i<p.length;i++){
 				if(p[i].charAt(0) != '-') break;
@@ -256,6 +258,37 @@ public class EngineLibSVM  extends Engine {
 			param.gamma=1/num_feats;
 		}
 		
+		//Reorder the weights--when the user chose their weights they did so on the
+		//basis of alphabetical/natural order. The classes didn't come in that way 
+		//though so we need to reorder the weights the way the user meant.
+		Object[] labels = labelAlph.toArray();
+                
+                if(param.weight.length!=0) {
+                  if (labels.length != param.weight.length) {
+                    // TODO: (JP) this does not seem to make sense and we should probably abort here?
+                    logger.error("LearningFramework: Number of weights not the same as number of classes: "+
+                            param.weight.length+"/"+labels.length);
+                  } else {
+                    Arrays.sort(labels);
+                    int[] sortedindices = new int[param.weight.length];
+                    for (int i = 0; i < param.weight.length; i++) { //Working through the libsvm param
+                      int index = param.weight_label[i];
+                      double weight = param.weight[i];
+                      //This is the class that the user meant to assign this weight to
+                      Object label = labels[index];
+                      //This is where it is in the prepped corpus according to Mallet.
+                      int indexincorpus = labelAlph.lookupIndex(label);
+				//So our new version of the label index array wants this index
+                      //in the slot for this weight.
+                      sortedindices[i] = indexincorpus;
+                      logger.info("LearningFramework: class "
+                              + label + " takes weight " + weight);
+                    }
+                    param.weight_label = sortedindices;
+                  }
+                } // have weight parameters
+                
+                
 		return param;
 	}
 
@@ -287,7 +320,8 @@ public class EngineLibSVM  extends Engine {
 
 		}
 
-		svm_parameter param = makeParam(trMal.getInstances().getDataAlphabet().size());
+		svm_parameter param = makeParam(trMal.getInstances().getDataAlphabet().size(),                        
+				trMal.getInstances().getTargetAlphabet());
 		
 		//Train is a static method on svm
 		libsvm.svm.svm_set_print_string_function(print_func);
@@ -300,11 +334,6 @@ public class EngineLibSVM  extends Engine {
 		//restart GATE
 		try {
       // JP: use the svmlib method to save the model
-			//ObjectOutputStream oos = new ObjectOutputStream
-			//		(new FileOutputStream(this.getOutputDirectory()
-			//				+ "/" + svmname));
-			//oos.writeObject(svmModel);
-			//oos.close();
       svm.svm_save_model(new File(getOutputDirectory(),svmname).getAbsolutePath(), svmModel);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -405,7 +434,7 @@ public class EngineLibSVM  extends Engine {
 	public void evaluateXFold(CorpusWriter evalCorpus, int folds){
 		CorpusWriterMallet cwm = (CorpusWriterMallet)evalCorpus; 
 		svm_problem prob = cwm.getLibSVMProblem();
-		svm_parameter param = makeParam(cwm.getInstances().getDataAlphabet().size());
+		svm_parameter param = makeParam(cwm.getInstances().getDataAlphabet().size(),cwm.getInstances().getTargetAlphabet());
 
 		double[] target = new double[prob.l];
 
@@ -430,7 +459,8 @@ public class EngineLibSVM  extends Engine {
 	public void evaluateHoldout(CorpusWriter evalCorpus, float trainingproportion){
 		CorpusWriterMallet cwm = (CorpusWriterMallet)evalCorpus; 
 		svm_problem[] probs = cwm.getLibSVMProblemSplit(trainingproportion);
-		svm_parameter param = makeParam(cwm.getInstances().getDataAlphabet().size());
+		svm_parameter param = makeParam(cwm.getInstances().getDataAlphabet().size(),
+                        cwm.getInstances().getTargetAlphabet());
 
 		//Train is a static method on svm
 		svm_model svmMod = libsvm.svm.svm_train(probs[0], param);
