@@ -251,7 +251,17 @@ public abstract class Engine {
 	}
     
   protected Pipe pipe = null;
-  public Pipe getPipe() { return pipe; }
-  public void setPipe(Pipe p) { pipe = p; }
+
+  public Pipe getPipe() {
+    return pipe;
+  }
+
+  public void setPipe(Pipe p) {
+    pipe = p;
+  }
+
+  protected static String pipename = "my.pipe";
+
+  protected static String modelfilename = "my.model";
 
 }

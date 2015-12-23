@@ -55,21 +55,6 @@ public class EngineLibSVM  extends Engine {
 
 	private svm_model svmModel = null;
 
-	/**
-	 * The name of the classifier location.
-	 */
-	private static String svmname = "my.model";
-
-	/**
-	 * The name of the pipe location. Since we are using
-	 * Mallet for feature prep but not for classification,
-	 * we have to explicitly save the pipe rather than relying
-	 * on Mallet to save it with the classifier.
-	 */
-	// JP: bumped up to parent
-  //private Pipe pipe = null;
-
-	private static String pipename = "my.pipe";
 
 	private String params = null;
 
@@ -110,7 +95,7 @@ public class EngineLibSVM  extends Engine {
 	 * 
 	 */
 	public void loadClassifier(){
-		File clf = new File(this.getOutputDirectory(), svmname);
+		File clf = new File(this.getOutputDirectory(), modelfilename);
 		File pf = new File(this.getOutputDirectory(), pipename);
 		if(clf.exists() && pf.exists()){
 			try {
@@ -335,7 +320,7 @@ public class EngineLibSVM  extends Engine {
 		//restart GATE
 		try {
       // JP: use the svmlib method to save the model
-      svm.svm_save_model(new File(getOutputDirectory(),svmname).getAbsolutePath(), svmModel);
+      svm.svm_save_model(new File(getOutputDirectory(),modelfilename).getAbsolutePath(), svmModel);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

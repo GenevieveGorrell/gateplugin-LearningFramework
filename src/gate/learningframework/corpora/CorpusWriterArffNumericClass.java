@@ -36,15 +36,16 @@ import cc.mallet.pipe.SerialPipes;
 import cc.mallet.types.FeatureVector;
 import cc.mallet.types.Instance;
 import cc.mallet.types.InstanceList;
+import gate.learningframework.classification.ScalingMethod;
 
 public class CorpusWriterArffNumericClass extends CorpusWriterArff {
 
 	public CorpusWriterArffNumericClass(FeatureSpecification conf,
 			String inst, String inpas, File outputDirectory, Mode mode,
 			String classType, String classFeature, String identifierFeature,
-			SerialPipes savedPipe) {
+			SerialPipes savedPipe, ScalingMethod scaleFeatures) {
 		super(conf, inst, inpas, outputDirectory, mode, classType, classFeature,
-				identifierFeature, null);
+				identifierFeature, null, scaleFeatures);
 		
 		ArrayList<Pipe> pipeList = new ArrayList<Pipe>();
 
@@ -72,7 +73,7 @@ public class CorpusWriterArffNumericClass extends CorpusWriterArff {
 	 * The header isn't sparse. We have to write them all out which is tedious
 	 * but trivial.
 	 */
-	public void conclude(){
+	public void writeToFile(){
 		this.initializeOutputStream(outputfile);
 		//First the header
 		this.getOutputStream(outputfile).print("@relation gate\n\n");

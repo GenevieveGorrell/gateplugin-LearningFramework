@@ -17,3 +17,4 @@ hs_err_*.log
 /testing/savedModel
 /test-ionosphere/model-wekarf/savedModel/
 /test-ionosphere/model-libsvm/savedModel/
+/testing/sequence

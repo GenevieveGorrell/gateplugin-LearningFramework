@@ -44,6 +44,7 @@ import cc.mallet.pipe.Target2Label;
 import cc.mallet.types.FeatureVector;
 import cc.mallet.types.Instance;
 import cc.mallet.types.InstanceList;
+import gate.learningframework.classification.ScalingMethod;
 
 public class CorpusWriterArff extends CorpusWriter{
 
@@ -55,8 +56,8 @@ public class CorpusWriterArff extends CorpusWriter{
 
 	public CorpusWriterArff(FeatureSpecification conf, String inst, String inpas, 
 			File outputDirectory, Mode mode, String classType, String classFeature,
-			String identifierFeature, SerialPipes savedPipe){
-		super(conf, inst, inpas, outputDirectory, mode, classType, classFeature, identifierFeature);
+			String identifierFeature, SerialPipes savedPipe, ScalingMethod scaleFeatures){
+		super(conf, inst, inpas, outputDirectory, mode, classType, classFeature, identifierFeature, scaleFeatures);
 
 		ArrayList<Pipe> pipeList = new ArrayList<Pipe>();
 		if(savedPipe==null){ //We need to create one
@@ -121,7 +122,7 @@ public class CorpusWriterArff extends CorpusWriter{
 	 * The header isn't sparse. We have to write them all out which is tedious
 	 * but trivial.
 	 */
-	public void conclude(){
+	public void writeToFile(){
 		this.initializeOutputStream(outputfile);
 		//First the header
 		this.getOutputStream(outputfile).print("@relation gate\n\n");

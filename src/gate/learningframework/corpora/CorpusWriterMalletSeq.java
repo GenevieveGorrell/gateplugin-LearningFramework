@@ -34,6 +34,7 @@ import cc.mallet.pipe.Pipe;
 import cc.mallet.pipe.SerialPipes;
 import cc.mallet.types.Instance;
 import cc.mallet.types.InstanceList;
+import gate.learningframework.classification.ScalingMethod;
 
 public class CorpusWriterMalletSeq extends CorpusWriter{
 
@@ -47,8 +48,9 @@ public class CorpusWriterMalletSeq extends CorpusWriter{
 	
 	public CorpusWriterMalletSeq(FeatureSpecification conf, String inst, String inpas, 
 			File outputFile, String sequenceSpan, Mode mode, String classType, 
-			String classFeature, String identifierFeature){
-		super(conf, inst, inpas, outputFile, mode, classType, classFeature, identifierFeature);
+			String classFeature, String identifierFeature, ScalingMethod scaleFeatures){
+		super(conf, inst, inpas, outputFile, mode, classType, classFeature, 
+                        identifierFeature, scaleFeatures);
 		this.sequenceSpan = sequenceSpan;
 
 		/*
@@ -197,7 +199,10 @@ public class CorpusWriterMalletSeq extends CorpusWriter{
 	}
 
 	public void conclude(){
-		//Doesn't need to do anything for Mallet output
+	  if(scaleFeatures != ScalingMethod.NONE){
+ 			logger.warn("LearningFramework: Feature scaling not implemented for sequence"
+ 					+ " learners, sorry.");
+          }
 	}
 
 	public InstanceList getInstances() {

@@ -15,6 +15,7 @@
 
 package gate.learningframework.corpora;
 
+import cc.mallet.pipe.Pipe;
 import cc.mallet.pipe.SerialPipes;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -26,6 +27,8 @@ import cc.mallet.types.FeatureVector;
 import cc.mallet.types.InstanceList;
 import gate.Document;
 import gate.learningframework.classification.Mode;
+import gate.learningframework.classification.ScalingMethod;
+import java.util.ArrayList;
 
 public abstract class CorpusWriter {
 
@@ -42,6 +45,8 @@ public abstract class CorpusWriter {
 	private String instanceName;
 
 	private PrintStream outputStream;
+        
+        protected ScalingMethod scaleFeatures;
 
 	public void setOutputDirectory(File outputFile) {
 		this.outputDirectory = outputFile;
@@ -90,7 +95,7 @@ public abstract class CorpusWriter {
 
 	public CorpusWriter(FeatureSpecification conf, String inst, String inpas, 
 			File outputDirectory, Mode mode, String classType, String classFeature,
-			String identifierFeature){
+			String identifierFeature, ScalingMethod scaleFeatures){
 		this.conf = conf;
 		this.instanceName = inst;
 		this.inputASName = inpas;
@@ -99,6 +104,7 @@ public abstract class CorpusWriter {
 		this.classType = classType;
 		this.classFeature = classFeature;
 		this.identifierFeature = identifierFeature;
+                this.scaleFeatures = scaleFeatures;
 	}
 
 	public void initializeOutputStream(String file) {
@@ -134,8 +140,56 @@ public abstract class CorpusWriter {
 	
 	public abstract void add(Document doc);
 	
-	public abstract void conclude();
+	public void conclude() {
+          if(scaleFeatures != ScalingMethod.NONE) {
+            normalize();
+          }
+        }
 
+	public void normalize(){
+		//We need to add the scaling step to the pipe.
+		double[] sums = new double[instances.getDataAlphabet().size()];
+		double[] sumsofsquares = new double[instances.getDataAlphabet().size()];
+		//double[] numvals = new double[instances.getDataAlphabet().size()];
+		double[] means = new double[instances.getDataAlphabet().size()];
+		double[] variances = new double[instances.getDataAlphabet().size()];
+		
+		for(int i=0;i<instances.size();i++){
+			FeatureVector data = (FeatureVector)instances.get(i).getData();
+			int[] indices = data.getIndices();
+			double[] values = data.getValues();
+			for(int j=0;j<indices.length;j++){
+				int index = indices[j];
+				double value = values[j];
+				sums[index]+=value;
+				sumsofsquares[index]+=(value*value);
+				//numvals[index]++;
+			}
+		}
+		
+		//Now use the accumulators to prepare means and variances
+		//for each feature in the alphabet, to be used for scaling.
+		for(int i=0;i<sums.length;i++){
+			means[i] = sums[i]/instances.getDataAlphabet().size();
+			variances[i] = sumsofsquares[i]/instances.getDataAlphabet().size();
+		}
+		
+		//We make a new pipe and apply it to all the instances
+		FeatureVector2NormalizedFeatureVector normalizer 
+			= new FeatureVector2NormalizedFeatureVector(means, variances, instances.getAlphabet());
+		InstanceList newInstanceList = new InstanceList(normalizer);
+		for(int i=0;i<instances.size();i++){
+			newInstanceList.addThruPipe(instances.get(i));
+		}
+		this.instances = newInstanceList;
+		
+		//Add the pipe to the pipes so application time data will go through it
+		ArrayList<Pipe> pipeList = this.pipe.pipes();
+		pipeList.add(normalizer);
+		this.pipe = new SerialPipes(pipeList);
+	}
+        
+        
 	public PrintStream getOutputStream(String file) {
 		return outputStream;
 	}

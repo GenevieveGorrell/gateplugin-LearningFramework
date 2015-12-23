@@ -55,11 +55,6 @@ import cc.mallet.types.InstanceList;
 public class EngineMallet extends Engine {
 
 	private Classifier classifier = null;
-
-	/**
-	 * The name of the classifier location.
-	 */
-	private static String classifiername = "my.model";
 	
 	private String params;
 
@@ -77,7 +72,7 @@ public class EngineMallet extends Engine {
 		//Restore the classifier and the saved copy of the configuration file
 		//from train time.
 		if(restore){
-			File clf = new File(this.getOutputDirectory(), classifiername);
+			File clf = new File(this.getOutputDirectory(), modelfilename);
 			if(clf.exists()){	
 				try {
 					this.classifier = loadClassifier(clf);
@@ -356,7 +351,7 @@ public class EngineMallet extends Engine {
 				try {
 					ObjectOutputStream oos = new ObjectOutputStream
 							(new FileOutputStream(this.getOutputDirectory()
-									+ "/" + classifiername));
+									+ "/" + modelfilename));
 					oos.writeObject(classifier);
 					oos.close();
 				} catch (Exception e) {
@@ -406,7 +401,8 @@ public class EngineMallet extends Engine {
 			//Instance needs to go through the pipe for this classifier, so that
 			//it gets mapped using the same alphabet, and the text is in the
 			//expected format.
-			instance = this.classifier.getInstancePipe().instanceFrom(instance);
+			//instance = this.classifier.getInstancePipe().instanceFrom(instance);
+			instance = pipe.instanceFrom(instance);
 
 			Classification classification = classifier.classify(instance);
 			String bestLabel = classification.getLabeling().getBestLabel().toString();

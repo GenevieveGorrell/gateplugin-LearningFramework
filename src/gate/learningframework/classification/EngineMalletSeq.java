@@ -48,16 +48,6 @@ import gate.learningframework.corpora.FeatureSpecification;
 
 public class EngineMalletSeq extends Engine {
 
-	/**
-	 * The name of the classifier location.
-	 */
-	private static String modelname = "my.model";
-
-	/**
-	 * The name of the saved pipe location.
-	 */
-	//private static String pipename = new String("my.pipe");
-
 	private CRF crf;
 
 	//private Pipe pipe;
@@ -86,7 +76,7 @@ public class EngineMalletSeq extends Engine {
 	public void loadCRF()
 			throws FileNotFoundException, IOException, ClassNotFoundException {
 
-		File serializedFile = new File(this.getOutputDirectory(), modelname);
+		File serializedFile = new File(this.getOutputDirectory(), modelfilename);
 		
 		//Restore the model
 		if(serializedFile.exists()){
@@ -162,7 +152,7 @@ public class EngineMalletSeq extends Engine {
 		try {
 			ObjectOutputStream oos = new ObjectOutputStream
 					(new FileOutputStream(
-							new File(this.getOutputDirectory(), modelname)));
+							new File(this.getOutputDirectory(), modelfilename)));
 			oos.writeObject(crf);
 			oos.close();
 		} catch (Exception e) {

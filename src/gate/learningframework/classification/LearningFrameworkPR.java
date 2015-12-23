@@ -379,6 +379,18 @@ Serializable, ControllerAwarePR {
 		return this.learnerParams;
 	}
 
+        @RunTime
+	@CreoleParameter(defaultValue = "NONE", comment = "If and how to scale features. ")
+	public void setScaleFeatures(ScalingMethod sf) {
+          scaleFeatures = sf;
+	}
+	public ScalingMethod getScaleFeatures() {
+          return scaleFeatures;
+	}
+        protected ScalingMethod scaleFeatures = ScalingMethod.NONE;
+        
+        
+        
   // TODO: eventually, maybe LF_class should be the default for this,
   // but for now we make empty the default so that the existing 
   // pipelines work unchanged. Since it is optional, the parameter
@@ -901,21 +913,21 @@ Serializable, ControllerAwarePR {
 							gate.util.Files.fileFromURL(saveDirectory), trainfilenamemallet);
 					trainingCorpus = new CorpusWriterMallet(this.conf, this.instanceName, 
 							this.inputASName, trainfilemallet, mode, classType, 
-							classFeature, identifierFeature);
+							classFeature, identifierFeature, scaleFeatures);
 					break;
 				case MALLET_SEQ_CRF:
 					File trainfilemalletseq = new File(
 							gate.util.Files.fileFromURL(saveDirectory), trainfilenamemalletseq);
 					trainingCorpus = new CorpusWriterMalletSeq(this.conf, this.instanceName, 
 							this.inputASName, trainfilemalletseq, this.sequenceSpan, 
-							mode, classType, classFeature, identifierFeature);
+							mode, classType, classFeature, identifierFeature, scaleFeatures);
 					break;
 				case WEKA_CL_NUM_ADDITIVE_REGRESSION:
 					File trainfileweka = new File(
 							gate.util.Files.fileFromURL(saveDirectory), trainfilenamearff);
 					trainingCorpus = new CorpusWriterArffNumericClass(this.conf, this.instanceName, 
 							this.inputASName, trainfileweka, 
-							mode, classType, classFeature, identifierFeature, null);
+							mode, classType, classFeature, identifierFeature, null, scaleFeatures);
 					break;
 				case WEKA_CL_NAIVE_BAYES:
 				case WEKA_CL_J48:
@@ -927,7 +939,8 @@ Serializable, ControllerAwarePR {
 							gate.util.Files.fileFromURL(saveDirectory), trainfilenamearff);
 					trainingCorpus = new CorpusWriterArff(this.conf, this.instanceName, 
 							this.inputASName, trainfileweka, 
-							mode, classType, classFeature, identifierFeature, null);
+							mode, classType, classFeature, identifierFeature, 
+                                                null, scaleFeatures);
 					break;
 				}
 
@@ -980,21 +993,21 @@ Serializable, ControllerAwarePR {
 							gate.util.Files.fileFromURL(saveDirectory), testfilenamemallet);
 					testCorpus = new CorpusWriterMallet(this.conf, this.instanceName, 
 							this.inputASName, testfilemallet, mode, classType, 
-							classFeature, identifierFeature);
+							classFeature, identifierFeature, scaleFeatures);
 					break;
 				case MALLET_SEQ_CRF:
 					File testfilemalletseq = new File(
 							gate.util.Files.fileFromURL(saveDirectory), testfilenamemalletseq);
 					testCorpus = new CorpusWriterMalletSeq(this.conf, this.instanceName, 
 							this.inputASName, testfilemalletseq, this.sequenceSpan, 
-							mode, classType, classFeature, identifierFeature);
+							mode, classType, classFeature, identifierFeature, scaleFeatures);
 					break;
 				case WEKA_CL_NUM_ADDITIVE_REGRESSION:
 					File testfileweka = new File(
 							gate.util.Files.fileFromURL(saveDirectory), testfilenamearff);
 					testCorpus = new CorpusWriterArffNumericClass(this.conf, this.instanceName, 
 							this.inputASName, testfileweka, mode, classType, classFeature, 
-							identifierFeature, null);
+							identifierFeature, null, scaleFeatures);
 					break;
 				case WEKA_CL_NAIVE_BAYES:
 				case WEKA_CL_J48:
@@ -1006,7 +1019,7 @@ Serializable, ControllerAwarePR {
 							gate.util.Files.fileFromURL(saveDirectory), testfilenamearff);
 					testCorpus = new CorpusWriterArff(this.conf, this.instanceName, 
 							this.inputASName, testfileweka, mode, classType, classFeature, 
-							identifierFeature, null);
+							identifierFeature, null, scaleFeatures);
 					break;
 				}
 			}
@@ -1016,13 +1029,14 @@ Serializable, ControllerAwarePR {
 							gate.util.Files.fileFromURL(saveDirectory), corpusoutputdirectory);
 		  exportCorpus = new CorpusWriterMallet(conf, instanceName, 
 							inputASName, trainfilemallet, mode, classType, 
-							classFeature, identifierFeature);            
+							classFeature, identifierFeature, scaleFeatures);            
       break;
 		case EXPORT_ARFF:
 			File outputfilearff = new File(
 					gate.util.Files.fileFromURL(saveDirectory), corpusoutputdirectory);
 			exportCorpus = new CorpusWriterArff(this.conf, this.instanceName, this.inputASName, 
-					outputfilearff, mode, classType, classFeature, identifierFeature, null);
+					outputfilearff, mode, classType, classFeature, identifierFeature, null,
+                        scaleFeatures);
 			break;
 		case EXPORT_ARFF_THRU_CURRENT_PIPE:
 			File outputfilearff2 = new File(
@@ -1038,13 +1052,13 @@ Serializable, ControllerAwarePR {
 			
 			exportCorpus = new CorpusWriterArff(this.conf, this.instanceName, this.inputASName, 
 					outputfilearff2, mode, classType, classFeature, identifierFeature, 
-					CorpusWriterArff.getArffPipe(outputfilearff2));
+					CorpusWriterArff.getArffPipe(outputfilearff2),scaleFeatures);
 			break;
 		case EXPORT_ARFF_NUMERIC_CLASS:
 			File outputfilearff3 = new File(
 					gate.util.Files.fileFromURL(saveDirectory), corpusoutputdirectory);
 			exportCorpus = new CorpusWriterArffNumericClass(this.conf, this.instanceName, this.inputASName, 
-					outputfilearff3, mode, classType, classFeature, identifierFeature, null);
+					outputfilearff3, mode, classType, classFeature, identifierFeature, null, scaleFeatures);
 			break;
 		case EXPORT_ARFF_NUMERIC_CLASS_THRU_CURRENT_PIPE:
 			File outputfilearff4 = new File(
@@ -1060,7 +1074,7 @@ Serializable, ControllerAwarePR {
 			
 			exportCorpus = new CorpusWriterArffNumericClass(this.conf, this.instanceName, this.inputASName, 
 					outputfilearff4, mode, classType, classFeature, identifierFeature, 
-					CorpusWriterArff.getArffPipe(outputfilearff4));
+					CorpusWriterArff.getArffPipe(outputfilearff4),scaleFeatures);
 			break;
 		}
 	}

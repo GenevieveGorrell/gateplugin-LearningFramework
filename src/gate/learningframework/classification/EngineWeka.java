@@ -56,20 +56,8 @@ public class EngineWeka extends Engine {
 	/**
 	 * The name of the classifier location.
 	 */
-	private static String classifiername = "my.model";
-
+	
 	private String params;
-
-	/**
-	 * The name of the pipe location. Since we are using
-	 * Mallet for feature prep but not for classification,
-	 * we have to explicitly save the pipe rather than relying
-	 * on Mallet to save it with the classifier.
-	 */
-	//private Pipe pipe = null;
-
-	private static String pipename = "my.pipe";
-
 
 	public EngineWeka(File savedModel, Mode mode, String params, String engine, boolean restore){	
 		this(savedModel, mode, engine, restore);
@@ -90,7 +78,7 @@ public class EngineWeka extends Engine {
 
 	public void loadClassifier(){
 
-		File clf = new File(this.getOutputDirectory(), classifiername);
+		File clf = new File(this.getOutputDirectory(), modelfilename);
 		File pf = new File(this.getOutputDirectory(), pipename);
 		if(clf.exists() && pf.exists()){
 			try {
@@ -218,7 +206,7 @@ public class EngineWeka extends Engine {
 				try {
 					ObjectOutputStream oos = new ObjectOutputStream
 							(new FileOutputStream(this.getOutputDirectory()
-									+ "/" + classifiername));
+									+ "/" + modelfilename));
 					oos.writeObject(classifier);
 					oos.close();
 				} catch (Exception e) {

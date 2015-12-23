@@ -45,6 +45,7 @@ import cc.mallet.types.Instance;
 import cc.mallet.types.InstanceList;
 import cc.mallet.types.Label;
 import cc.mallet.types.SparseVector;
+import gate.learningframework.classification.ScalingMethod;
 
 public class CorpusWriterMallet extends CorpusWriter{
 
@@ -53,9 +54,9 @@ public class CorpusWriterMallet extends CorpusWriter{
 	
 	public CorpusWriterMallet(FeatureSpecification conf, String inst, String inpas, 
 			File outputFile, Mode mode, String classType, String classFeature,
-			String identifierFeature){
+			String identifierFeature, ScalingMethod scaleFeatures){
 		super(conf, inst, inpas, outputFile, mode, classType, classFeature, 
-				identifierFeature);
+				identifierFeature, scaleFeatures);
 		
 		/*
 		 * Mallet requires data to be passed through a pipe to create an instance.
@@ -443,9 +444,6 @@ public class CorpusWriterMallet extends CorpusWriter{
 		return nodearray;
 	}
 	
-	public void conclude(){
-		//Doesn't need to do anything for Mallet output
-	}
 
 	public InstanceList getInstances() {
 		return instances;
