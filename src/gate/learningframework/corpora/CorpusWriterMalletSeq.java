@@ -43,9 +43,6 @@ public class CorpusWriterMalletSeq extends CorpusWriter{
 	//of tokens. So we need to define sequence span.
 	private String sequenceSpan;
 
-	private InstanceList instances; 
-	
-	
 	public CorpusWriterMalletSeq(FeatureSpecification conf, String inst, String inpas, 
 			File outputFile, String sequenceSpan, Mode mode, String classType, 
 			String classFeature, String identifierFeature, ScalingMethod scaleFeatures){
@@ -205,8 +202,5 @@ public class CorpusWriterMalletSeq extends CorpusWriter{
           }
 	}
 
-	public InstanceList getInstances() {
-		return instances;
-	}
 
 }

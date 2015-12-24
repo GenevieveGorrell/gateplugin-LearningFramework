@@ -401,8 +401,8 @@ public class EngineMallet extends Engine {
 			//Instance needs to go through the pipe for this classifier, so that
 			//it gets mapped using the same alphabet, and the text is in the
 			//expected format.
-			//instance = this.classifier.getInstancePipe().instanceFrom(instance);
-			instance = pipe.instanceFrom(instance);
+			instance = this.classifier.getInstancePipe().instanceFrom(instance);
+			//instance = pipe.instanceFrom(instance);
 
 			Classification classification = classifier.classify(instance);
 			String bestLabel = classification.getLabeling().getBestLabel().toString();

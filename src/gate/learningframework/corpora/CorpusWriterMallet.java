@@ -49,9 +49,6 @@ import gate.learningframework.classification.ScalingMethod;
 
 public class CorpusWriterMallet extends CorpusWriter{
 
-	private InstanceList instances;
-	
-	
 	public CorpusWriterMallet(FeatureSpecification conf, String inst, String inpas, 
 			File outputFile, Mode mode, String classType, String classFeature,
 			String identifierFeature, ScalingMethod scaleFeatures){
@@ -79,7 +76,8 @@ public class CorpusWriterMallet extends CorpusWriter{
 		//pipeList.add(new PrintInputAndTarget());
 		pipe = new SerialPipes(pipeList);
 		
-		this.instances = new InstanceList(pipe);
+		instances = new InstanceList(pipe);
+                System.out.println("DEBUG Created SerialPipes in CorpusWriterMallet: "+pipe);
 	}
 
 	/**
@@ -444,12 +442,4 @@ public class CorpusWriterMallet extends CorpusWriter{
 		return nodearray;
 	}
 	
-
-	public InstanceList getInstances() {
-		return instances;
-	}
-
-	public void setInstances(InstanceList instances) {
-		this.instances = instances;
-	}
 }

@@ -343,11 +343,13 @@ public class EngineLibSVM  extends Engine {
   public void savePipe(CorpusWriterMallet trMal) {
 		//Save the pipe--we aren't using Mallet for classification,
 		//but we are using Mallet for data prep so we need the pipe.
+    System.out.println("DEBUG EngingeLibSVM saving pipe, writer pipe is "+trMal.getPipe());
+    System.out.println("DEBUG EngingeLibSVM saving pipe, instances pipe is "+trMal.getInstances().getPipe());
 		try {
 			ObjectOutputStream oos = new ObjectOutputStream
 					(new FileOutputStream(this.getOutputDirectory()
 							+ "/" + pipename));
-			oos.writeObject(trMal.getInstances().getPipe());
+			oos.writeObject(trMal.getPipe());
 			oos.close();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -355,6 +357,7 @@ public class EngineLibSVM  extends Engine {
     
   }
   
+  static boolean printedDebug = false;
   
 	public List<GateClassification> classify(String instanceAnn, 
 			String inputASname, Document doc){
@@ -368,6 +371,12 @@ public class EngineLibSVM  extends Engine {
 
 		int numberOfLabels = pipe.getTargetAlphabet().size();
 
+                if(!printedDebug) {
+                  // this gives featurevector2normalizedfeaturevector??
+                  System.out.println("DEBUG: pipe in classify is "+pipe);
+                  printedDebug = true;
+                }
+                
 		while(it.hasNext()){
 			Annotation instanceAnnotation = it.next();
 

@@ -184,8 +184,10 @@ public abstract class Engine {
                                     case WEKA_CL_NUM_ADDITIVE_REGRESSION:
                                     case WEKA_CL_NAIVE_BAYES:
                                     case WEKA_CL_J48:
+                                    case WEKA_CL_JRIP:
                                     case WEKA_CL_RANDOM_TREE:
                                     case WEKA_CL_IBK:
+                                    case WEKA_CL_MULTILAYER_PERCEPTRON:
                                     case WEKA_CL_RANDOM_FOREST:
                                     case WEKA_CL_LOGISTIC_REGRESSION:
                                       System.err.println("DEBUG: trying to load a known weka cl model");

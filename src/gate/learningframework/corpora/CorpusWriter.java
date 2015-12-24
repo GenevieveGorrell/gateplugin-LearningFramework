@@ -141,13 +141,19 @@ public abstract class CorpusWriter {
 	public abstract void add(Document doc);
 	
 	public void conclude() {
+          System.out.println("DEBUG running conclude, class writer is "+this.getClass());
           if(scaleFeatures != ScalingMethod.NONE) {
+            System.out.println("DEBUG LearningFramework: scaling features using "+scaleFeatures);
             normalize();
           }
         }
 
 	public void normalize(){
 		//We need to add the scaling step to the pipe.
+          //System.out.println("DEBUG normalize: instances="+instances);
+          //System.out.println("DEBUG normalize: instances="+getInstances());
+          System.out.println("DEBUG normalize: getDataAlphabet="+instances.getDataAlphabet());
+          System.out.println("DEBUG normalize: size="+instances.getDataAlphabet().size());
 		double[] sums = new double[instances.getDataAlphabet().size()];
 		double[] sumsofsquares = new double[instances.getDataAlphabet().size()];
 		//double[] numvals = new double[instances.getDataAlphabet().size()];
@@ -181,12 +187,14 @@ public abstract class CorpusWriter {
 		for(int i=0;i<instances.size();i++){
 			newInstanceList.addThruPipe(instances.get(i));
 		}
-		this.instances = newInstanceList;
+		instances = newInstanceList;
 		
 		//Add the pipe to the pipes so application time data will go through it
-		ArrayList<Pipe> pipeList = this.pipe.pipes();
+		ArrayList<Pipe> pipeList = pipe.pipes();
 		pipeList.add(normalizer);
-		this.pipe = new SerialPipes(pipeList);
+                System.out.println("DEBUG normalize: added normalizer pipe "+normalizer);
+		pipe = new SerialPipes(pipeList);
+                System.out.println("DEBUG pipes after normalization: "+pipe);
 	}
         
         
@@ -243,7 +251,9 @@ public abstract class CorpusWriter {
   public void setPipe(SerialPipes pipe) { this.pipe = pipe; }
   
   protected InstanceList instances;
-  public InstanceList getInstances() { return instances; }
+  public InstanceList getInstances() {
+    return instances; 
+  }
   public void setInstances(InstanceList is) { instances = is; }
   
 }

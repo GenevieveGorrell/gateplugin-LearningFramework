@@ -36,7 +36,7 @@ public class FeatureVector2NormalizedFeatureVector extends Pipe implements Seria
   public Instance pipe(Instance carrier) {
     if (!(carrier.getData() instanceof FeatureVector)) {
       System.out.println(carrier.getData().getClass());
-      throw new IllegalArgumentException("Data must be of type FeatureVector");
+      throw new IllegalArgumentException("Data must be of type FeatureVector not "+carrier.getData().getClass()+" we got "+carrier.getData());
     }
 
     if (this.means.length != this.getDataAlphabet().size()

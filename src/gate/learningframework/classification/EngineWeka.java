@@ -46,6 +46,8 @@ import gate.learningframework.corpora.CorpusWriterArffNumericClass;
 import gate.learningframework.corpora.CorpusWriterMallet;
 import gate.learningframework.corpora.FeatureSpecification;
 import weka.classifiers.functions.Logistic;
+import weka.classifiers.functions.MultilayerPerceptron;
+import weka.classifiers.rules.JRip;
 import weka.classifiers.trees.RandomForest;
 import weka.core.OptionHandler;
 
@@ -140,6 +142,12 @@ public class EngineWeka extends Engine {
 			break;
 		case "WEKA_CL_IBK":
 			classifier = new IBk();
+			break;
+		case "WEKA_CL_JRIP":
+			classifier = new JRip();
+			break;
+		case "WEKA_CL_MULTILAYER_PERCEPTRON":
+			classifier = new MultilayerPerceptron();
 			break;
     case "WEKA_CL_LOGISTIC_REGRESSION":
       classifier = new Logistic();

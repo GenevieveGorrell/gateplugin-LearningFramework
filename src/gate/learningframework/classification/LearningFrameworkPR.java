@@ -481,9 +481,11 @@ Serializable, ControllerAwarePR {
 			case WEKA_CL_NUM_ADDITIVE_REGRESSION:
 			case WEKA_CL_NAIVE_BAYES:
 			case WEKA_CL_J48:
+			case WEKA_CL_JRIP:
 			case WEKA_CL_RANDOM_TREE:
 			case WEKA_CL_IBK:
 			case WEKA_CL_LOGISTIC_REGRESSION:
+			case WEKA_CL_MULTILAYER_PERCEPTRON:
 			case WEKA_CL_RANDOM_FOREST:
 				return new EngineWeka(
 						savedModelFile, mode, learnerParams, spec, false);
@@ -557,7 +559,9 @@ Serializable, ControllerAwarePR {
                               case WEKA_CL_NUM_ADDITIVE_REGRESSION:
                               case WEKA_CL_NAIVE_BAYES:
                               case WEKA_CL_J48:
+                              case WEKA_CL_JRIP:
                               case WEKA_CL_RANDOM_TREE:
+                              case WEKA_CL_MULTILAYER_PERCEPTRON:
                               case WEKA_CL_IBK:
                         			case WEKA_CL_LOGISTIC_REGRESSION:
                               case WEKA_CL_RANDOM_FOREST:
@@ -785,12 +789,19 @@ Serializable, ControllerAwarePR {
 	@Override
 	public void controllerExecutionFinished(Controller arg0)
 			throws ExecutionException {
-                // reset the flags for the next time the controller is run
+                // reset the flags for the next time the controller is run but remember if we had 
+                // some documents for checking later!
+                boolean hadSomeDocuments = haveSomeDocuments;                
                 justStarted = false;
                 haveSomeDocuments = false;
-                
+
 		switch(this.getOperation()){
 		case TRAIN:	
+                  // check if there were some documents: if not we have nothing to train our
+                  // model on!
+                  if(!hadSomeDocuments) {
+                    throw new GateRuntimeException("Cannot train, did not see any documents!");
+                  }
 			if(trainingLearner!=null) {	
 				//Ready to go
         // JP: Using the logger does not always make the info show, so using System.out here 
@@ -806,6 +817,9 @@ Serializable, ControllerAwarePR {
         } else {
 			    System.out.println("LearningFramework: Attributes " + trainingCorpus.getInstances().getDataAlphabet().toString().replaceAll("\\n"," "));
         }
+          //System.out.println("DEBUG: instances are "+trainingCorpus.getInstances());
+          System.out.println("DEBUG: trainingCorpus class is "+trainingCorpus.getClass());
+                                trainingCorpus.conclude();
 				trainingLearner.train(conf, trainingCorpus);
 				this.applicationLearner = trainingLearner;
 				logger.info("LearningFramework: Training complete!");				
@@ -817,6 +831,7 @@ Serializable, ControllerAwarePR {
 			if(evaluationLearner!=null) {	
 				//Ready to evaluate
 				logger.info("LearningFramework: Evaluating ..");
+                                testCorpus.conclude();
 				evaluationLearner.evaluateXFold(testCorpus, this.foldsForXVal);
 			}
 			break;
@@ -824,6 +839,7 @@ Serializable, ControllerAwarePR {
 			if(evaluationLearner!=null) {	
 				//Ready to evaluate
 				logger.info("LearningFramework: Evaluating ..");
+                                testCorpus.conclude();
 				evaluationLearner.evaluateHoldout(
 						testCorpus, this.trainingproportion);
 			}
@@ -833,9 +849,12 @@ Serializable, ControllerAwarePR {
 		case EXPORT_ARFF_NUMERIC_CLASS:
 		case EXPORT_ARFF_NUMERIC_CLASS_THRU_CURRENT_PIPE:
 			exportCorpus.conclude();
+                        ((CorpusWriterArff)exportCorpus).writeToFile();
 			break;
       case EXPORT_LIBSVM:
         // JP: this should get moved to some better place
+        // JP: I have no idea if conclude works properly here! CHECK!
+        exportCorpus.conclude();
         svm_problem prob = ((CorpusWriterMallet) exportCorpus).getLibSVMProblem();
         PrintStream out = null;
         File savedir = gate.util.Files.fileFromURL(saveDirectory);
@@ -931,7 +950,9 @@ Serializable, ControllerAwarePR {
 					break;
 				case WEKA_CL_NAIVE_BAYES:
 				case WEKA_CL_J48:
+				case WEKA_CL_JRIP:
 				case WEKA_CL_RANDOM_TREE:
+				case WEKA_CL_MULTILAYER_PERCEPTRON:
 				case WEKA_CL_IBK:
   			case WEKA_CL_LOGISTIC_REGRESSION:
 	  		case WEKA_CL_RANDOM_FOREST:
@@ -1011,7 +1032,9 @@ Serializable, ControllerAwarePR {
 					break;
 				case WEKA_CL_NAIVE_BAYES:
 				case WEKA_CL_J48:
+				case WEKA_CL_JRIP:
 				case WEKA_CL_RANDOM_TREE:
+				case WEKA_CL_MULTILAYER_PERCEPTRON:
 				case WEKA_CL_IBK:
   			case WEKA_CL_LOGISTIC_REGRESSION:
 	   		case WEKA_CL_RANDOM_FOREST:

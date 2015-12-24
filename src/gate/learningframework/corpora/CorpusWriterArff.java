@@ -403,22 +403,6 @@ public class CorpusWriterArff extends CorpusWriter{
 		return pipe;
 	}
 	
-	public InstanceList getInstances() {
-		return instances;
-	}
-
-	public void setInstances(InstanceList instances) {
-		this.instances = instances;
-	}
-
-  // JP: moved to parent
-	//public SerialPipes getPipe() {
-	//	return pipe;
-	//}
-
-	//public void setPipe(SerialPipes pipe) {
-	//	pipe = pipe;
-	//}
 
 	public Map<String, Set<String>> getNominalAttributeMap() {
 		return nominalAttributeMap;
