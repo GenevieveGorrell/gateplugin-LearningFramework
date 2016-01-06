@@ -45,7 +45,13 @@
       <include name="*.jar"/>
     </fileset>
   </path>
-  
+ 
+  <path id="run.classpath">
+    <path refid="compile.classpath" />
+    <pathelement location="${jar.location}" />
+  </path>
+
+ 
   <!-- create build directory structure -->
   <target name="prepare">
     <mkdir dir="${classes.dir}" />
@@ -62,6 +68,19 @@
            source="1.7" 
            target="1.7">
      </javac>
+  </target>
+
+  <!-- TODO: separate compile, classpath etc. for the whole testing stuff,
+       but at the moment, it is just part of everything else -->
+  
+  <!-- TODO: make testing use the separate testing jar etc. -->
+  <target name="test" depends="jar">
+    <junit fork="true">
+      <classpath refid="run.classpath" />
+      <formatter type="brief" usefile="false" />
+      <formatter type="xml" />
+      <test name="gate.plugin.learningframework.tests.SuiteAllTests" />
+    </junit>
   </target>
 
   <!-- Build JavaDoc documentation -->
@@ -108,6 +127,5 @@
                          distribution
   -->
   <target name="build" depends="jar" />
-  <target name="test" />
   <target name="distro.prepare" depends="clean.classes" />
 </project>
