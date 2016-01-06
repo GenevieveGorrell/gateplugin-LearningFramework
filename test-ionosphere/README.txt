@@ -10,11 +10,13 @@ Without feature scaling:
 LibSVM: 0.9972
 RF:     1.0000
 NB:     0.8291
+MLP:    0.9972
 
 With feature scaling:
 LibSVM: 0.3590
 RF:     0.6410
 NB:     0.8291
+MLP:    0.9972
 
 This values were obtained for
   branch version_1_0, commit 63e734dbc5adf1a7115e8e5d8f1fdaa8ea0f23bb
