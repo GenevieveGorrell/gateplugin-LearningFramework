@@ -16,6 +16,7 @@
 package gate.learningframework.corpora;
 
 import gate.creole.ResourceInstantiationException;
+import gate.util.GateRuntimeException;
 
 import java.io.Serializable;
 import java.net.URL;
@@ -83,7 +84,7 @@ public class FeatureSpecification {
 		nominal, numeric, unset;
 	}
 	
-	public FeatureSpecification(URL configFileURL) throws ResourceInstantiationException{
+	public FeatureSpecification(URL configFileURL) {
 		this.url = configFileURL;
 		
 		SAXBuilder saxBuilder = new SAXBuilder(false);
@@ -91,10 +92,10 @@ public class FeatureSpecification {
 			try {
 				this.jdomDocConf = saxBuilder.build(configFileURL);
 			} catch(JDOMException jde){
-				throw new ResourceInstantiationException(jde);
+				throw new GateRuntimeException(jde);
 			}
 		} catch (java.io.IOException ex) {
-			throw new ResourceInstantiationException(ex);
+			throw new GateRuntimeException(ex);
 		}
 
 		Element rootElement = jdomDocConf.getRootElement();

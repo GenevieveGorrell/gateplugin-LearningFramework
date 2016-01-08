@@ -106,12 +106,7 @@ public abstract class Engine {
 		}
 		
 		if(confURL!=null){
-			try {
 				this.setSavedConfFile(new FeatureSpecification(confURL));
-			} catch (ResourceInstantiationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		}
 		
 	}

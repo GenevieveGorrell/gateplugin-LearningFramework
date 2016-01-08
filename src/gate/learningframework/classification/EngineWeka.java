@@ -103,12 +103,7 @@ public class EngineWeka extends Engine {
 				e1.printStackTrace();
 			}
 
-			try {
 				this.setSavedConfFile(new FeatureSpecification(confURL));
-			} catch (ResourceInstantiationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} 
 			try {
 				ObjectInputStream ois =
 						new ObjectInputStream (new FileInputStream(pf));

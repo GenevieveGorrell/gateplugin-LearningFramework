@@ -188,12 +188,7 @@ Serializable, ControllerAwarePR {
 	public void setFeatureSpecURL(URL featureSpecURL) {
 		if(!featureSpecURL.equals(this.featureSpecURL)){
 			this.featureSpecURL = featureSpecURL;
-			try {
 				this.conf = new FeatureSpecification(featureSpecURL);
-			} catch (ResourceInstantiationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		}
 	}
 

@@ -90,12 +90,7 @@ public class EngineMallet extends Engine {
 					e1.printStackTrace();
 				}
 
-				try {
 					this.setSavedConfFile(new FeatureSpecification(confURL));
-				} catch (ResourceInstantiationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} 
 			} else {
 				//If we can't restore the classifier, no point trying to restore
 				//anything else. It's a failed restore. Ah well.
