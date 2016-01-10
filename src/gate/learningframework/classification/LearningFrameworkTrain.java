@@ -21,7 +21,6 @@ import gate.creole.metadata.CreoleParameter;
 import gate.creole.metadata.CreoleResource;
 import gate.creole.metadata.Optional;
 import gate.creole.metadata.RunTime;
-import static gate.learningframework.classification.Globals.*;
 import gate.learningframework.corpora.CorpusWriter;
 import gate.learningframework.corpora.CorpusWriterArff;
 import gate.learningframework.corpora.CorpusWriterArffNumericClass;
@@ -175,7 +174,7 @@ public class LearningFrameworkTrain extends LearningFrameworkPRBase {
   protected void beforeFirstDocument(Controller controller) {
     conf = new FeatureSpecification(featureSpecURL);
     savedModelDirectoryFile = new File(
-            gate.util.Files.fileFromURL(saveDirectory), savedModelDirectory);
+            gate.util.Files.fileFromURL(saveDirectory), Globals.savedModelDirectory);
 
     if (trainingAlgo == null) {
       throw new GateRuntimeException("LearningFramework: no training algorithm specified");
@@ -191,21 +190,21 @@ public class LearningFrameworkTrain extends LearningFrameworkPRBase {
         case MALLET_CL_NAIVE_BAYES:
         case MALLET_CL_WINNOW:
           File trainfilemallet = new File(
-                  gate.util.Files.fileFromURL(saveDirectory), trainFilename);
+                  gate.util.Files.fileFromURL(saveDirectory), Globals.trainFilename);
           trainingCorpus = new CorpusWriterMallet(this.conf, this.instanceName,
                   this.inputASName, trainfilemallet, mode, classType,
                   classFeature, identifierFeature, scaleFeatures);
           break;
         case MALLET_SEQ_CRF:
           File trainfilemalletseq = new File(
-                  gate.util.Files.fileFromURL(saveDirectory), trainFilename);
+                  gate.util.Files.fileFromURL(saveDirectory), Globals.trainFilename);
           trainingCorpus = new CorpusWriterMalletSeq(this.conf, this.instanceName,
                   this.inputASName, trainfilemalletseq, this.sequenceSpan,
                   mode, classType, classFeature, identifierFeature, scaleFeatures);
           break;
         case WEKA_CL_NUM_ADDITIVE_REGRESSION:
           File trainfileweka = new File(
-                  gate.util.Files.fileFromURL(saveDirectory), trainFilename);
+                  gate.util.Files.fileFromURL(saveDirectory), Globals.trainFilename);
           trainingCorpus = new CorpusWriterArffNumericClass(this.conf, this.instanceName,
                   this.inputASName, trainfileweka,
                   mode, classType, classFeature, identifierFeature, null, scaleFeatures);
@@ -219,7 +218,7 @@ public class LearningFrameworkTrain extends LearningFrameworkPRBase {
         case WEKA_CL_LOGISTIC_REGRESSION:
         case WEKA_CL_RANDOM_FOREST:
           trainfileweka = new File(
-                  gate.util.Files.fileFromURL(saveDirectory), trainFilename);
+                  gate.util.Files.fileFromURL(saveDirectory), Globals.trainFilename);
           trainingCorpus = new CorpusWriterArff(this.conf, this.instanceName,
                   this.inputASName, trainfileweka,
                   mode, classType, classFeature, identifierFeature,
