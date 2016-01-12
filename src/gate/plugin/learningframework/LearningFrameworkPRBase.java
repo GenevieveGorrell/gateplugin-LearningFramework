@@ -8,7 +8,7 @@
  * (in the distribution as file licence.html, and also available at
  * http://gate.ac.uk/gate/licence.html).
  */
-package gate.learningframework.classification;
+package gate.plugin.learningframework;
 
 import java.io.Serializable;
 import java.net.URL;

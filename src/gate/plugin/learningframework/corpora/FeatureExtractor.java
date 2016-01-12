@@ -12,16 +12,16 @@
  *
  * Genevieve Gorrell, 9 Jan 2015
  */
-package gate.learningframework.corpora;
+package gate.plugin.learningframework.corpora;
 
 import gate.Annotation;
 import gate.AnnotationSet;
 import gate.Document;
 import gate.Utils;
-import gate.learningframework.corpora.FeatureSpecification.Attribute;
-import gate.learningframework.corpora.FeatureSpecification.AttributeList;
-import gate.learningframework.corpora.FeatureSpecification.Datatype;
-import gate.learningframework.corpora.FeatureSpecification.Ngram;
+import gate.plugin.learningframework.corpora.FeatureSpecification.Attribute;
+import gate.plugin.learningframework.corpora.FeatureSpecification.AttributeList;
+import gate.plugin.learningframework.corpora.FeatureSpecification.Datatype;
+import gate.plugin.learningframework.corpora.FeatureSpecification.Ngram;
 
 import java.util.List;
 

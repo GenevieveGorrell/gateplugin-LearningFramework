@@ -7,12 +7,9 @@
  * licenced under the GNU Library General Public License, Version 2, June 1991
  * (in the distribution as file licence.html, and also available at
  * http://gate.ac.uk/gate/licence.html).
- *
  */
+package gate.plugin.learningframework;
 
-package gate.learningframework.classification;
-
-public enum ScalingMethod {
-        NONE,
-	MEANVARIANCE_ALL_FEATURES;
+public enum Mode {
+  NAMED_ENTITY_RECOGNITION, CLASSIFICATION;
 }

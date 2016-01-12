@@ -13,7 +13,7 @@
  * Genevieve Gorrell, 9 Jan 2015
  */
 
-package gate.learningframework.corpora;
+package gate.plugin.learningframework.corpora;
 
 import java.io.Serializable;
 import java.util.ArrayList;

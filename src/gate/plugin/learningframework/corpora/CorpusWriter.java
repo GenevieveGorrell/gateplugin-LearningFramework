@@ -13,7 +13,7 @@
  * Genevieve Gorrell, 9 Jan 2015
  */
 
-package gate.learningframework.corpora;
+package gate.plugin.learningframework.corpora;
 
 import cc.mallet.pipe.Pipe;
 import cc.mallet.pipe.SerialPipes;
@@ -26,8 +26,8 @@ import org.apache.log4j.Logger;
 import cc.mallet.types.FeatureVector;
 import cc.mallet.types.InstanceList;
 import gate.Document;
-import gate.learningframework.classification.Mode;
-import gate.learningframework.classification.ScalingMethod;
+import gate.plugin.learningframework.Mode;
+import gate.plugin.learningframework.ScalingMethod;
 import java.util.ArrayList;
 
 public abstract class CorpusWriter {

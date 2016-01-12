@@ -15,6 +15,12 @@
 
 package gate.learningframework.classification;
 
+import gate.plugin.learningframework.EngineMalletSeq;
+import gate.plugin.learningframework.EngineWeka;
+import gate.plugin.learningframework.EngineLibSVM;
+import gate.plugin.learningframework.Engine;
+import gate.plugin.learningframework.GateClassification;
+import gate.plugin.learningframework.EngineMallet;
 import java.io.File;
 import java.io.Serializable;
 import java.net.URL;
@@ -22,7 +28,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 
 import org.apache.log4j.Logger;
 
@@ -42,12 +47,12 @@ import gate.creole.metadata.CreoleParameter;
 import gate.creole.metadata.CreoleResource;
 import gate.creole.metadata.Optional;
 import gate.creole.metadata.RunTime;
-import gate.learningframework.corpora.CorpusWriter;
-import gate.learningframework.corpora.CorpusWriterArff;
-import gate.learningframework.corpora.CorpusWriterArffNumericClass;
-import gate.learningframework.corpora.CorpusWriterMallet;
-import gate.learningframework.corpora.CorpusWriterMalletSeq;
-import gate.learningframework.corpora.FeatureSpecification;
+import gate.plugin.learningframework.corpora.CorpusWriter;
+import gate.plugin.learningframework.corpora.CorpusWriterArff;
+import gate.plugin.learningframework.corpora.CorpusWriterArffNumericClass;
+import gate.plugin.learningframework.corpora.CorpusWriterMallet;
+import gate.plugin.learningframework.corpora.CorpusWriterMalletSeq;
+import gate.plugin.learningframework.corpora.FeatureSpecification;
 import gate.util.GateRuntimeException;
 import gate.util.InvalidOffsetException;
 import java.io.FileNotFoundException;
@@ -55,7 +60,9 @@ import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintStream;
 import libsvm.svm_problem;
-
+import gate.plugin.learningframework.Mode;
+import gate.plugin.learningframework.Algorithm;
+import gate.plugin.learningframework.ScalingMethod;
 
 /**
  * <p>Training, evaluation and application of ML in GATE.</p>

@@ -13,7 +13,7 @@
  * Genevieve Gorrell, 9 Jan 2015
  */
 
-package gate.learningframework.classification;
+package gate.plugin.learningframework;
 
 import java.util.List;
 

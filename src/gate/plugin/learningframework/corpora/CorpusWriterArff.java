@@ -13,12 +13,12 @@
  * Genevieve Gorrell, 9 Jan 2015
  */
 
-package gate.learningframework.corpora;
+package gate.plugin.learningframework.corpora;
 
 import gate.Annotation;
 import gate.AnnotationSet;
 import gate.Document;
-import gate.learningframework.classification.Mode;
+import gate.plugin.learningframework.Mode;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -44,7 +44,7 @@ import cc.mallet.pipe.Target2Label;
 import cc.mallet.types.FeatureVector;
 import cc.mallet.types.Instance;
 import cc.mallet.types.InstanceList;
-import gate.learningframework.classification.ScalingMethod;
+import gate.plugin.learningframework.ScalingMethod;
 
 public class CorpusWriterArff extends CorpusWriter{
 

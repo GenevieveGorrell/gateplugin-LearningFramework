@@ -146,7 +146,7 @@
                 </entry>
                 <entry>
                   <string>trainingAlgo</string>
-                  <gate.learningframework.classification.Algorithm>WEKA_CL_NAIVE_BAYES</gate.learningframework.classification.Algorithm>
+                  <gate.plugin.learningframework.Algorithm>WEKA_CL_NAIVE_BAYES</gate.plugin.learningframework.Algorithm>
                 </entry>
                 <entry>
                   <string>document</string>
@@ -166,7 +166,7 @@
                 </entry>
                 <entry>
                   <string>mode</string>
-                  <gate.learningframework.classification.Mode>CLASSIFICATION</gate.learningframework.classification.Mode>
+                  <gate.plugin.learningframework.Mode>CLASSIFICATION</gate.plugin.learningframework.Mode>
                 </entry>
                 <entry>
                   <string>saveDirectory</string>
@@ -194,7 +194,7 @@
                 </entry>
                 <entry>
                   <string>scaleFeatures</string>
-                  <gate.learningframework.classification.ScalingMethod>NONE</gate.learningframework.classification.ScalingMethod>
+                  <gate.plugin.learningframework.ScalingMethod>NONE</gate.plugin.learningframework.ScalingMethod>
                 </entry>
                 <entry>
                   <string>classType</string>
@@ -202,7 +202,7 @@
                 </entry>
               </localMap>
             </runtimeParams>
-            <resourceType>gate.learningframework.classification.LearningFrameworkTrain</resourceType>
+            <resourceType>gate.plugin.learningframework.LearningFrameworkTrain</resourceType>
             <resourceName>LearningFrameworkTrain</resourceName>
             <initParams class="gate.util.persistence.MapPersistence">
               <mapType>gate.util.SimpleFeatureMapImpl</mapType>

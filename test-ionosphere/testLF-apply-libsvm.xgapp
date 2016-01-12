@@ -153,7 +153,7 @@
                 </entry>
                 <entry>
                   <string>trainingAlgo</string>
-                  <gate.learningframework.classification.Algorithm>LIBSVM</gate.learningframework.classification.Algorithm>
+                  <gate.plugin.learningframework.Algorithm>LIBSVM</gate.plugin.learningframework.Algorithm>
                 </entry>
                 <entry>
                   <string>confidenceThreshold</string>
@@ -177,7 +177,7 @@
                 </entry>
                 <entry>
                   <string>mode</string>
-                  <gate.learningframework.classification.Mode>CLASSIFICATION</gate.learningframework.classification.Mode>
+                  <gate.plugin.learningframework.Mode>CLASSIFICATION</gate.plugin.learningframework.Mode>
                 </entry>
                 <entry>
                   <string>saveDirectory</string>

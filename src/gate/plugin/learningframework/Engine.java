@@ -13,7 +13,7 @@
  * Genevieve Gorrell, 9 Jan 2015
  */
 
-package gate.learningframework.classification;
+package gate.plugin.learningframework;
 
 import cc.mallet.pipe.Pipe;
 import java.io.File;
@@ -30,8 +30,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 import gate.creole.ResourceInstantiationException;
-import gate.learningframework.corpora.CorpusWriter;
-import gate.learningframework.corpora.FeatureSpecification;
+import gate.plugin.learningframework.corpora.CorpusWriter;
+import gate.plugin.learningframework.corpora.FeatureSpecification;
 import gate.util.GateRuntimeException;
 
 public abstract class Engine {

@@ -13,7 +13,7 @@
  * Genevieve Gorrell, 9 Jan 2015
  */
 
-package gate.learningframework.classification;
+package gate.plugin.learningframework;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -42,9 +42,9 @@ import gate.Annotation;
 import gate.AnnotationSet;
 import gate.Document;
 import gate.creole.ResourceInstantiationException;
-import gate.learningframework.corpora.CorpusWriter;
-import gate.learningframework.corpora.CorpusWriterMalletSeq;
-import gate.learningframework.corpora.FeatureSpecification;
+import gate.plugin.learningframework.corpora.CorpusWriter;
+import gate.plugin.learningframework.corpora.CorpusWriterMalletSeq;
+import gate.plugin.learningframework.corpora.FeatureSpecification;
 
 public class EngineMalletSeq extends Engine {
 

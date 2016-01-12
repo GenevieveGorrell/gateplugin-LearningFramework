@@ -8,8 +8,9 @@
  * (in the distribution as file licence.html, and also available at
  * http://gate.ac.uk/gate/licence.html).
  */
-package gate.learningframework.classification;
+package gate.plugin.learningframework;
 
+import gate.plugin.learningframework.LearningFrameworkPRBase;
 import java.io.File;
 import java.net.URL;
 
@@ -21,12 +22,12 @@ import gate.creole.metadata.CreoleParameter;
 import gate.creole.metadata.CreoleResource;
 import gate.creole.metadata.Optional;
 import gate.creole.metadata.RunTime;
-import gate.learningframework.corpora.CorpusWriter;
-import gate.learningframework.corpora.CorpusWriterArff;
-import gate.learningframework.corpora.CorpusWriterArffNumericClass;
-import gate.learningframework.corpora.CorpusWriterMallet;
-import gate.learningframework.corpora.CorpusWriterMalletSeq;
-import gate.learningframework.corpora.FeatureSpecification;
+import gate.plugin.learningframework.corpora.CorpusWriter;
+import gate.plugin.learningframework.corpora.CorpusWriterArff;
+import gate.plugin.learningframework.corpora.CorpusWriterArffNumericClass;
+import gate.plugin.learningframework.corpora.CorpusWriterMallet;
+import gate.plugin.learningframework.corpora.CorpusWriterMalletSeq;
+import gate.plugin.learningframework.corpora.FeatureSpecification;
 import gate.util.GateRuntimeException;
 
 /**

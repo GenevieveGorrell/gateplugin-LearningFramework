@@ -9,7 +9,7 @@
  * http://gate.ac.uk/gate/licence.html).
  *
  */
-package gate.learningframework.corpora;
+package gate.plugin.learningframework.corpora;
 
 import cc.mallet.pipe.Pipe;
 import cc.mallet.types.Alphabet;

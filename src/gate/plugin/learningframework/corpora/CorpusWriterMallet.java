@@ -13,15 +13,15 @@
  * Genevieve Gorrell, 9 Jan 2015
  */
 
-package gate.learningframework.corpora;
+package gate.plugin.learningframework.corpora;
 
 import gate.Annotation;
 import gate.AnnotationSet;
 import gate.Document;
-import gate.learningframework.classification.Mode;
-import gate.learningframework.corpora.FeatureSpecification.Attribute;
-import gate.learningframework.corpora.FeatureSpecification.AttributeList;
-import gate.learningframework.corpora.FeatureSpecification.Ngram;
+import gate.plugin.learningframework.Mode;
+import gate.plugin.learningframework.corpora.FeatureSpecification.Attribute;
+import gate.plugin.learningframework.corpora.FeatureSpecification.AttributeList;
+import gate.plugin.learningframework.corpora.FeatureSpecification.Ngram;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -45,7 +45,7 @@ import cc.mallet.types.Instance;
 import cc.mallet.types.InstanceList;
 import cc.mallet.types.Label;
 import cc.mallet.types.SparseVector;
-import gate.learningframework.classification.ScalingMethod;
+import gate.plugin.learningframework.ScalingMethod;
 
 public class CorpusWriterMallet extends CorpusWriter{
 

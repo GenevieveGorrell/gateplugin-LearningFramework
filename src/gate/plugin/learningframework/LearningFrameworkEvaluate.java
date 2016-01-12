@@ -12,8 +12,9 @@
  *
  * Genevieve Gorrell, 9 Jan 2015
  */
-package gate.learningframework.classification;
+package gate.plugin.learningframework;
 
+import gate.learningframework.classification.Operation;
 import java.io.File;
 import java.io.Serializable;
 import java.net.URL;
@@ -40,12 +41,12 @@ import gate.creole.metadata.CreoleParameter;
 import gate.creole.metadata.CreoleResource;
 import gate.creole.metadata.Optional;
 import gate.creole.metadata.RunTime;
-import gate.learningframework.corpora.CorpusWriter;
-import gate.learningframework.corpora.CorpusWriterArff;
-import gate.learningframework.corpora.CorpusWriterArffNumericClass;
-import gate.learningframework.corpora.CorpusWriterMallet;
-import gate.learningframework.corpora.CorpusWriterMalletSeq;
-import gate.learningframework.corpora.FeatureSpecification;
+import gate.plugin.learningframework.corpora.CorpusWriter;
+import gate.plugin.learningframework.corpora.CorpusWriterArff;
+import gate.plugin.learningframework.corpora.CorpusWriterArffNumericClass;
+import gate.plugin.learningframework.corpora.CorpusWriterMallet;
+import gate.plugin.learningframework.corpora.CorpusWriterMalletSeq;
+import gate.plugin.learningframework.corpora.FeatureSpecification;
 import gate.util.GateRuntimeException;
 import gate.util.InvalidOffsetException;
 import java.io.FileNotFoundException;
@@ -58,8 +59,8 @@ import libsvm.svm_problem;
  * <p>
  * Training, evaluation and application of ML in GATE.</p>
  */
-@CreoleResource(name = "LearningFrameworkExportTODO", comment = "Export machine learning instances to files in various formats")
-public class LearningFrameworkExport extends AbstractLanguageAnalyser implements
+@CreoleResource(name = "LearningFrameworkEvaluateTODO", comment = "Evaluate a machine learning approach")
+public class LearningFrameworkEvaluate extends AbstractLanguageAnalyser implements
         ProcessingResource,
         Serializable, ControllerAwarePR {
 

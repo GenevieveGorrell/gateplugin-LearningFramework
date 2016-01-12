@@ -173,7 +173,7 @@
                 </entry>
                 <entry>
                   <string>mode</string>
-                  <gate.learningframework.classification.Mode>CLASSIFICATION</gate.learningframework.classification.Mode>
+                  <gate.plugin.learningframework.Mode>CLASSIFICATION</gate.plugin.learningframework.Mode>
                 </entry>
                 <entry>
                   <string>saveDirectory</string>
@@ -203,7 +203,7 @@
                 </entry>
               </localMap>
             </runtimeParams>
-            <resourceType>gate.learningframework.classification.LearningFrameworkApply</resourceType>
+            <resourceType>gate.plugin.learningframework.LearningFrameworkApply</resourceType>
             <resourceName>LearningFrameworkApply</resourceName>
             <initParams class="gate.util.persistence.MapPersistence">
               <mapType>gate.util.SimpleFeatureMapImpl</mapType>

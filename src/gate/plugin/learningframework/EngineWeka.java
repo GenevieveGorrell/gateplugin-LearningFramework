@@ -13,7 +13,7 @@
  * Genevieve Gorrell, 9 Jan 2015
  */
 
-package gate.learningframework.classification;
+package gate.plugin.learningframework;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -40,11 +40,11 @@ import gate.Annotation;
 import gate.AnnotationSet;
 import gate.Document;
 import gate.creole.ResourceInstantiationException;
-import gate.learningframework.corpora.CorpusWriter;
-import gate.learningframework.corpora.CorpusWriterArff;
-import gate.learningframework.corpora.CorpusWriterArffNumericClass;
-import gate.learningframework.corpora.CorpusWriterMallet;
-import gate.learningframework.corpora.FeatureSpecification;
+import gate.plugin.learningframework.corpora.CorpusWriter;
+import gate.plugin.learningframework.corpora.CorpusWriterArff;
+import gate.plugin.learningframework.corpora.CorpusWriterArffNumericClass;
+import gate.plugin.learningframework.corpora.CorpusWriterMallet;
+import gate.plugin.learningframework.corpora.FeatureSpecification;
 import weka.classifiers.functions.Logistic;
 import weka.classifiers.functions.MultilayerPerceptron;
 import weka.classifiers.rules.JRip;
