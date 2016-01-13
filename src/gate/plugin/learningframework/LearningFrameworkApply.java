@@ -10,7 +10,6 @@
  */
 package gate.plugin.learningframework;
 
-import gate.plugin.learningframework.LearningFrameworkPRBase;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -29,7 +28,6 @@ import gate.creole.metadata.CreoleParameter;
 import gate.creole.metadata.CreoleResource;
 import gate.creole.metadata.Optional;
 import gate.creole.metadata.RunTime;
-import gate.plugin.learningframework.corpora.FeatureSpecification;
 import gate.util.GateRuntimeException;
 import gate.util.InvalidOffsetException;
 

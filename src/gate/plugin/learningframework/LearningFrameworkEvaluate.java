@@ -1,6 +1,4 @@
 /*
- * LearningFrameworkPR.java
- *  
  * Copyright (c) 1995-2015, The University of Sheffield. See the file
  * COPYRIGHT.txt in the software or at http://gate.ac.uk/gate/COPYRIGHT.txt
  * Copyright 2015 South London and Maudsley NHS Trust and King's College London
@@ -9,14 +7,11 @@
  * licenced under the GNU Library General Public License, Version 2, June 1991
  * (in the distribution as file licence.html, and also available at
  * http://gate.ac.uk/gate/licence.html).
- *
- * Genevieve Gorrell, 9 Jan 2015
  */
 package gate.plugin.learningframework;
 
 import gate.learningframework.classification.Operation;
 import java.io.File;
-import java.io.Serializable;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -31,11 +26,8 @@ import gate.Controller;
 import gate.Document;
 import gate.Factory;
 import gate.FeatureMap;
-import gate.ProcessingResource;
 import gate.Resource;
-import gate.creole.ControllerAwarePR;
 import gate.creole.ResourceInstantiationException;
-import gate.creole.AbstractLanguageAnalyser;
 import gate.creole.ExecutionException;
 import gate.creole.metadata.CreoleParameter;
 import gate.creole.metadata.CreoleResource;
@@ -56,38 +48,20 @@ import java.io.PrintStream;
 import libsvm.svm_problem;
 
 /**
- * <p>
- * Training, evaluation and application of ML in GATE.</p>
+ * Evaluate a machine learning algorithm on some corpus.
  */
 @CreoleResource(name = "LearningFrameworkEvaluateTODO", comment = "Evaluate a machine learning approach")
-public class LearningFrameworkEvaluate extends AbstractLanguageAnalyser implements
-        ProcessingResource,
-        Serializable, ControllerAwarePR {
+public class LearningFrameworkEvaluate extends LearningFrameworkPRBase {
 
   /**
    *
    */
   private static final long serialVersionUID = 1L;
 
-  static final Logger logger = Logger.getLogger("LearningFrameworkPR");
+  static final Logger logger = Logger.getLogger(LearningFrameworkEvaluate.class.getCanonicalName());
 
-  /**
-   * The configuration file.
-   *
-   */
   private java.net.URL featureSpecURL;
 
-  /**
-   * The directory to which data will be saved, including models and corpora.
-   *
-   */
-  private java.net.URL saveDirectory;
-
-  /**
-   * The name of the annotation set to be used as input.
-   *
-   */
-  private String inputASName;
 
   /**
    * The name of the output annotation set.
@@ -1088,4 +1062,24 @@ public class LearningFrameworkEvaluate extends AbstractLanguageAnalyser implemen
     }
   }
 
+  public void finishedNoDocument(Controller arg0, Throwable throwable) {
+    // no need to do anything
+  }
+
+  @Override
+  protected void execute(Document document) {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
+  @Override
+  protected void beforeFirstDocument(Controller ctrl) {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
+  @Override
+  protected void afterLastDocument(Controller ctrl, Throwable t) {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+  
+  
 }

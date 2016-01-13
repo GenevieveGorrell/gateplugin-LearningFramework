@@ -10,7 +10,6 @@
  */
 package gate.plugin.learningframework;
 
-import gate.plugin.learningframework.LearningFrameworkPRBase;
 import java.io.File;
 import java.net.URL;
 
