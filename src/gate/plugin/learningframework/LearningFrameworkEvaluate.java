@@ -295,11 +295,11 @@ public class LearningFrameworkEvaluate extends LearningFrameworkPRBase {
   @Optional
   @CreoleParameter(comment = "For classification, the feature "
           + "containing the class. Ignored for NER, where type only is used.")
-  public void setClassFeature(String classFeature) {
+  public void setTargetFeature(String classFeature) {
     this.classFeature = classFeature;
   }
 
-  public String getClassFeature() {
+  public String getTargetFeature() {
     return this.classFeature;
   }
 

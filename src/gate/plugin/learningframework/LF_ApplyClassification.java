@@ -104,6 +104,8 @@ public class LF_ApplyClassification extends LearningFrameworkPRBase  {
   private Engine applicationLearner;
 
   private File savedModelDirectoryFile;
+  
+  private Mode mode = Mode.CLASSIFICATION;
 
   //In the case of NER, output instance annotations to temporary
   //AS, to keep them separate.
@@ -167,7 +169,7 @@ public class LF_ApplyClassification extends LearningFrameworkPRBase  {
           }
 
           addClassificationAnnotations(doc, gcs);
-          if (this.getMode() == Mode.NAMED_ENTITY_RECOGNITION) {
+          if (mode == Mode.NAMED_ENTITY_RECOGNITION) {
             //We need to make the surrounding annotations
             addSurroundingAnnotations(doc);
           }
@@ -185,7 +187,7 @@ public class LF_ApplyClassification extends LearningFrameworkPRBase  {
 
     AnnotationSet outputAnnSet = doc.getAnnotations(this.outputASName);
     //Unless we are doing NER, in which case we want to use the temp
-    if (this.getMode() == Mode.NAMED_ENTITY_RECOGNITION) {
+    if (mode == Mode.NAMED_ENTITY_RECOGNITION) {
       outputAnnSet = doc.getAnnotations(tempOutputASName);
     }
 
@@ -194,7 +196,7 @@ public class LF_ApplyClassification extends LearningFrameworkPRBase  {
 
       // JP: TODO: need to check if we always get the correct confidence
       // score here and if the default makes this do what is expected!
-      if (this.getMode() == Mode.CLASSIFICATION
+      if (mode == Mode.CLASSIFICATION
               && gc.getConfidenceScore() < this.getConfidenceThreshold()) {
         //Skip it
       } else //We have a valid classification. Now write it onto the document.
@@ -202,7 +204,7 @@ public class LF_ApplyClassification extends LearningFrameworkPRBase  {
       // do not create a new annotation and instead just add features
       // to the instance annotation
       // TODO: this can be refactored to be more concise!
-      if (getMode() == Mode.CLASSIFICATION && getOutClassFeature() != null
+      if (mode == Mode.CLASSIFICATION && getOutClassFeature() != null
               && !getOutClassFeature().isEmpty()) {
         Annotation instance = gc.getInstance();
         FeatureMap fm = instance.getFeatures();
@@ -385,10 +387,10 @@ public class LF_ApplyClassification extends LearningFrameworkPRBase  {
                     + applicationLearner.getPipe().getTargetAlphabet().toString().replaceAll("\\n", " "));
           }
 
-          if (applicationLearner.getMode() != this.getMode()) {
+          if (applicationLearner.getMode() != mode) {
             logger.warn("LearningFramework: Warning! Applying "
                     + "model trained in " + applicationLearner.getMode()
-                    + " mode in " + this.getMode() + " mode!");
+                    + " mode in " + mode + " mode!");
           }
         }
   }

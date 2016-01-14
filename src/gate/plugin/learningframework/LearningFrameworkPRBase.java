@@ -83,16 +83,6 @@ public abstract class LearningFrameworkPRBase
 
   protected Mode mode;
 
-  @RunTime
-  @CreoleParameter(defaultValue = "CLASSIFICATION", comment = "Whether to do "
-          + "classification or named entity recognition.")
-  public void setMode(Mode mode) {
-    this.mode = mode;
-  }
-
-  public Mode getMode() {
-    return this.mode;
-  }
 
   protected String classType;
 
@@ -106,19 +96,6 @@ public abstract class LearningFrameworkPRBase
     return this.classType;
   }
 
-  protected String classFeature;
-
-  @RunTime
-  @Optional
-  @CreoleParameter(comment = "For classification, the feature "
-          + "containing the class. Ignored for NER, where type only is used.")
-  public void setClassFeature(String classFeature) {
-    this.classFeature = classFeature;
-  }
-
-  public String getClassFeature() {
-    return this.classFeature;
-  }
 
   protected String identifierFeature;
 

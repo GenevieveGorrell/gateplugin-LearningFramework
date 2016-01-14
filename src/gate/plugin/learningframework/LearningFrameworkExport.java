@@ -164,13 +164,13 @@ public class LearningFrameworkExport extends LearningFrameworkPRBase {
                 gate.util.Files.fileFromURL(dataDirectory), corpusoutputdirectory);
         exportCorpus = new CorpusWriterMallet(conf, instanceType,
                 inputASName, trainfilemallet, mode, classType,
-                classFeature, identifierFeature, scaleFeatures);
+                targetFeature, identifierFeature, scaleFeatures);
         break;
       case EXPORT_ARFF:
         File outputfilearff = new File(
                 gate.util.Files.fileFromURL(dataDirectory), corpusoutputdirectory);
         exportCorpus = new CorpusWriterArff(this.conf, this.instanceType, this.inputASName,
-                outputfilearff, mode, classType, classFeature, identifierFeature, null,
+                outputfilearff, mode, classType, targetFeature, identifierFeature, null,
                 scaleFeatures);
         break;
       case EXPORT_ARFF_THRU_CURRENT_PIPE:
@@ -186,14 +186,14 @@ public class LearningFrameworkExport extends LearningFrameworkPRBase {
         }
 
         exportCorpus = new CorpusWriterArff(this.conf, this.instanceType, this.inputASName,
-                outputfilearff2, mode, classType, classFeature, identifierFeature,
+                outputfilearff2, mode, classType, targetFeature, identifierFeature,
                 CorpusWriterArff.getArffPipe(outputfilearff2), scaleFeatures);
         break;
       case EXPORT_ARFF_NUMERIC_CLASS:
         File outputfilearff3 = new File(
                 gate.util.Files.fileFromURL(dataDirectory), corpusoutputdirectory);
         exportCorpus = new CorpusWriterArffNumericClass(this.conf, this.instanceType, this.inputASName,
-                outputfilearff3, mode, classType, classFeature, identifierFeature, null, scaleFeatures);
+                outputfilearff3, mode, classType, targetFeature, identifierFeature, null, scaleFeatures);
         break;
       case EXPORT_ARFF_NUMERIC_CLASS_THRU_CURRENT_PIPE:
         File outputfilearff4 = new File(
@@ -208,7 +208,7 @@ public class LearningFrameworkExport extends LearningFrameworkPRBase {
         }
 
         exportCorpus = new CorpusWriterArffNumericClass(this.conf, this.instanceType, this.inputASName,
-                outputfilearff4, mode, classType, classFeature, identifierFeature,
+                outputfilearff4, mode, classType, targetFeature, identifierFeature,
                 CorpusWriterArff.getArffPipe(outputfilearff4), scaleFeatures);
         break;
     */

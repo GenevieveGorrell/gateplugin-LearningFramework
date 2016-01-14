@@ -106,7 +106,7 @@ public class LF_TrainSequenceTagging extends LearningFrameworkPRBase {
     return this.sequenceSpan;
   }
   
-  
+  private Mode mode = Mode.NAMED_ENTITY_RECOGNITION;
   
   //These corpora will be added to on each document so they need to be globals
   private CorpusWriter trainingCorpus = null;
@@ -210,21 +210,21 @@ public class LF_TrainSequenceTagging extends LearningFrameworkPRBase {
                   gate.util.Files.fileFromURL(dataDirectory), Globals.trainFilename);
           trainingCorpus = new CorpusWriterMallet(this.conf, this.instanceType,
                   this.inputASName, trainfilemallet, mode, classType,
-                  classFeature, identifierFeature, scaleFeatures);
+                  targetFeature, identifierFeature, scaleFeatures);
           break;
         case MALLET_SEQ_CRF:
           File trainfilemalletseq = new File(
                   gate.util.Files.fileFromURL(dataDirectory), Globals.trainFilename);
           trainingCorpus = new CorpusWriterMalletSeq(this.conf, this.instanceType,
                   this.inputASName, trainfilemalletseq, this.sequenceSpan,
-                  mode, classType, classFeature, identifierFeature, scaleFeatures);
+                  mode, classType, targetFeature, identifierFeature, scaleFeatures);
           break;
         case WEKA_CL_NUM_ADDITIVE_REGRESSION:
           File trainfileweka = new File(
                   gate.util.Files.fileFromURL(dataDirectory), Globals.trainFilename);
           trainingCorpus = new CorpusWriterArffNumericClass(this.conf, this.instanceType,
                   this.inputASName, trainfileweka,
-                  mode, classType, classFeature, identifierFeature, null, scaleFeatures);
+                  mode, classType, targetFeature, identifierFeature, null, scaleFeatures);
           break;
         case WEKA_CL_NAIVE_BAYES:
         case WEKA_CL_J48:
@@ -238,7 +238,7 @@ public class LF_TrainSequenceTagging extends LearningFrameworkPRBase {
                   gate.util.Files.fileFromURL(dataDirectory), Globals.trainFilename);
           trainingCorpus = new CorpusWriterArff(this.conf, this.instanceType,
                   this.inputASName, trainfileweka,
-                  mode, classType, classFeature, identifierFeature,
+                  mode, classType, targetFeature, identifierFeature,
                   null, scaleFeatures);
           break;
       }
