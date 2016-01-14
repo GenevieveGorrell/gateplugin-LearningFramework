@@ -168,15 +168,11 @@
                   <string></string>
                 </entry>
                 <entry>
-                  <string>sequenceSpan</string>
-                  <null/>
-                </entry>
-                <entry>
                   <string>mode</string>
                   <gate.plugin.learningframework.Mode>CLASSIFICATION</gate.plugin.learningframework.Mode>
                 </entry>
                 <entry>
-                  <string>saveDirectory</string>
+                  <string>dataDirectory</string>
                   <gate.util.persistence.PersistenceManager-URLHolder>
                     <urlString>$relpath$model-wekanb</urlString>
                   </gate.util.persistence.PersistenceManager-URLHolder>
@@ -203,7 +199,7 @@
                 </entry>
               </localMap>
             </runtimeParams>
-            <resourceType>gate.plugin.learningframework.LearningFrameworkApply</resourceType>
+            <resourceType>gate.plugin.learningframework.LF_ApplyClassification</resourceType>
             <resourceName>LearningFrameworkApply</resourceName>
             <initParams class="gate.util.persistence.MapPersistence">
               <mapType>gate.util.SimpleFeatureMapImpl</mapType>

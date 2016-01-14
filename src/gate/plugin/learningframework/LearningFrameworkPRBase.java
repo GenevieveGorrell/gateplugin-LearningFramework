@@ -42,16 +42,16 @@ public abstract class LearningFrameworkPRBase
   // =================================================================
   // Creole Parameters for all the PRs that derive from this class
   // =================================================================
-  protected URL saveDirectory;
+  protected URL dataDirectory;
 
   @RunTime
   @CreoleParameter(comment = "The directory where all data will be stored and read from")
-  public void setSaveDirectory(URL output) {
-    this.saveDirectory = output;
+  public void setDataDirectory(URL output) {
+    dataDirectory = output;
   }
 
-  public URL getSaveDirectory() {
-    return this.saveDirectory;
+  public URL getDataDirectory() {
+    return this.dataDirectory;
   }
 
   protected String inputASName;
@@ -80,20 +80,6 @@ public abstract class LearningFrameworkPRBase
     return this.instanceName;
   }
 
-  protected String sequenceSpan;
-
-  @RunTime
-  @Optional
-  @CreoleParameter(comment = "For sequence learners, an annotation type "
-          + "defining a meaningful sequence span. Ignored by non-sequence "
-          + "learners. Needs to be in the input AS.")
-  public void setSequenceSpan(String seq) {
-    this.sequenceSpan = seq;
-  }
-
-  public String getSequenceSpan() {
-    return this.sequenceSpan;
-  }
 
   protected Mode mode;
 

@@ -35,17 +35,17 @@ import gate.util.InvalidOffsetException;
  * <p>
  * Training, evaluation and application of ML in GATE.</p>
  */
-@CreoleResource(name = "LearningFrameworkApply", 
+@CreoleResource(name = "LF_ApplyClassification", 
         helpURL = "",
-        comment = "Apply a trained machine learning model")
-public class LearningFrameworkApply extends LearningFrameworkPRBase  {
+        comment = "Apply a trained machine learning model for classification")
+public class LF_ApplyClassification extends LearningFrameworkPRBase  {
 
   /**
    *
    */
   private static final long serialVersionUID = 1L;
 
-  static final Logger logger = Logger.getLogger(LearningFrameworkApply.class.getCanonicalName());
+  static final Logger logger = Logger.getLogger(LF_ApplyClassification.class.getCanonicalName());
 
   protected String outputASName;
   @RunTime
@@ -99,6 +99,8 @@ public class LearningFrameworkApply extends LearningFrameworkPRBase  {
 ////////////////////////////////////////////////////////////////////////////
 
 
+  private String sequenceSpan = null;
+  
   private Engine applicationLearner;
 
   private File savedModelDirectoryFile;
@@ -369,11 +371,11 @@ public class LearningFrameworkApply extends LearningFrameworkPRBase  {
   @Override
   protected void beforeFirstDocument(Controller controller) {
 
-    // JP: this was moved from the saveDirectory setter to avoid problems
+    // JP: this was moved from the dataDirectory setter to avoid problems
     // but we should really make sure that the learning is reloaded only 
     // if the URL has changed since the last time (if ever) it was loaded.
     savedModelDirectoryFile = new File(
-            gate.util.Files.fileFromURL(saveDirectory), Globals.savedModelDirectory);
+            gate.util.Files.fileFromURL(dataDirectory), Globals.savedModelDirectory);
 
     applicationLearner = Engine.restoreLearner(savedModelDirectoryFile);
     //System.out.println("LF-Info: model loaded is now "+applicationLearner);

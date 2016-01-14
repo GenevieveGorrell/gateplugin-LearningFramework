@@ -154,28 +154,28 @@ public class LearningFrameworkExport extends LearningFrameworkPRBase {
   @Override
   protected void beforeFirstDocument(Controller c) {
     File savedModelDirectoryFile = new File(
-            gate.util.Files.fileFromURL(saveDirectory), Globals.savedModelDirectory);
+            gate.util.Files.fileFromURL(dataDirectory), Globals.savedModelDirectory);
     conf = new FeatureSpecification(featureSpecURL);
     
     // TODO
     /*
       case EXPORT_LIBSVM:
         File trainfilemallet = new File(
-                gate.util.Files.fileFromURL(saveDirectory), corpusoutputdirectory);
+                gate.util.Files.fileFromURL(dataDirectory), corpusoutputdirectory);
         exportCorpus = new CorpusWriterMallet(conf, instanceName,
                 inputASName, trainfilemallet, mode, classType,
                 classFeature, identifierFeature, scaleFeatures);
         break;
       case EXPORT_ARFF:
         File outputfilearff = new File(
-                gate.util.Files.fileFromURL(saveDirectory), corpusoutputdirectory);
+                gate.util.Files.fileFromURL(dataDirectory), corpusoutputdirectory);
         exportCorpus = new CorpusWriterArff(this.conf, this.instanceName, this.inputASName,
                 outputfilearff, mode, classType, classFeature, identifierFeature, null,
                 scaleFeatures);
         break;
       case EXPORT_ARFF_THRU_CURRENT_PIPE:
         File outputfilearff2 = new File(
-                gate.util.Files.fileFromURL(saveDirectory), corpusoutputdirectory);
+                gate.util.Files.fileFromURL(dataDirectory), corpusoutputdirectory);
 
         if (CorpusWriterArff.getArffPipe(outputfilearff2) == null) {
           logger.warn("LearningFramework: No pipe found in corpus output directory! "
@@ -191,13 +191,13 @@ public class LearningFrameworkExport extends LearningFrameworkPRBase {
         break;
       case EXPORT_ARFF_NUMERIC_CLASS:
         File outputfilearff3 = new File(
-                gate.util.Files.fileFromURL(saveDirectory), corpusoutputdirectory);
+                gate.util.Files.fileFromURL(dataDirectory), corpusoutputdirectory);
         exportCorpus = new CorpusWriterArffNumericClass(this.conf, this.instanceName, this.inputASName,
                 outputfilearff3, mode, classType, classFeature, identifierFeature, null, scaleFeatures);
         break;
       case EXPORT_ARFF_NUMERIC_CLASS_THRU_CURRENT_PIPE:
         File outputfilearff4 = new File(
-                gate.util.Files.fileFromURL(saveDirectory), corpusoutputdirectory);
+                gate.util.Files.fileFromURL(dataDirectory), corpusoutputdirectory);
 
         if (CorpusWriterArff.getArffPipe(outputfilearff4) == null) {
           logger.warn("LearningFramework: No pipe found in corpus output directory! "

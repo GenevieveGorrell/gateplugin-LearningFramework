@@ -168,13 +168,13 @@ public class LearningFrameworkEvaluate extends LearningFrameworkPRBase {
 
   @RunTime
   @CreoleParameter(comment = "The directory to which data will be saved, including models and corpora.")
-  public void setSaveDirectory(URL output) {
-    //System.out.println("LF DEBUG: setting saveDirectory to "+output);
-    this.saveDirectory = output;
+  public void setDataDirectory(URL output) {
+    //System.out.println("LF DEBUG: setting dataDirectory to "+output);
+    this.dataDirectory = output;
   }
 
-  public URL getSaveDirectory() {
-    return this.saveDirectory;
+  public URL getDataDirectory() {
+    return this.dataDirectory;
   }
 
   @RunTime
@@ -817,7 +817,7 @@ public class LearningFrameworkEvaluate extends LearningFrameworkPRBase {
         exportCorpus.conclude();
         svm_problem prob = ((CorpusWriterMallet) exportCorpus).getLibSVMProblem();
         PrintStream out = null;
-        File savedir = gate.util.Files.fileFromURL(saveDirectory);
+        File savedir = gate.util.Files.fileFromURL(dataDirectory);
         File expdir = new File(savedir, "exportedLibSVM");
         expdir.mkdir();
         try {
@@ -857,16 +857,16 @@ public class LearningFrameworkEvaluate extends LearningFrameworkPRBase {
 
   protected void runAfterJustStarted() {
 
-    // JP: this was moved from the saveDirectory setter to avoid problems
+    // JP: this was moved from the dataDirectory setter to avoid problems
     // but we should really make sure that the learning is reloaded only 
     // if the URL has changed since the last time (if ever) it was loaded.
     savedModelDirectoryFile = new File(
-            gate.util.Files.fileFromURL(saveDirectory), savedModelDirectory);
+            gate.util.Files.fileFromURL(dataDirectory), savedModelDirectory);
 
     evaluationModelDirectoryFile = new File(
-            gate.util.Files.fileFromURL(saveDirectory), evaluationModelDirectory);
+            gate.util.Files.fileFromURL(dataDirectory), evaluationModelDirectory);
 
-    //System.out.println("LF-Info: loading model from "+savedModelDirectoryFile.getAbsolutePath()+" saveDirectory is "+saveDirectory);
+    //System.out.println("LF-Info: loading model from "+savedModelDirectoryFile.getAbsolutePath()+" dataDirectory is "+dataDirectory);
     applicationLearner = Engine.restoreLearner(savedModelDirectoryFile);
     //System.out.println("LF-Info: model loaded is now "+applicationLearner);
 
@@ -889,21 +889,21 @@ public class LearningFrameworkEvaluate extends LearningFrameworkPRBase {
             case MALLET_CL_NAIVE_BAYES:
             case MALLET_CL_WINNOW:
               File trainfilemallet = new File(
-                      gate.util.Files.fileFromURL(saveDirectory), trainfilenamemallet);
+                      gate.util.Files.fileFromURL(dataDirectory), trainfilenamemallet);
               trainingCorpus = new CorpusWriterMallet(this.conf, this.instanceName,
                       this.inputASName, trainfilemallet, mode, classType,
                       classFeature, identifierFeature, scaleFeatures);
               break;
             case MALLET_SEQ_CRF:
               File trainfilemalletseq = new File(
-                      gate.util.Files.fileFromURL(saveDirectory), trainfilenamemalletseq);
+                      gate.util.Files.fileFromURL(dataDirectory), trainfilenamemalletseq);
               trainingCorpus = new CorpusWriterMalletSeq(this.conf, this.instanceName,
                       this.inputASName, trainfilemalletseq, this.sequenceSpan,
                       mode, classType, classFeature, identifierFeature, scaleFeatures);
               break;
             case WEKA_CL_NUM_ADDITIVE_REGRESSION:
               File trainfileweka = new File(
-                      gate.util.Files.fileFromURL(saveDirectory), trainfilenamearff);
+                      gate.util.Files.fileFromURL(dataDirectory), trainfilenamearff);
               trainingCorpus = new CorpusWriterArffNumericClass(this.conf, this.instanceName,
                       this.inputASName, trainfileweka,
                       mode, classType, classFeature, identifierFeature, null, scaleFeatures);
@@ -917,7 +917,7 @@ public class LearningFrameworkEvaluate extends LearningFrameworkPRBase {
             case WEKA_CL_LOGISTIC_REGRESSION:
             case WEKA_CL_RANDOM_FOREST:
               trainfileweka = new File(
-                      gate.util.Files.fileFromURL(saveDirectory), trainfilenamearff);
+                      gate.util.Files.fileFromURL(dataDirectory), trainfilenamearff);
               trainingCorpus = new CorpusWriterArff(this.conf, this.instanceName,
                       this.inputASName, trainfileweka,
                       mode, classType, classFeature, identifierFeature,
@@ -971,21 +971,21 @@ public class LearningFrameworkEvaluate extends LearningFrameworkPRBase {
             case MALLET_CL_NAIVE_BAYES:
             case MALLET_CL_WINNOW:
               File testfilemallet = new File(
-                      gate.util.Files.fileFromURL(saveDirectory), testfilenamemallet);
+                      gate.util.Files.fileFromURL(dataDirectory), testfilenamemallet);
               testCorpus = new CorpusWriterMallet(this.conf, this.instanceName,
                       this.inputASName, testfilemallet, mode, classType,
                       classFeature, identifierFeature, scaleFeatures);
               break;
             case MALLET_SEQ_CRF:
               File testfilemalletseq = new File(
-                      gate.util.Files.fileFromURL(saveDirectory), testfilenamemalletseq);
+                      gate.util.Files.fileFromURL(dataDirectory), testfilenamemalletseq);
               testCorpus = new CorpusWriterMalletSeq(this.conf, this.instanceName,
                       this.inputASName, testfilemalletseq, this.sequenceSpan,
                       mode, classType, classFeature, identifierFeature, scaleFeatures);
               break;
             case WEKA_CL_NUM_ADDITIVE_REGRESSION:
               File testfileweka = new File(
-                      gate.util.Files.fileFromURL(saveDirectory), testfilenamearff);
+                      gate.util.Files.fileFromURL(dataDirectory), testfilenamearff);
               testCorpus = new CorpusWriterArffNumericClass(this.conf, this.instanceName,
                       this.inputASName, testfileweka, mode, classType, classFeature,
                       identifierFeature, null, scaleFeatures);
@@ -999,7 +999,7 @@ public class LearningFrameworkEvaluate extends LearningFrameworkPRBase {
             case WEKA_CL_LOGISTIC_REGRESSION:
             case WEKA_CL_RANDOM_FOREST:
               testfileweka = new File(
-                      gate.util.Files.fileFromURL(saveDirectory), testfilenamearff);
+                      gate.util.Files.fileFromURL(dataDirectory), testfilenamearff);
               testCorpus = new CorpusWriterArff(this.conf, this.instanceName,
                       this.inputASName, testfileweka, mode, classType, classFeature,
                       identifierFeature, null, scaleFeatures);
@@ -1009,21 +1009,21 @@ public class LearningFrameworkEvaluate extends LearningFrameworkPRBase {
         break;
       case EXPORT_LIBSVM:
         File trainfilemallet = new File(
-                gate.util.Files.fileFromURL(saveDirectory), corpusoutputdirectory);
+                gate.util.Files.fileFromURL(dataDirectory), corpusoutputdirectory);
         exportCorpus = new CorpusWriterMallet(conf, instanceName,
                 inputASName, trainfilemallet, mode, classType,
                 classFeature, identifierFeature, scaleFeatures);
         break;
       case EXPORT_ARFF:
         File outputfilearff = new File(
-                gate.util.Files.fileFromURL(saveDirectory), corpusoutputdirectory);
+                gate.util.Files.fileFromURL(dataDirectory), corpusoutputdirectory);
         exportCorpus = new CorpusWriterArff(this.conf, this.instanceName, this.inputASName,
                 outputfilearff, mode, classType, classFeature, identifierFeature, null,
                 scaleFeatures);
         break;
       case EXPORT_ARFF_THRU_CURRENT_PIPE:
         File outputfilearff2 = new File(
-                gate.util.Files.fileFromURL(saveDirectory), corpusoutputdirectory);
+                gate.util.Files.fileFromURL(dataDirectory), corpusoutputdirectory);
 
         if (CorpusWriterArff.getArffPipe(outputfilearff2) == null) {
           logger.warn("LearningFramework: No pipe found in corpus output directory! "
@@ -1039,13 +1039,13 @@ public class LearningFrameworkEvaluate extends LearningFrameworkPRBase {
         break;
       case EXPORT_ARFF_NUMERIC_CLASS:
         File outputfilearff3 = new File(
-                gate.util.Files.fileFromURL(saveDirectory), corpusoutputdirectory);
+                gate.util.Files.fileFromURL(dataDirectory), corpusoutputdirectory);
         exportCorpus = new CorpusWriterArffNumericClass(this.conf, this.instanceName, this.inputASName,
                 outputfilearff3, mode, classType, classFeature, identifierFeature, null, scaleFeatures);
         break;
       case EXPORT_ARFF_NUMERIC_CLASS_THRU_CURRENT_PIPE:
         File outputfilearff4 = new File(
-                gate.util.Files.fileFromURL(saveDirectory), corpusoutputdirectory);
+                gate.util.Files.fileFromURL(dataDirectory), corpusoutputdirectory);
 
         if (CorpusWriterArff.getArffPipe(outputfilearff4) == null) {
           logger.warn("LearningFramework: No pipe found in corpus output directory! "
