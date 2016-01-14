@@ -141,7 +141,7 @@
               <mapType>gate.util.SimpleFeatureMapImpl</mapType>
               <localMap>
                 <entry>
-                  <string>instanceName</string>
+                  <string>instanceType</string>
                   <string>Mention</string>
                 </entry>
                 <entry>

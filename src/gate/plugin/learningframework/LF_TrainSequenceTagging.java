@@ -208,21 +208,21 @@ public class LF_TrainSequenceTagging extends LearningFrameworkPRBase {
         case MALLET_CL_WINNOW:
           File trainfilemallet = new File(
                   gate.util.Files.fileFromURL(dataDirectory), Globals.trainFilename);
-          trainingCorpus = new CorpusWriterMallet(this.conf, this.instanceName,
+          trainingCorpus = new CorpusWriterMallet(this.conf, this.instanceType,
                   this.inputASName, trainfilemallet, mode, classType,
                   classFeature, identifierFeature, scaleFeatures);
           break;
         case MALLET_SEQ_CRF:
           File trainfilemalletseq = new File(
                   gate.util.Files.fileFromURL(dataDirectory), Globals.trainFilename);
-          trainingCorpus = new CorpusWriterMalletSeq(this.conf, this.instanceName,
+          trainingCorpus = new CorpusWriterMalletSeq(this.conf, this.instanceType,
                   this.inputASName, trainfilemalletseq, this.sequenceSpan,
                   mode, classType, classFeature, identifierFeature, scaleFeatures);
           break;
         case WEKA_CL_NUM_ADDITIVE_REGRESSION:
           File trainfileweka = new File(
                   gate.util.Files.fileFromURL(dataDirectory), Globals.trainFilename);
-          trainingCorpus = new CorpusWriterArffNumericClass(this.conf, this.instanceName,
+          trainingCorpus = new CorpusWriterArffNumericClass(this.conf, this.instanceType,
                   this.inputASName, trainfileweka,
                   mode, classType, classFeature, identifierFeature, null, scaleFeatures);
           break;
@@ -236,7 +236,7 @@ public class LF_TrainSequenceTagging extends LearningFrameworkPRBase {
         case WEKA_CL_RANDOM_FOREST:
           trainfileweka = new File(
                   gate.util.Files.fileFromURL(dataDirectory), Globals.trainFilename);
-          trainingCorpus = new CorpusWriterArff(this.conf, this.instanceName,
+          trainingCorpus = new CorpusWriterArff(this.conf, this.instanceType,
                   this.inputASName, trainfileweka,
                   mode, classType, classFeature, identifierFeature,
                   null, scaleFeatures);

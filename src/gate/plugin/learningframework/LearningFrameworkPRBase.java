@@ -67,17 +67,17 @@ public abstract class LearningFrameworkPRBase
     return this.inputASName;
   }
 
-  protected String instanceName;
+  protected String instanceType;
 
   @RunTime
   @CreoleParameter(defaultValue = "Token", comment = "The annotation type to "
           + "be treated as instance.")
-  public void setInstanceName(String inst) {
-    this.instanceName = inst;
+  public void setInstanceType(String inst) {
+    this.instanceType = inst;
   }
 
-  public String getInstanceName() {
-    return this.instanceName;
+  public String getInstanceType() {
+    return this.instanceType;
   }
 
 

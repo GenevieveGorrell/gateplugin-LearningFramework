@@ -226,11 +226,11 @@ public class LearningFrameworkEvaluate extends LearningFrameworkPRBase {
   @RunTime
   @CreoleParameter(defaultValue = "Token", comment = "The annotation type to "
           + "be treated as instance.")
-  public void setInstanceName(String inst) {
+  public void setInstanceType(String inst) {
     this.instanceName = inst;
   }
 
-  public String getInstanceName() {
+  public String getInstanceType() {
     return this.instanceName;
   }
 

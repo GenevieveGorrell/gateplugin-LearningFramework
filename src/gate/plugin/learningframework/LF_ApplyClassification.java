@@ -126,24 +126,20 @@ public class LF_ApplyClassification extends LearningFrameworkPRBase  {
           // the whatIsIt will return null, so we handle this separately.
           if (applicationLearner.whatIsIt() == null) {
             if (applicationLearner instanceof EngineWeka) {
-              gcs = ((EngineWeka) applicationLearner).classify(
-                      this.instanceName, this.inputASName, doc);
+              gcs = ((EngineWeka) applicationLearner).classify(this.instanceType, this.inputASName, doc);
             } else if (applicationLearner instanceof EngineMallet
                     && ((EngineMallet) applicationLearner).getMode() == Mode.CLASSIFICATION) {
-              gcs = ((EngineMallet) applicationLearner).classify(
-                      this.instanceName, this.inputASName, doc);
+              gcs = ((EngineMallet) applicationLearner).classify(this.instanceType, this.inputASName, doc);
             } else if (applicationLearner instanceof EngineMallet
                     && ((EngineMallet) applicationLearner).getMode() == Mode.NAMED_ENTITY_RECOGNITION) {
-              gcs = ((EngineMalletSeq) applicationLearner).classify(
-                      this.instanceName, this.inputASName, doc, this.sequenceSpan);
+              gcs = ((EngineMalletSeq) applicationLearner).classify(this.instanceType, this.inputASName, doc, this.sequenceSpan);
             } else {
               throw new GateRuntimeException("Found a strange instance of an engine");
             }
           } else {
             switch (applicationLearner.whatIsIt()) {
               case LIBSVM:
-                gcs = ((EngineLibSVM) applicationLearner).classify(
-                        this.instanceName, this.inputASName, doc);
+                gcs = ((EngineLibSVM) applicationLearner).classify(this.instanceType, this.inputASName, doc);
                 break;
               case MALLET_CL_C45:
               case MALLET_CL_DECISION_TREE:
@@ -151,12 +147,10 @@ public class LF_ApplyClassification extends LearningFrameworkPRBase  {
               case MALLET_CL_NAIVE_BAYES_EM:
               case MALLET_CL_NAIVE_BAYES:
               case MALLET_CL_WINNOW:
-                gcs = ((EngineMallet) applicationLearner).classify(
-                        this.instanceName, this.inputASName, doc);
+                gcs = ((EngineMallet) applicationLearner).classify(this.instanceType, this.inputASName, doc);
                 break;
               case MALLET_SEQ_CRF:
-                gcs = ((EngineMalletSeq) applicationLearner).classify(
-                        this.instanceName, this.inputASName, doc, this.sequenceSpan);
+                gcs = ((EngineMalletSeq) applicationLearner).classify(this.instanceType, this.inputASName, doc, this.sequenceSpan);
                 break;
               case WEKA_CL_NUM_ADDITIVE_REGRESSION:
               case WEKA_CL_NAIVE_BAYES:
@@ -167,8 +161,7 @@ public class LF_ApplyClassification extends LearningFrameworkPRBase  {
               case WEKA_CL_IBK:
               case WEKA_CL_LOGISTIC_REGRESSION:
               case WEKA_CL_RANDOM_FOREST:
-                gcs = ((EngineWeka) applicationLearner).classify(
-                        this.instanceName, this.inputASName, doc);
+                gcs = ((EngineWeka) applicationLearner).classify(this.instanceType, this.inputASName, doc);
                 break;
             }
           }
@@ -253,7 +246,7 @@ public class LF_ApplyClassification extends LearningFrameworkPRBase  {
   private void addSurroundingAnnotations(Document doc) {
     AnnotationSet fromset = doc.getAnnotations(tempOutputASName);
     AnnotationSet toset = doc.getAnnotations(this.outputASName);
-    List<Annotation> insts = fromset.get(this.instanceName).inDocumentOrder();
+    List<Annotation> insts = fromset.get(this.instanceType).inDocumentOrder();
 
     class AnnToAdd {
 
