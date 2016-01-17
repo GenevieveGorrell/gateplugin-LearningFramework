@@ -36,7 +36,7 @@ import gate.util.GateRuntimeException;
         name = "LF_TrainSequenceTagging", 
         helpURL = "",
         comment = "Train a machine learning model for sequence tagging")
-public class LF_TrainSequenceTagging extends LearningFrameworkPRBase {
+public class LF_TrainSequenceTagging extends LF_TrainBase {
 
   /**
    *
@@ -198,6 +198,11 @@ public class LF_TrainSequenceTagging extends LearningFrameworkPRBase {
     } else {
       trainingLearner = this.createLearner(trainingAlgo, savedModelDirectoryFile);
 
+      // TODO: not sure how this should work: what is targetFeature if we want to do sequence
+      // tagging without an actual sequence learner? 
+      // CHECK: for now we always use null as the targetFeature in this PR to make it compile!
+      
+      String targetFeature = null;
       switch (this.getTrainingAlgo()) {
         case LIBSVM: //Yes we are making a mallet corpus writer for use with libsvm ..
         case MALLET_CL_C45:
@@ -210,7 +215,7 @@ public class LF_TrainSequenceTagging extends LearningFrameworkPRBase {
                   gate.util.Files.fileFromURL(dataDirectory), Globals.trainFilename);
           trainingCorpus = new CorpusWriterMallet(this.conf, this.instanceType,
                   this.inputASName, trainfilemallet, mode, classType,
-                  targetFeature, identifierFeature, scaleFeatures);
+                  targetFeature, identifierFeature, scaleFeatures); 
           break;
         case MALLET_SEQ_CRF:
           File trainfilemalletseq = new File(

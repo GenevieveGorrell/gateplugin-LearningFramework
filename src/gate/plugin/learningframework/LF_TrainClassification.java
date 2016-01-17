@@ -36,7 +36,7 @@ import gate.util.GateRuntimeException;
         name = "LF_TrainClassification", 
         helpURL = "",
         comment = "Train a machine learning model for classification")
-public class LF_TrainClassification extends LearningFrameworkPRBase {
+public class LF_TrainClassification extends LF_TrainBase {
 
   /**
    *
