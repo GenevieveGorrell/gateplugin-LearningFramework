@@ -5,10 +5,7 @@
         <urlString>$gatehome$plugins/ANNIE</urlString>
       </gate.util.persistence.PersistenceManager-URLHolder>
       <gate.util.persistence.PersistenceManager-URLHolder>
-        <urlString>$relpath$..</urlString>
-      </gate.util.persistence.PersistenceManager-URLHolder>
-      <gate.util.persistence.PersistenceManager-URLHolder>
-        <urlString>$gatehome$plugins/Groovy</urlString>
+        <urlString>$relpath$../..</urlString>
       </gate.util.persistence.PersistenceManager-URLHolder>
     </localList>
     <collectionType>java.util.ArrayList</collectionType>
@@ -139,17 +136,21 @@
           <runMode>1</runMode>
           <featureName></featureName>
           <featureValue></featureValue>
-          <pr class="gate.util.persistence.LanguageAnalyserPersistence">
+          <pr class="gate.util.persistence.PRPersistence">
             <runtimeParams class="gate.util.persistence.MapPersistence">
               <mapType>gate.util.SimpleFeatureMapImpl</mapType>
               <localMap>
                 <entry>
-                  <string>outClassFeature</string>
-                  <string></string>
+                  <string>trainingProportion</string>
+                  <float>0.5</float>
                 </entry>
                 <entry>
-                  <string>instanceType</string>
+                  <string>instanceName</string>
                   <string>Mention</string>
+                </entry>
+                <entry>
+                  <string>trainingAlgo</string>
+                  <gate.plugin.learningframework.Algorithm>WEKA_CL_RANDOM_FOREST</gate.plugin.learningframework.Algorithm>
                 </entry>
                 <entry>
                   <string>confidenceThreshold</string>
@@ -165,12 +166,20 @@
                 </entry>
                 <entry>
                   <string>inputASName</string>
+                  <null/>
+                </entry>
+                <entry>
+                  <string>sequenceSpan</string>
                   <string></string>
                 </entry>
                 <entry>
-                  <string>dataDirectory</string>
+                  <string>mode</string>
+                  <gate.plugin.learningframework.Mode>CLASSIFICATION</gate.plugin.learningframework.Mode>
+                </entry>
+                <entry>
+                  <string>saveDirectory</string>
                   <gate.util.persistence.PersistenceManager-URLHolder>
-                    <urlString>$relpath$model-wekanb</urlString>
+                    <urlString>$relpath$model-wekarf</urlString>
                   </gate.util.persistence.PersistenceManager-URLHolder>
                 </entry>
                 <entry>
@@ -179,15 +188,29 @@
                 </entry>
                 <entry>
                   <string>learnerParams</string>
-                  <string></string>
+                  <null/>
                 </entry>
                 <entry>
                   <string>outputASName</string>
                   <string>LearningFramework</string>
                 </entry>
                 <entry>
+                  <string>featureSpecURL</string>
+                  <gate.util.persistence.PersistenceManager-URLHolder>
+                    <urlString>$relpath$feats.xml</urlString>
+                  </gate.util.persistence.PersistenceManager-URLHolder>
+                </entry>
+                <entry>
                   <string>classFeature</string>
                   <string>class</string>
+                </entry>
+                <entry>
+                  <string>foldsForXVal</string>
+                  <int>3</int>
+                </entry>
+                <entry>
+                  <string>operation</string>
+                  <gate.learningframework.classification.Operation>TRAIN</gate.learningframework.classification.Operation>
                 </entry>
                 <entry>
                   <string>classType</string>
@@ -195,67 +218,11 @@
                 </entry>
               </localMap>
             </runtimeParams>
-            <resourceType>gate.plugin.learningframework.LF_ApplyClassification</resourceType>
-            <resourceName>LearningFrameworkApply</resourceName>
+            <resourceType>gate.learningframework.classification.LearningFrameworkPR</resourceType>
+            <resourceName>LearningFramework</resourceName>
             <initParams class="gate.util.persistence.MapPersistence">
               <mapType>gate.util.SimpleFeatureMapImpl</mapType>
               <localMap/>
-            </initParams>
-            <features class="gate.util.persistence.MapPersistence">
-              <mapType>gate.util.SimpleFeatureMapImpl</mapType>
-              <localMap/>
-            </features>
-          </pr>
-        </gate.util.persistence.AnalyserRunningStrategyPersistence>
-        <gate.util.persistence.AnalyserRunningStrategyPersistence>
-          <runMode>1</runMode>
-          <featureName></featureName>
-          <featureValue></featureValue>
-          <pr class="gate.util.persistence.PRPersistence">
-            <runtimeParams class="gate.util.persistence.MapPersistence">
-              <mapType>gate.util.SimpleFeatureMapImpl</mapType>
-              <localMap>
-                <entry>
-                  <string>corpus</string>
-                  <null/>
-                </entry>
-                <entry>
-                  <string>scriptParams</string>
-                  <gate.util.persistence.MapPersistence>
-                    <mapType>gate.util.SimpleFeatureMapImpl</mapType>
-                    <localMap/>
-                  </gate.util.persistence.MapPersistence>
-                </entry>
-                <entry>
-                  <string>outputASName</string>
-                  <null/>
-                </entry>
-                <entry>
-                  <string>inputASName</string>
-                  <null/>
-                </entry>
-                <entry>
-                  <string>document</string>
-                  <null/>
-                </entry>
-              </localMap>
-            </runtimeParams>
-            <resourceType>gate.groovy.ScriptPR</resourceType>
-            <resourceName>Groovy:prepare4Eval</resourceName>
-            <initParams class="gate.util.persistence.MapPersistence">
-              <mapType>gate.util.SimpleFeatureMapImpl</mapType>
-              <localMap>
-                <entry>
-                  <string>encoding</string>
-                  <string>UTF-8</string>
-                </entry>
-                <entry>
-                  <string>scriptURL</string>
-                  <gate.util.persistence.PersistenceManager-URLHolder>
-                    <urlString>$relpath$prepare4Eval.groovy</urlString>
-                  </gate.util.persistence.PersistenceManager-URLHolder>
-                </entry>
-              </localMap>
             </initParams>
             <features class="gate.util.persistence.MapPersistence">
               <mapType>gate.util.SimpleFeatureMapImpl</mapType>
@@ -269,13 +236,12 @@
     <prList class="gate.util.persistence.CollectionPersistence">
       <localList>
         <gate.util.persistence.PRPersistence reference="../../../strategiesList/localList/gate.util.persistence.AnalyserRunningStrategyPersistence/pr"/>
-        <gate.util.persistence.LanguageAnalyserPersistence reference="../../../strategiesList/localList/gate.util.persistence.AnalyserRunningStrategyPersistence[2]/pr"/>
-        <gate.util.persistence.PRPersistence reference="../../../strategiesList/localList/gate.util.persistence.AnalyserRunningStrategyPersistence[3]/pr"/>
+        <gate.util.persistence.PRPersistence reference="../../../strategiesList/localList/gate.util.persistence.AnalyserRunningStrategyPersistence[2]/pr"/>
       </localList>
       <collectionType>java.util.ArrayList</collectionType>
     </prList>
     <resourceType>gate.creole.ConditionalSerialAnalyserController</resourceType>
-    <resourceName>testLF-apply-wekanb2</resourceName>
+    <resourceName>testLF-train-wekarf</resourceName>
     <initParams class="gate.util.persistence.MapPersistence">
       <mapType>gate.util.SimpleFeatureMapImpl</mapType>
       <localMap/>

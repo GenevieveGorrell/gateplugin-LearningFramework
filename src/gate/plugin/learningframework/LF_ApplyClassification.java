@@ -82,6 +82,8 @@ public class LF_ApplyClassification extends LearningFrameworkPRBase  {
 
   protected String outClassFeature;
 
+  // TODO: we want to get rid of this and read this name from the info file!!
+  
   @RunTime
   @Optional
   @CreoleParameter(comment = "Name of class feature to add to the original "
