@@ -19,3 +19,4 @@ hs_err_*.log
 /test-ionosphere/model-libsvm/savedModel/
 /test-ionosphere/model-wekanb/savedModel/
 /testing/sequence
+/tests/seq-wikipedia1/model-crf/
