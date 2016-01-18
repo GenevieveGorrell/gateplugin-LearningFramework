@@ -38,14 +38,14 @@ import gate.util.InvalidOffsetException;
 @CreoleResource(name = "LF_ApplyClassification", 
         helpURL = "",
         comment = "Apply a trained machine learning model for classification")
-public class LF_ApplyClassification extends LearningFrameworkPRBase  {
+public class LF_ApplySequenceTagging extends LearningFrameworkPRBase  {
 
   /**
    *
    */
   private static final long serialVersionUID = 1L;
 
-  static final Logger logger = Logger.getLogger(LF_ApplyClassification.class.getCanonicalName());
+  static final Logger logger = Logger.getLogger(LF_ApplySequenceTagging.class.getCanonicalName());
 
   protected String outputASName;
   @RunTime
@@ -80,39 +80,39 @@ public class LF_ApplyClassification extends LearningFrameworkPRBase  {
     return this.confidenceThreshold;
   }
 
-  protected String outClassFeature;
 
-  // TODO: we want to get rid of this and read this name from the info file!!
-  
+
+  protected String sequenceSpan;
+
   @RunTime
   @Optional
-  @CreoleParameter(comment = "Name of class feature to add to the original "
-          + "instance annotations, if empty new annotation is created.",
-          defaultValue = "")
-  public void setOutClassFeature(String name) {
-    outClassFeature = name;
+  @CreoleParameter(comment = "For sequence learners, an annotation type "
+          + "defining a meaningful sequence span. Ignored by non-sequence "
+          + "learners. Needs to be in the input AS.")
+  public void setSequenceSpan(String seq) {
+    this.sequenceSpan = seq;
   }
 
-  public String getOutClassFeature() {
-    return outClassFeature;
+  public String getSequenceSpan() {
+    return this.sequenceSpan;
   }
-
-
+  
+  private Mode mode = Mode.NAMED_ENTITY_RECOGNITION;
+  
+  
 ////////////////////////////////////////////////////////////////////////////
 
-
-  private final String sequenceSpan = null;
   
   private Engine applicationLearner;
 
   private File savedModelDirectoryFile;
   
-  private final Mode mode = Mode.CLASSIFICATION;
 
   //In the case of NER, output instance annotations to temporary
   //AS, to keep them separate.
   private static final String tempOutputASName = "tmp_ouputas_for_ner12345";
 
+  private String outClassFeature = null;
 
   @Override
   public void execute(Document doc)  {
@@ -171,6 +171,10 @@ public class LF_ApplyClassification extends LearningFrameworkPRBase  {
           }
 
           addClassificationAnnotations(doc, gcs);
+          if (mode == Mode.NAMED_ENTITY_RECOGNITION) {
+            //We need to make the surrounding annotations
+            addSurroundingAnnotations(doc);
+          }
         }
   }
 
@@ -184,29 +188,19 @@ public class LF_ApplyClassification extends LearningFrameworkPRBase  {
     Iterator<GateClassification> gcit = gcs.iterator();
 
     AnnotationSet outputAnnSet = doc.getAnnotations(this.outputASName);
+    //Unless we are doing NER, in which case we want to use the temp
+    if (mode == Mode.NAMED_ENTITY_RECOGNITION) {
+      outputAnnSet = doc.getAnnotations(tempOutputASName);
+    }
 
     while (gcit.hasNext()) {
       GateClassification gc = gcit.next();
 
-      //We have a valid classification. Now write it onto the document.
-      // If this is classification and the add feature value is set,
-      // do not create a new annotation and instead just add features
-      // to the instance annotation
-      // TODO: this can be refactored to be more concise!
-      if (mode == Mode.CLASSIFICATION && getOutClassFeature() != null
-              && !getOutClassFeature().isEmpty()) {
-        Annotation instance = gc.getInstance();
-        FeatureMap fm = instance.getFeatures();
-        // Instead of the predefined output class feature name use the one specified
-        // as a PR parameter
-        //
-        // fm.put(outputClassFeature, gc.getClassAssigned());
-        fm.put(getOutClassFeature(), gc.getClassAssigned());
-        fm.put(Globals.outputProbFeature, gc.getConfidenceScore());
-        if (gc.getClassList() != null && gc.getConfidenceList() != null) {
-          fm.put(Globals.outputClassFeature + "_list", gc.getClassList());
-          fm.put(Globals.outputProbFeature + "_list", gc.getConfidenceList());
-        }
+      // JP: TODO: need to check if we always get the correct confidence
+      // score here and if the default makes this do what is expected!
+      if (mode == Mode.CLASSIFICATION
+              && gc.getConfidenceScore() < this.getConfidenceThreshold()) {
+        //Skip it
       } else {
         FeatureMap fm = Factory.newFeatureMap();
         fm.putAll(gc.getInstance().getFeatures());
@@ -218,14 +212,127 @@ public class LF_ApplyClassification extends LearningFrameworkPRBase  {
         }
         //fm.put(this.conf.getIdentifier(), identifier);
         if (gc.getSeqSpanID() != null) {
-          System.err.println("Refactoring error: why do we have a SeqSpanID when doing classification?");
+          fm.put(Globals.outputSequenceSpanIDFeature, gc.getSeqSpanID());
         }
         outputAnnSet.add(gc.getInstance().getStartNode(),
                 gc.getInstance().getEndNode(),
                 gc.getInstance().getType(), fm);
-      } // else if CLASSIFICATION and have out class feature
-
+      } 
     }
+  }
+
+  /*
+	 * In the case of NER, we replace the instance annotations with
+	 * spanning annotations for the desired entity type. We apply a confidence
+	 * threshold to the average for the whole entity. We write the average
+	 * confidence for the entity onto the entity.
+   */
+  private void addSurroundingAnnotations(Document doc) {
+    AnnotationSet fromset = doc.getAnnotations(tempOutputASName);
+    AnnotationSet toset = doc.getAnnotations(this.outputASName);
+    List<Annotation> insts = fromset.get(this.instanceType).inDocumentOrder();
+
+    class AnnToAdd {
+
+      long thisStart = -1;
+      long thisEnd = -1;
+      int len = 0;
+      double conf = 0.0;
+    }
+
+    Map<Integer, AnnToAdd> annsToAdd = new HashMap<Integer, AnnToAdd>();
+
+    Iterator<Annotation> it = insts.iterator();
+    while (it.hasNext()) {
+      Annotation inst = it.next();
+
+      //Do we have an annotation in progress for this sequence span ID?
+      //If we didn't use sequence learning, just use the same ID repeatedly.
+      Integer sequenceSpanID = (Integer) inst.getFeatures().get(Globals.outputSequenceSpanIDFeature);
+      if (sequenceSpanID == null) {
+        sequenceSpanID = 0;
+      }
+      AnnToAdd thisAnnToAdd = annsToAdd.get(sequenceSpanID);
+
+      //B, I or O??
+      String status = (String) inst.getFeatures().get(Globals.outputClassFeature);
+      if (status == null) {
+        status = "outside";
+      }
+
+      if (thisAnnToAdd != null && (status.equals("beginning") || status.equals("outside"))) {
+        //If we've found a beginning or an end, this indicates that a current
+        //incomplete annotation is now completed. We should write it on and
+        //remove it from the map.
+        double entityconf = thisAnnToAdd.conf / thisAnnToAdd.len;
+
+        if (thisAnnToAdd.thisStart != -1 && thisAnnToAdd.thisEnd != -1
+                && entityconf >= this.getConfidenceThreshold()) {
+          FeatureMap fm = Factory.newFeatureMap();
+          fm.put(Globals.outputProbFeature, entityconf);
+          if (sequenceSpanID != null) {
+            fm.put(Globals.outputSequenceSpanIDFeature, sequenceSpanID);
+          }
+          try {
+            toset.add(
+                    thisAnnToAdd.thisStart, thisAnnToAdd.thisEnd,
+                    this.getClassType(), fm);
+          } catch (InvalidOffsetException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+          }
+        }
+
+        annsToAdd.remove(sequenceSpanID);
+      }
+
+      if (status.equals("beginning")) {
+        AnnToAdd ata = new AnnToAdd();
+        ata.thisStart = inst.getStartNode().getOffset();
+        //Update the end on the offchance that this is it
+        ata.thisEnd = inst.getEndNode().getOffset();
+        ata.conf = (Double) inst.getFeatures().get(Globals.outputProbFeature);
+        ata.len++;
+        annsToAdd.put(sequenceSpanID, ata);
+      }
+
+      if (status.equals("inside") && thisAnnToAdd != null) {
+        thisAnnToAdd.conf += (Double) inst.getFeatures().get(Globals.outputProbFeature);
+        thisAnnToAdd.len++;
+        //Update the end on the offchance that this is it
+        thisAnnToAdd.thisEnd = inst.getEndNode().getOffset();
+      }
+
+      //Remove each inst ann as we consume it
+      fromset.remove(inst);
+    }
+
+    //Add any hanging entities at the end.
+    Iterator<Integer> atait = annsToAdd.keySet().iterator();
+    while (atait.hasNext()) {
+      Integer sequenceSpanID = (Integer) atait.next();
+      AnnToAdd thisAnnToAdd = annsToAdd.get(sequenceSpanID);
+      double entityconf = thisAnnToAdd.conf / thisAnnToAdd.len;
+
+      if (thisAnnToAdd.thisStart != -1 && thisAnnToAdd.thisEnd != -1
+              && entityconf >= this.getConfidenceThreshold()) {
+        FeatureMap fm = Factory.newFeatureMap();
+        fm.put(Globals.outputProbFeature, entityconf);
+        if (sequenceSpanID != null) {
+          fm.put(Globals.outputSequenceSpanIDFeature, sequenceSpanID);
+        }
+        try {
+          toset.add(
+                  thisAnnToAdd.thisStart, thisAnnToAdd.thisEnd,
+                  this.getClassType(), fm);
+        } catch (InvalidOffsetException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+      }
+    }
+
+    doc.removeAnnotationSet(tempOutputASName);
   }
 
 

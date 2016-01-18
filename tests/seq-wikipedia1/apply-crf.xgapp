@@ -583,11 +583,7 @@
               <mapType>gate.util.SimpleFeatureMapImpl</mapType>
               <localMap>
                 <entry>
-                  <string>outClassFeature</string>
-                  <string></string>
-                </entry>
-                <entry>
-                  <string>instanceName</string>
+                  <string>instanceType</string>
                   <string>Token</string>
                 </entry>
                 <entry>
@@ -611,11 +607,7 @@
                   <string>Sentence</string>
                 </entry>
                 <entry>
-                  <string>mode</string>
-                  <gate.plugin.learningframework.Mode>NAMED_ENTITY_RECOGNITION</gate.plugin.learningframework.Mode>
-                </entry>
-                <entry>
-                  <string>saveDirectory</string>
+                  <string>dataDirectory</string>
                   <gate.util.persistence.PersistenceManager-URLHolder>
                     <urlString>$relpath$model-crf</urlString>
                   </gate.util.persistence.PersistenceManager-URLHolder>
@@ -633,16 +625,12 @@
                   <string>LearningFramework</string>
                 </entry>
                 <entry>
-                  <string>classFeature</string>
-                  <string></string>
-                </entry>
-                <entry>
                   <string>classType</string>
                   <string>Link</string>
                 </entry>
               </localMap>
             </runtimeParams>
-            <resourceType>gate.plugin.learningframework.LearningFrameworkApply</resourceType>
+            <resourceType>gate.plugin.learningframework.LF_ApplySequenceTagging</resourceType>
             <resourceName>LearningFrameworkApply 00012</resourceName>
             <initParams class="gate.util.persistence.MapPersistence">
               <mapType>gate.util.SimpleFeatureMapImpl</mapType>
