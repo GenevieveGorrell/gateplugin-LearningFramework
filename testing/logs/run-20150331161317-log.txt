@@ -1,0 +1,4 @@
+JAVA_OPTS is now -Xmx8G
+PARMS are RunPipeline -b ./logs/run-20150331161317-benchmark.txt -c lf.config.yaml /home/genevieve/git/gate-plugins/Learning_Framework/testing/evaluation.xgapp cl-testing cl-out
+/home/genevieve/git/yodie/yodie-tools/scala/scaladist/bin/scala -cp /home/genevieve/git/yodie/yodie-tools/scala/lib/*:/home/genevieve/git/gate-plugins/Learning_Framework/testing:/home/genevieve/git/gate-plugins/Learning_Framework/testing/lib/*:/home/genevieve/git/yodie/yodie-tools/scala/disambiguation-scala.jar:/home/genevieve/gate-top/externals/gate/bin/gate.jar:/home/genevieve/gate-top/externals/gate/lib/* RunPipeline -b ./logs/run-20150331161317-benchmark.txt -c lf.config.yaml /home/genevieve/git/gate-plugins/Learning_Framework/testing/evaluation.xgapp cl-testing cl-out
+Input directory does not exist or is not a directory: cl-testing

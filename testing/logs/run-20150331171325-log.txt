@@ -1,0 +1,1729 @@
+JAVA_OPTS is now -Xmx8G
+PARMS are RunPipeline -b ./logs/run-20150331171325-benchmark.txt -c lf.config.yaml /home/genevieve/git/gate-plugins/Learning_Framework/testing/lf-evaluation.xgapp cl-out
+/home/genevieve/git/yodie/yodie-tools/scala/scaladist/bin/scala -cp /home/genevieve/git/yodie/yodie-tools/scala/lib/*:/home/genevieve/git/gate-plugins/Learning_Framework/testing:/home/genevieve/git/gate-plugins/Learning_Framework/testing/lib/*:/home/genevieve/git/yodie/yodie-tools/scala/disambiguation-scala.jar:/home/genevieve/gate-top/externals/gate/bin/gate.jar:/home/genevieve/gate-top/externals/gate/lib/* RunPipeline -b ./logs/run-20150331171325-benchmark.txt -c lf.config.yaml /home/genevieve/git/gate-plugins/Learning_Framework/testing/lf-evaluation.xgapp cl-out
+Pipeline:    /home/genevieve/git/gate-plugins/Learning_Framework/testing/lf-evaluation.xgapp
+InDir:       cl-out
+OutDir:      cl-out
+Starting up GATE ....
+GATE startup completed.
+log4j:WARN No appenders could be found for logger (gate.creole.CreoleRegisterImpl).
+log4j:WARN Please initialize the log4j system properly.
+log4j:WARN See http://logging.apache.org/log4j/1.2/faq.html#noconfig for more info.
+Loading pipeline /home/genevieve/git/gate-plugins/Learning_Framework/testing/lf-evaluation.xgapp...
+Processing 947.finf...
+Processed 947.finf written to cl-out/947.finf
+Processing 948.finf...
+Processed 948.finf written to cl-out/948.finf
+Processing 949.finf...
+Processed 949.finf written to cl-out/949.finf
+Processing 950.finf...
+Processed 950.finf written to cl-out/950.finf
+Processing 951.finf...
+Processed 951.finf written to cl-out/951.finf
+Processing 952.finf...
+Processed 952.finf written to cl-out/952.finf
+Processing 953.finf...
+Processed 953.finf written to cl-out/953.finf
+Processing 954.finf...
+Processed 954.finf written to cl-out/954.finf
+Processing 955.finf...
+Processed 955.finf written to cl-out/955.finf
+Processing 956.finf...
+Processed 956.finf written to cl-out/956.finf
+Processing 957.finf...
+Processed 957.finf written to cl-out/957.finf
+Processing 958.finf...
+Processed 958.finf written to cl-out/958.finf
+Processing 959.finf...
+Processed 959.finf written to cl-out/959.finf
+Processing 960.finf...
+Processed 960.finf written to cl-out/960.finf
+Processing 961.finf...
+Processed 961.finf written to cl-out/961.finf
+Processing 962.finf...
+Processed 962.finf written to cl-out/962.finf
+Processing 963.finf...
+Processed 963.finf written to cl-out/963.finf
+Processing 964.finf...
+Processed 964.finf written to cl-out/964.finf
+Processing 965.finf...
+Processed 965.finf written to cl-out/965.finf
+Processing 966.finf...
+Processed 966.finf written to cl-out/966.finf
+Processing 967.finf...
+Processed 967.finf written to cl-out/967.finf
+Processing 968.finf...
+Processed 968.finf written to cl-out/968.finf
+Processing 969.finf...
+Processed 969.finf written to cl-out/969.finf
+Processing 970.finf...
+Processed 970.finf written to cl-out/970.finf
+Processing 971.finf...
+Processed 971.finf written to cl-out/971.finf
+Processing 972.finf...
+Processed 972.finf written to cl-out/972.finf
+Processing 973.finf...
+Processed 973.finf written to cl-out/973.finf
+Processing 974.finf...
+Processed 974.finf written to cl-out/974.finf
+Processing 975.finf...
+Processed 975.finf written to cl-out/975.finf
+Processing 976.finf...
+Processed 976.finf written to cl-out/976.finf
+Processing 977.finf...
+Processed 977.finf written to cl-out/977.finf
+Processing 978.finf...
+Processed 978.finf written to cl-out/978.finf
+Processing 979.finf...
+Processed 979.finf written to cl-out/979.finf
+Processing 980.finf...
+Processed 980.finf written to cl-out/980.finf
+Processing 981.finf...
+Processed 981.finf written to cl-out/981.finf
+Processing 982.finf...
+Processed 982.finf written to cl-out/982.finf
+Processing 983.finf...
+Processed 983.finf written to cl-out/983.finf
+Processing 984.finf...
+Processed 984.finf written to cl-out/984.finf
+Processing 985.finf...
+Processed 985.finf written to cl-out/985.finf
+Processing 986.finf...
+Processed 986.finf written to cl-out/986.finf
+Processing 987.finf...
+Processed 987.finf written to cl-out/987.finf
+Processing 988.finf...
+Processed 988.finf written to cl-out/988.finf
+Processing 989.finf...
+Processed 989.finf written to cl-out/989.finf
+Processing 990.finf...
+Processed 990.finf written to cl-out/990.finf
+Processing 991.finf...
+Processed 991.finf written to cl-out/991.finf
+Processing 992.finf...
+Processed 992.finf written to cl-out/992.finf
+Processing 993.finf...
+Processed 993.finf written to cl-out/993.finf
+Processing 994.finf...
+Processed 994.finf written to cl-out/994.finf
+Processing 995.finf...
+Processed 995.finf written to cl-out/995.finf
+Processing 996.finf...
+Processed 996.finf written to cl-out/996.finf
+ set=LearningFramework, type=Mention, th=none, Precision Strict: 0.5106
+ set=LearningFramework, type=Mention, th=none, Recall Strict: 0.5106
+ set=LearningFramework, type=Mention, th=none, F1.0 Strict: 0.5106
+ set=LearningFramework, type=Mention, th=none, Accuracy Strict: 0.5106
+ set=LearningFramework, type=Mention, th=none, Precision Lenient: 0.5106
+ set=LearningFramework, type=Mention, th=none, Recall Lenient: 0.5106
+ set=LearningFramework, type=Mention, th=none, F1.0 Lenient: 0.5106
+ set=LearningFramework, type=Mention, th=none, Accuracy Lenient: 0.5106
+ set=LearningFramework, type=Mention, th=none, Targets: 1279
+ set=LearningFramework, type=Mention, th=none, Responses: 1279
+ set=LearningFramework, type=Mention, th=none, Correct Strict: 653
+ set=LearningFramework, type=Mention, th=none, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=none, Incorrect Strict: 626
+ set=LearningFramework, type=Mention, th=none, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=none, Missing Strict: 626
+ set=LearningFramework, type=Mention, th=none, True Missing Strict: 0
+ set=LearningFramework, type=Mention, th=none, Missing Lenient: 626
+ set=LearningFramework, type=Mention, th=none, True Missing Lenient: 0
+ set=LearningFramework, type=Mention, th=none, Spurious Strict: 626
+ set=LearningFramework, type=Mention, th=none, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=none, Spurious Lenient: 626
+ set=LearningFramework, type=Mention, th=none, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=none, Single Correct Strict: 653
+ set=LearningFramework, type=Mention, th=none, Single Correct Lenient: 653
+ set=ReferenceKey, type=Mention, th=none, Precision Strict: 1.0
+ set=ReferenceKey, type=Mention, th=none, Recall Strict: 0.0
+ set=ReferenceKey, type=Mention, th=none, F1.0 Strict: 0.0
+ set=ReferenceKey, type=Mention, th=none, Accuracy Strict: 0.0
+ set=ReferenceKey, type=Mention, th=none, Precision Lenient: 1.0
+ set=ReferenceKey, type=Mention, th=none, Recall Lenient: 0.0
+ set=ReferenceKey, type=Mention, th=none, F1.0 Lenient: 0.0
+ set=ReferenceKey, type=Mention, th=none, Accuracy Lenient: 0.0
+ set=ReferenceKey, type=Mention, th=none, Targets: 1279
+ set=ReferenceKey, type=Mention, th=none, Responses: 0
+ set=ReferenceKey, type=Mention, th=none, Correct Strict: 0
+ set=ReferenceKey, type=Mention, th=none, Correct Partial: 0
+ set=ReferenceKey, type=Mention, th=none, Incorrect Strict: 0
+ set=ReferenceKey, type=Mention, th=none, Incorrect Partial: 0
+ set=ReferenceKey, type=Mention, th=none, Missing Strict: 1279
+ set=ReferenceKey, type=Mention, th=none, True Missing Strict: 1279
+ set=ReferenceKey, type=Mention, th=none, Missing Lenient: 1279
+ set=ReferenceKey, type=Mention, th=none, True Missing Lenient: 1279
+ set=ReferenceKey, type=Mention, th=none, Spurious Strict: 0
+ set=ReferenceKey, type=Mention, th=none, True Spurious Strict: 0
+ set=ReferenceKey, type=Mention, th=none, Spurious Lenient: 0
+ set=ReferenceKey, type=Mention, th=none, True Spurious Lenient: 0
+ set=ReferenceKey, type=Mention, th=none, Single Correct Strict: 0
+ set=ReferenceKey, type=Mention, th=none, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9409, Precision Strict: 0.5106
+ set=LearningFramework, type=Mention, th=0.9409, Recall Strict: 0.5106
+ set=LearningFramework, type=Mention, th=0.9409, F1.0 Strict: 0.5106
+ set=LearningFramework, type=Mention, th=0.9409, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9409, Precision Lenient: 0.5106
+ set=LearningFramework, type=Mention, th=0.9409, Recall Lenient: 0.5106
+ set=LearningFramework, type=Mention, th=0.9409, F1.0 Lenient: 0.5106
+ set=LearningFramework, type=Mention, th=0.9409, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9409, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9409, Responses: 1279
+ set=LearningFramework, type=Mention, th=0.9409, Correct Strict: 653
+ set=LearningFramework, type=Mention, th=0.9409, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9409, Incorrect Strict: 626
+ set=LearningFramework, type=Mention, th=0.9409, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9409, Missing Strict: 626
+ set=LearningFramework, type=Mention, th=0.9409, True Missing Strict: 0
+ set=LearningFramework, type=Mention, th=0.9409, Missing Lenient: 626
+ set=LearningFramework, type=Mention, th=0.9409, True Missing Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9409, Spurious Strict: 626
+ set=LearningFramework, type=Mention, th=0.9409, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9409, Spurious Lenient: 626
+ set=LearningFramework, type=Mention, th=0.9409, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9409, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9409, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9621, Precision Strict: 0.5134
+ set=LearningFramework, type=Mention, th=0.9621, Recall Strict: 0.5106
+ set=LearningFramework, type=Mention, th=0.9621, F1.0 Strict: 0.512
+ set=LearningFramework, type=Mention, th=0.9621, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9621, Precision Lenient: 0.5134
+ set=LearningFramework, type=Mention, th=0.9621, Recall Lenient: 0.5106
+ set=LearningFramework, type=Mention, th=0.9621, F1.0 Lenient: 0.512
+ set=LearningFramework, type=Mention, th=0.9621, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9621, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9621, Responses: 1272
+ set=LearningFramework, type=Mention, th=0.9621, Correct Strict: 653
+ set=LearningFramework, type=Mention, th=0.9621, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9621, Incorrect Strict: 619
+ set=LearningFramework, type=Mention, th=0.9621, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9621, Missing Strict: 626
+ set=LearningFramework, type=Mention, th=0.9621, True Missing Strict: 7
+ set=LearningFramework, type=Mention, th=0.9621, Missing Lenient: 626
+ set=LearningFramework, type=Mention, th=0.9621, True Missing Lenient: 7
+ set=LearningFramework, type=Mention, th=0.9621, Spurious Strict: 619
+ set=LearningFramework, type=Mention, th=0.9621, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9621, Spurious Lenient: 619
+ set=LearningFramework, type=Mention, th=0.9621, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9621, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9621, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9672, Precision Strict: 0.5154
+ set=LearningFramework, type=Mention, th=0.9672, Recall Strict: 0.5106
+ set=LearningFramework, type=Mention, th=0.9672, F1.0 Strict: 0.513
+ set=LearningFramework, type=Mention, th=0.9672, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9672, Precision Lenient: 0.5154
+ set=LearningFramework, type=Mention, th=0.9672, Recall Lenient: 0.5106
+ set=LearningFramework, type=Mention, th=0.9672, F1.0 Lenient: 0.513
+ set=LearningFramework, type=Mention, th=0.9672, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9672, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9672, Responses: 1267
+ set=LearningFramework, type=Mention, th=0.9672, Correct Strict: 653
+ set=LearningFramework, type=Mention, th=0.9672, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9672, Incorrect Strict: 614
+ set=LearningFramework, type=Mention, th=0.9672, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9672, Missing Strict: 626
+ set=LearningFramework, type=Mention, th=0.9672, True Missing Strict: 12
+ set=LearningFramework, type=Mention, th=0.9672, Missing Lenient: 626
+ set=LearningFramework, type=Mention, th=0.9672, True Missing Lenient: 12
+ set=LearningFramework, type=Mention, th=0.9672, Spurious Strict: 614
+ set=LearningFramework, type=Mention, th=0.9672, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9672, Spurious Lenient: 614
+ set=LearningFramework, type=Mention, th=0.9672, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9672, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9672, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9723, Precision Strict: 0.5216
+ set=LearningFramework, type=Mention, th=0.9723, Recall Strict: 0.5106
+ set=LearningFramework, type=Mention, th=0.9723, F1.0 Strict: 0.516
+ set=LearningFramework, type=Mention, th=0.9723, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9723, Precision Lenient: 0.5216
+ set=LearningFramework, type=Mention, th=0.9723, Recall Lenient: 0.5106
+ set=LearningFramework, type=Mention, th=0.9723, F1.0 Lenient: 0.516
+ set=LearningFramework, type=Mention, th=0.9723, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9723, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9723, Responses: 1252
+ set=LearningFramework, type=Mention, th=0.9723, Correct Strict: 653
+ set=LearningFramework, type=Mention, th=0.9723, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9723, Incorrect Strict: 599
+ set=LearningFramework, type=Mention, th=0.9723, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9723, Missing Strict: 626
+ set=LearningFramework, type=Mention, th=0.9723, True Missing Strict: 27
+ set=LearningFramework, type=Mention, th=0.9723, Missing Lenient: 626
+ set=LearningFramework, type=Mention, th=0.9723, True Missing Lenient: 27
+ set=LearningFramework, type=Mention, th=0.9723, Spurious Strict: 599
+ set=LearningFramework, type=Mention, th=0.9723, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9723, Spurious Lenient: 599
+ set=LearningFramework, type=Mention, th=0.9723, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9723, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9723, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9723, Precision Strict: 0.5224
+ set=LearningFramework, type=Mention, th=0.9723, Recall Strict: 0.5106
+ set=LearningFramework, type=Mention, th=0.9723, F1.0 Strict: 0.5164
+ set=LearningFramework, type=Mention, th=0.9723, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9723, Precision Lenient: 0.5224
+ set=LearningFramework, type=Mention, th=0.9723, Recall Lenient: 0.5106
+ set=LearningFramework, type=Mention, th=0.9723, F1.0 Lenient: 0.5164
+ set=LearningFramework, type=Mention, th=0.9723, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9723, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9723, Responses: 1250
+ set=LearningFramework, type=Mention, th=0.9723, Correct Strict: 653
+ set=LearningFramework, type=Mention, th=0.9723, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9723, Incorrect Strict: 597
+ set=LearningFramework, type=Mention, th=0.9723, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9723, Missing Strict: 626
+ set=LearningFramework, type=Mention, th=0.9723, True Missing Strict: 29
+ set=LearningFramework, type=Mention, th=0.9723, Missing Lenient: 626
+ set=LearningFramework, type=Mention, th=0.9723, True Missing Lenient: 29
+ set=LearningFramework, type=Mention, th=0.9723, Spurious Strict: 597
+ set=LearningFramework, type=Mention, th=0.9723, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9723, Spurious Lenient: 597
+ set=LearningFramework, type=Mention, th=0.9723, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9723, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9723, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9757, Precision Strict: 0.5241
+ set=LearningFramework, type=Mention, th=0.9757, Recall Strict: 0.5106
+ set=LearningFramework, type=Mention, th=0.9757, F1.0 Strict: 0.5172
+ set=LearningFramework, type=Mention, th=0.9757, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9757, Precision Lenient: 0.5241
+ set=LearningFramework, type=Mention, th=0.9757, Recall Lenient: 0.5106
+ set=LearningFramework, type=Mention, th=0.9757, F1.0 Lenient: 0.5172
+ set=LearningFramework, type=Mention, th=0.9757, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9757, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9757, Responses: 1246
+ set=LearningFramework, type=Mention, th=0.9757, Correct Strict: 653
+ set=LearningFramework, type=Mention, th=0.9757, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9757, Incorrect Strict: 593
+ set=LearningFramework, type=Mention, th=0.9757, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9757, Missing Strict: 626
+ set=LearningFramework, type=Mention, th=0.9757, True Missing Strict: 33
+ set=LearningFramework, type=Mention, th=0.9757, Missing Lenient: 626
+ set=LearningFramework, type=Mention, th=0.9757, True Missing Lenient: 33
+ set=LearningFramework, type=Mention, th=0.9757, Spurious Strict: 593
+ set=LearningFramework, type=Mention, th=0.9757, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9757, Spurious Lenient: 593
+ set=LearningFramework, type=Mention, th=0.9757, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9757, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9757, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9759, Precision Strict: 0.5292
+ set=LearningFramework, type=Mention, th=0.9759, Recall Strict: 0.5106
+ set=LearningFramework, type=Mention, th=0.9759, F1.0 Strict: 0.5197
+ set=LearningFramework, type=Mention, th=0.9759, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9759, Precision Lenient: 0.5292
+ set=LearningFramework, type=Mention, th=0.9759, Recall Lenient: 0.5106
+ set=LearningFramework, type=Mention, th=0.9759, F1.0 Lenient: 0.5197
+ set=LearningFramework, type=Mention, th=0.9759, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9759, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9759, Responses: 1234
+ set=LearningFramework, type=Mention, th=0.9759, Correct Strict: 653
+ set=LearningFramework, type=Mention, th=0.9759, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9759, Incorrect Strict: 581
+ set=LearningFramework, type=Mention, th=0.9759, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9759, Missing Strict: 626
+ set=LearningFramework, type=Mention, th=0.9759, True Missing Strict: 45
+ set=LearningFramework, type=Mention, th=0.9759, Missing Lenient: 626
+ set=LearningFramework, type=Mention, th=0.9759, True Missing Lenient: 45
+ set=LearningFramework, type=Mention, th=0.9759, Spurious Strict: 581
+ set=LearningFramework, type=Mention, th=0.9759, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9759, Spurious Lenient: 581
+ set=LearningFramework, type=Mention, th=0.9759, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9759, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9759, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9762, Precision Strict: 0.5292
+ set=LearningFramework, type=Mention, th=0.9762, Recall Strict: 0.5098
+ set=LearningFramework, type=Mention, th=0.9762, F1.0 Strict: 0.5193
+ set=LearningFramework, type=Mention, th=0.9762, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9762, Precision Lenient: 0.5292
+ set=LearningFramework, type=Mention, th=0.9762, Recall Lenient: 0.5098
+ set=LearningFramework, type=Mention, th=0.9762, F1.0 Lenient: 0.5193
+ set=LearningFramework, type=Mention, th=0.9762, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9762, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9762, Responses: 1232
+ set=LearningFramework, type=Mention, th=0.9762, Correct Strict: 652
+ set=LearningFramework, type=Mention, th=0.9762, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9762, Incorrect Strict: 580
+ set=LearningFramework, type=Mention, th=0.9762, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9762, Missing Strict: 627
+ set=LearningFramework, type=Mention, th=0.9762, True Missing Strict: 47
+ set=LearningFramework, type=Mention, th=0.9762, Missing Lenient: 627
+ set=LearningFramework, type=Mention, th=0.9762, True Missing Lenient: 47
+ set=LearningFramework, type=Mention, th=0.9762, Spurious Strict: 580
+ set=LearningFramework, type=Mention, th=0.9762, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9762, Spurious Lenient: 580
+ set=LearningFramework, type=Mention, th=0.9762, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9762, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9762, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9766, Precision Strict: 0.5322
+ set=LearningFramework, type=Mention, th=0.9766, Recall Strict: 0.5098
+ set=LearningFramework, type=Mention, th=0.9766, F1.0 Strict: 0.5208
+ set=LearningFramework, type=Mention, th=0.9766, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9766, Precision Lenient: 0.5322
+ set=LearningFramework, type=Mention, th=0.9766, Recall Lenient: 0.5098
+ set=LearningFramework, type=Mention, th=0.9766, F1.0 Lenient: 0.5208
+ set=LearningFramework, type=Mention, th=0.9766, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9766, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9766, Responses: 1225
+ set=LearningFramework, type=Mention, th=0.9766, Correct Strict: 652
+ set=LearningFramework, type=Mention, th=0.9766, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9766, Incorrect Strict: 573
+ set=LearningFramework, type=Mention, th=0.9766, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9766, Missing Strict: 627
+ set=LearningFramework, type=Mention, th=0.9766, True Missing Strict: 54
+ set=LearningFramework, type=Mention, th=0.9766, Missing Lenient: 627
+ set=LearningFramework, type=Mention, th=0.9766, True Missing Lenient: 54
+ set=LearningFramework, type=Mention, th=0.9766, Spurious Strict: 573
+ set=LearningFramework, type=Mention, th=0.9766, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9766, Spurious Lenient: 573
+ set=LearningFramework, type=Mention, th=0.9766, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9766, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9766, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9769, Precision Strict: 0.5362
+ set=LearningFramework, type=Mention, th=0.9769, Recall Strict: 0.5098
+ set=LearningFramework, type=Mention, th=0.9769, F1.0 Strict: 0.5226
+ set=LearningFramework, type=Mention, th=0.9769, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9769, Precision Lenient: 0.5362
+ set=LearningFramework, type=Mention, th=0.9769, Recall Lenient: 0.5098
+ set=LearningFramework, type=Mention, th=0.9769, F1.0 Lenient: 0.5226
+ set=LearningFramework, type=Mention, th=0.9769, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9769, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9769, Responses: 1216
+ set=LearningFramework, type=Mention, th=0.9769, Correct Strict: 652
+ set=LearningFramework, type=Mention, th=0.9769, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9769, Incorrect Strict: 564
+ set=LearningFramework, type=Mention, th=0.9769, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9769, Missing Strict: 627
+ set=LearningFramework, type=Mention, th=0.9769, True Missing Strict: 63
+ set=LearningFramework, type=Mention, th=0.9769, Missing Lenient: 627
+ set=LearningFramework, type=Mention, th=0.9769, True Missing Lenient: 63
+ set=LearningFramework, type=Mention, th=0.9769, Spurious Strict: 564
+ set=LearningFramework, type=Mention, th=0.9769, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9769, Spurious Lenient: 564
+ set=LearningFramework, type=Mention, th=0.9769, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9769, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9769, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9769, Precision Strict: 0.5371
+ set=LearningFramework, type=Mention, th=0.9769, Recall Strict: 0.5098
+ set=LearningFramework, type=Mention, th=0.9769, F1.0 Strict: 0.5231
+ set=LearningFramework, type=Mention, th=0.9769, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9769, Precision Lenient: 0.5371
+ set=LearningFramework, type=Mention, th=0.9769, Recall Lenient: 0.5098
+ set=LearningFramework, type=Mention, th=0.9769, F1.0 Lenient: 0.5231
+ set=LearningFramework, type=Mention, th=0.9769, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9769, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9769, Responses: 1214
+ set=LearningFramework, type=Mention, th=0.9769, Correct Strict: 652
+ set=LearningFramework, type=Mention, th=0.9769, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9769, Incorrect Strict: 562
+ set=LearningFramework, type=Mention, th=0.9769, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9769, Missing Strict: 627
+ set=LearningFramework, type=Mention, th=0.9769, True Missing Strict: 65
+ set=LearningFramework, type=Mention, th=0.9769, Missing Lenient: 627
+ set=LearningFramework, type=Mention, th=0.9769, True Missing Lenient: 65
+ set=LearningFramework, type=Mention, th=0.9769, Spurious Strict: 562
+ set=LearningFramework, type=Mention, th=0.9769, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9769, Spurious Lenient: 562
+ set=LearningFramework, type=Mention, th=0.9769, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9769, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9769, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9775, Precision Strict: 0.5393
+ set=LearningFramework, type=Mention, th=0.9775, Recall Strict: 0.5098
+ set=LearningFramework, type=Mention, th=0.9775, F1.0 Strict: 0.5241
+ set=LearningFramework, type=Mention, th=0.9775, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9775, Precision Lenient: 0.5393
+ set=LearningFramework, type=Mention, th=0.9775, Recall Lenient: 0.5098
+ set=LearningFramework, type=Mention, th=0.9775, F1.0 Lenient: 0.5241
+ set=LearningFramework, type=Mention, th=0.9775, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9775, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9775, Responses: 1209
+ set=LearningFramework, type=Mention, th=0.9775, Correct Strict: 652
+ set=LearningFramework, type=Mention, th=0.9775, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9775, Incorrect Strict: 557
+ set=LearningFramework, type=Mention, th=0.9775, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9775, Missing Strict: 627
+ set=LearningFramework, type=Mention, th=0.9775, True Missing Strict: 70
+ set=LearningFramework, type=Mention, th=0.9775, Missing Lenient: 627
+ set=LearningFramework, type=Mention, th=0.9775, True Missing Lenient: 70
+ set=LearningFramework, type=Mention, th=0.9775, Spurious Strict: 557
+ set=LearningFramework, type=Mention, th=0.9775, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9775, Spurious Lenient: 557
+ set=LearningFramework, type=Mention, th=0.9775, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9775, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9775, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9775, Precision Strict: 0.5397
+ set=LearningFramework, type=Mention, th=0.9775, Recall Strict: 0.5098
+ set=LearningFramework, type=Mention, th=0.9775, F1.0 Strict: 0.5243
+ set=LearningFramework, type=Mention, th=0.9775, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9775, Precision Lenient: 0.5397
+ set=LearningFramework, type=Mention, th=0.9775, Recall Lenient: 0.5098
+ set=LearningFramework, type=Mention, th=0.9775, F1.0 Lenient: 0.5243
+ set=LearningFramework, type=Mention, th=0.9775, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9775, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9775, Responses: 1208
+ set=LearningFramework, type=Mention, th=0.9775, Correct Strict: 652
+ set=LearningFramework, type=Mention, th=0.9775, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9775, Incorrect Strict: 556
+ set=LearningFramework, type=Mention, th=0.9775, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9775, Missing Strict: 627
+ set=LearningFramework, type=Mention, th=0.9775, True Missing Strict: 71
+ set=LearningFramework, type=Mention, th=0.9775, Missing Lenient: 627
+ set=LearningFramework, type=Mention, th=0.9775, True Missing Lenient: 71
+ set=LearningFramework, type=Mention, th=0.9775, Spurious Strict: 556
+ set=LearningFramework, type=Mention, th=0.9775, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9775, Spurious Lenient: 556
+ set=LearningFramework, type=Mention, th=0.9775, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9775, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9775, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9793, Precision Strict: 0.5424
+ set=LearningFramework, type=Mention, th=0.9793, Recall Strict: 0.5098
+ set=LearningFramework, type=Mention, th=0.9793, F1.0 Strict: 0.5256
+ set=LearningFramework, type=Mention, th=0.9793, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9793, Precision Lenient: 0.5424
+ set=LearningFramework, type=Mention, th=0.9793, Recall Lenient: 0.5098
+ set=LearningFramework, type=Mention, th=0.9793, F1.0 Lenient: 0.5256
+ set=LearningFramework, type=Mention, th=0.9793, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9793, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9793, Responses: 1202
+ set=LearningFramework, type=Mention, th=0.9793, Correct Strict: 652
+ set=LearningFramework, type=Mention, th=0.9793, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9793, Incorrect Strict: 550
+ set=LearningFramework, type=Mention, th=0.9793, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9793, Missing Strict: 627
+ set=LearningFramework, type=Mention, th=0.9793, True Missing Strict: 77
+ set=LearningFramework, type=Mention, th=0.9793, Missing Lenient: 627
+ set=LearningFramework, type=Mention, th=0.9793, True Missing Lenient: 77
+ set=LearningFramework, type=Mention, th=0.9793, Spurious Strict: 550
+ set=LearningFramework, type=Mention, th=0.9793, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9793, Spurious Lenient: 550
+ set=LearningFramework, type=Mention, th=0.9793, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9793, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9793, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9808, Precision Strict: 0.5442
+ set=LearningFramework, type=Mention, th=0.9808, Recall Strict: 0.5098
+ set=LearningFramework, type=Mention, th=0.9808, F1.0 Strict: 0.5264
+ set=LearningFramework, type=Mention, th=0.9808, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9808, Precision Lenient: 0.5442
+ set=LearningFramework, type=Mention, th=0.9808, Recall Lenient: 0.5098
+ set=LearningFramework, type=Mention, th=0.9808, F1.0 Lenient: 0.5264
+ set=LearningFramework, type=Mention, th=0.9808, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9808, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9808, Responses: 1198
+ set=LearningFramework, type=Mention, th=0.9808, Correct Strict: 652
+ set=LearningFramework, type=Mention, th=0.9808, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9808, Incorrect Strict: 546
+ set=LearningFramework, type=Mention, th=0.9808, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9808, Missing Strict: 627
+ set=LearningFramework, type=Mention, th=0.9808, True Missing Strict: 81
+ set=LearningFramework, type=Mention, th=0.9808, Missing Lenient: 627
+ set=LearningFramework, type=Mention, th=0.9808, True Missing Lenient: 81
+ set=LearningFramework, type=Mention, th=0.9808, Spurious Strict: 546
+ set=LearningFramework, type=Mention, th=0.9808, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9808, Spurious Lenient: 546
+ set=LearningFramework, type=Mention, th=0.9808, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9808, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9808, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.981, Precision Strict: 0.5481
+ set=LearningFramework, type=Mention, th=0.981, Recall Strict: 0.4941
+ set=LearningFramework, type=Mention, th=0.981, F1.0 Strict: 0.5197
+ set=LearningFramework, type=Mention, th=0.981, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.981, Precision Lenient: 0.5481
+ set=LearningFramework, type=Mention, th=0.981, Recall Lenient: 0.4941
+ set=LearningFramework, type=Mention, th=0.981, F1.0 Lenient: 0.5197
+ set=LearningFramework, type=Mention, th=0.981, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.981, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.981, Responses: 1153
+ set=LearningFramework, type=Mention, th=0.981, Correct Strict: 632
+ set=LearningFramework, type=Mention, th=0.981, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.981, Incorrect Strict: 521
+ set=LearningFramework, type=Mention, th=0.981, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.981, Missing Strict: 647
+ set=LearningFramework, type=Mention, th=0.981, True Missing Strict: 126
+ set=LearningFramework, type=Mention, th=0.981, Missing Lenient: 647
+ set=LearningFramework, type=Mention, th=0.981, True Missing Lenient: 126
+ set=LearningFramework, type=Mention, th=0.981, Spurious Strict: 521
+ set=LearningFramework, type=Mention, th=0.981, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.981, Spurious Lenient: 521
+ set=LearningFramework, type=Mention, th=0.981, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.981, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.981, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9813, Precision Strict: 0.5476
+ set=LearningFramework, type=Mention, th=0.9813, Recall Strict: 0.4902
+ set=LearningFramework, type=Mention, th=0.9813, F1.0 Strict: 0.5173
+ set=LearningFramework, type=Mention, th=0.9813, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9813, Precision Lenient: 0.5476
+ set=LearningFramework, type=Mention, th=0.9813, Recall Lenient: 0.4902
+ set=LearningFramework, type=Mention, th=0.9813, F1.0 Lenient: 0.5173
+ set=LearningFramework, type=Mention, th=0.9813, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9813, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9813, Responses: 1145
+ set=LearningFramework, type=Mention, th=0.9813, Correct Strict: 627
+ set=LearningFramework, type=Mention, th=0.9813, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9813, Incorrect Strict: 518
+ set=LearningFramework, type=Mention, th=0.9813, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9813, Missing Strict: 652
+ set=LearningFramework, type=Mention, th=0.9813, True Missing Strict: 134
+ set=LearningFramework, type=Mention, th=0.9813, Missing Lenient: 652
+ set=LearningFramework, type=Mention, th=0.9813, True Missing Lenient: 134
+ set=LearningFramework, type=Mention, th=0.9813, Spurious Strict: 518
+ set=LearningFramework, type=Mention, th=0.9813, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9813, Spurious Lenient: 518
+ set=LearningFramework, type=Mention, th=0.9813, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9813, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9813, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9817, Precision Strict: 0.5824
+ set=LearningFramework, type=Mention, th=0.9817, Recall Strict: 0.4754
+ set=LearningFramework, type=Mention, th=0.9817, F1.0 Strict: 0.5235
+ set=LearningFramework, type=Mention, th=0.9817, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9817, Precision Lenient: 0.5824
+ set=LearningFramework, type=Mention, th=0.9817, Recall Lenient: 0.4754
+ set=LearningFramework, type=Mention, th=0.9817, F1.0 Lenient: 0.5235
+ set=LearningFramework, type=Mention, th=0.9817, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9817, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9817, Responses: 1044
+ set=LearningFramework, type=Mention, th=0.9817, Correct Strict: 608
+ set=LearningFramework, type=Mention, th=0.9817, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9817, Incorrect Strict: 436
+ set=LearningFramework, type=Mention, th=0.9817, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9817, Missing Strict: 671
+ set=LearningFramework, type=Mention, th=0.9817, True Missing Strict: 235
+ set=LearningFramework, type=Mention, th=0.9817, Missing Lenient: 671
+ set=LearningFramework, type=Mention, th=0.9817, True Missing Lenient: 235
+ set=LearningFramework, type=Mention, th=0.9817, Spurious Strict: 436
+ set=LearningFramework, type=Mention, th=0.9817, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9817, Spurious Lenient: 436
+ set=LearningFramework, type=Mention, th=0.9817, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9817, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9817, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.982, Precision Strict: 0.5841
+ set=LearningFramework, type=Mention, th=0.982, Recall Strict: 0.4754
+ set=LearningFramework, type=Mention, th=0.982, F1.0 Strict: 0.5241
+ set=LearningFramework, type=Mention, th=0.982, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.982, Precision Lenient: 0.5841
+ set=LearningFramework, type=Mention, th=0.982, Recall Lenient: 0.4754
+ set=LearningFramework, type=Mention, th=0.982, F1.0 Lenient: 0.5241
+ set=LearningFramework, type=Mention, th=0.982, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.982, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.982, Responses: 1041
+ set=LearningFramework, type=Mention, th=0.982, Correct Strict: 608
+ set=LearningFramework, type=Mention, th=0.982, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.982, Incorrect Strict: 433
+ set=LearningFramework, type=Mention, th=0.982, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.982, Missing Strict: 671
+ set=LearningFramework, type=Mention, th=0.982, True Missing Strict: 238
+ set=LearningFramework, type=Mention, th=0.982, Missing Lenient: 671
+ set=LearningFramework, type=Mention, th=0.982, True Missing Lenient: 238
+ set=LearningFramework, type=Mention, th=0.982, Spurious Strict: 433
+ set=LearningFramework, type=Mention, th=0.982, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.982, Spurious Lenient: 433
+ set=LearningFramework, type=Mention, th=0.982, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.982, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.982, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9826, Precision Strict: 0.604
+ set=LearningFramework, type=Mention, th=0.9826, Recall Strict: 0.4746
+ set=LearningFramework, type=Mention, th=0.9826, F1.0 Strict: 0.5315
+ set=LearningFramework, type=Mention, th=0.9826, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9826, Precision Lenient: 0.604
+ set=LearningFramework, type=Mention, th=0.9826, Recall Lenient: 0.4746
+ set=LearningFramework, type=Mention, th=0.9826, F1.0 Lenient: 0.5315
+ set=LearningFramework, type=Mention, th=0.9826, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9826, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9826, Responses: 1005
+ set=LearningFramework, type=Mention, th=0.9826, Correct Strict: 607
+ set=LearningFramework, type=Mention, th=0.9826, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9826, Incorrect Strict: 398
+ set=LearningFramework, type=Mention, th=0.9826, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9826, Missing Strict: 672
+ set=LearningFramework, type=Mention, th=0.9826, True Missing Strict: 274
+ set=LearningFramework, type=Mention, th=0.9826, Missing Lenient: 672
+ set=LearningFramework, type=Mention, th=0.9826, True Missing Lenient: 274
+ set=LearningFramework, type=Mention, th=0.9826, Spurious Strict: 398
+ set=LearningFramework, type=Mention, th=0.9826, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9826, Spurious Lenient: 398
+ set=LearningFramework, type=Mention, th=0.9826, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9826, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9826, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9826, Precision Strict: 0.6786
+ set=LearningFramework, type=Mention, th=0.9826, Recall Strict: 0.4441
+ set=LearningFramework, type=Mention, th=0.9826, F1.0 Strict: 0.5369
+ set=LearningFramework, type=Mention, th=0.9826, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9826, Precision Lenient: 0.6786
+ set=LearningFramework, type=Mention, th=0.9826, Recall Lenient: 0.4441
+ set=LearningFramework, type=Mention, th=0.9826, F1.0 Lenient: 0.5369
+ set=LearningFramework, type=Mention, th=0.9826, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9826, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9826, Responses: 837
+ set=LearningFramework, type=Mention, th=0.9826, Correct Strict: 568
+ set=LearningFramework, type=Mention, th=0.9826, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9826, Incorrect Strict: 269
+ set=LearningFramework, type=Mention, th=0.9826, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9826, Missing Strict: 711
+ set=LearningFramework, type=Mention, th=0.9826, True Missing Strict: 442
+ set=LearningFramework, type=Mention, th=0.9826, Missing Lenient: 711
+ set=LearningFramework, type=Mention, th=0.9826, True Missing Lenient: 442
+ set=LearningFramework, type=Mention, th=0.9826, Spurious Strict: 269
+ set=LearningFramework, type=Mention, th=0.9826, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9826, Spurious Lenient: 269
+ set=LearningFramework, type=Mention, th=0.9826, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9826, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9826, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9844, Precision Strict: 0.6819
+ set=LearningFramework, type=Mention, th=0.9844, Recall Strict: 0.4441
+ set=LearningFramework, type=Mention, th=0.9844, F1.0 Strict: 0.5379
+ set=LearningFramework, type=Mention, th=0.9844, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9844, Precision Lenient: 0.6819
+ set=LearningFramework, type=Mention, th=0.9844, Recall Lenient: 0.4441
+ set=LearningFramework, type=Mention, th=0.9844, F1.0 Lenient: 0.5379
+ set=LearningFramework, type=Mention, th=0.9844, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9844, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9844, Responses: 833
+ set=LearningFramework, type=Mention, th=0.9844, Correct Strict: 568
+ set=LearningFramework, type=Mention, th=0.9844, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9844, Incorrect Strict: 265
+ set=LearningFramework, type=Mention, th=0.9844, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9844, Missing Strict: 711
+ set=LearningFramework, type=Mention, th=0.9844, True Missing Strict: 446
+ set=LearningFramework, type=Mention, th=0.9844, Missing Lenient: 711
+ set=LearningFramework, type=Mention, th=0.9844, True Missing Lenient: 446
+ set=LearningFramework, type=Mention, th=0.9844, Spurious Strict: 265
+ set=LearningFramework, type=Mention, th=0.9844, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9844, Spurious Lenient: 265
+ set=LearningFramework, type=Mention, th=0.9844, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9844, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9844, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9845, Precision Strict: 0.7346
+ set=LearningFramework, type=Mention, th=0.9845, Recall Strict: 0.4003
+ set=LearningFramework, type=Mention, th=0.9845, F1.0 Strict: 0.5182
+ set=LearningFramework, type=Mention, th=0.9845, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9845, Precision Lenient: 0.7346
+ set=LearningFramework, type=Mention, th=0.9845, Recall Lenient: 0.4003
+ set=LearningFramework, type=Mention, th=0.9845, F1.0 Lenient: 0.5182
+ set=LearningFramework, type=Mention, th=0.9845, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9845, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9845, Responses: 697
+ set=LearningFramework, type=Mention, th=0.9845, Correct Strict: 512
+ set=LearningFramework, type=Mention, th=0.9845, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9845, Incorrect Strict: 185
+ set=LearningFramework, type=Mention, th=0.9845, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9845, Missing Strict: 767
+ set=LearningFramework, type=Mention, th=0.9845, True Missing Strict: 582
+ set=LearningFramework, type=Mention, th=0.9845, Missing Lenient: 767
+ set=LearningFramework, type=Mention, th=0.9845, True Missing Lenient: 582
+ set=LearningFramework, type=Mention, th=0.9845, Spurious Strict: 185
+ set=LearningFramework, type=Mention, th=0.9845, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9845, Spurious Lenient: 185
+ set=LearningFramework, type=Mention, th=0.9845, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9845, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9845, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9859, Precision Strict: 0.7356
+ set=LearningFramework, type=Mention, th=0.9859, Recall Strict: 0.4003
+ set=LearningFramework, type=Mention, th=0.9859, F1.0 Strict: 0.5185
+ set=LearningFramework, type=Mention, th=0.9859, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9859, Precision Lenient: 0.7356
+ set=LearningFramework, type=Mention, th=0.9859, Recall Lenient: 0.4003
+ set=LearningFramework, type=Mention, th=0.9859, F1.0 Lenient: 0.5185
+ set=LearningFramework, type=Mention, th=0.9859, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9859, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9859, Responses: 696
+ set=LearningFramework, type=Mention, th=0.9859, Correct Strict: 512
+ set=LearningFramework, type=Mention, th=0.9859, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9859, Incorrect Strict: 184
+ set=LearningFramework, type=Mention, th=0.9859, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9859, Missing Strict: 767
+ set=LearningFramework, type=Mention, th=0.9859, True Missing Strict: 583
+ set=LearningFramework, type=Mention, th=0.9859, Missing Lenient: 767
+ set=LearningFramework, type=Mention, th=0.9859, True Missing Lenient: 583
+ set=LearningFramework, type=Mention, th=0.9859, Spurious Strict: 184
+ set=LearningFramework, type=Mention, th=0.9859, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9859, Spurious Lenient: 184
+ set=LearningFramework, type=Mention, th=0.9859, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9859, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9859, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9864, Precision Strict: 0.7349
+ set=LearningFramework, type=Mention, th=0.9864, Recall Strict: 0.3987
+ set=LearningFramework, type=Mention, th=0.9864, F1.0 Strict: 0.517
+ set=LearningFramework, type=Mention, th=0.9864, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9864, Precision Lenient: 0.7349
+ set=LearningFramework, type=Mention, th=0.9864, Recall Lenient: 0.3987
+ set=LearningFramework, type=Mention, th=0.9864, F1.0 Lenient: 0.517
+ set=LearningFramework, type=Mention, th=0.9864, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9864, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9864, Responses: 694
+ set=LearningFramework, type=Mention, th=0.9864, Correct Strict: 510
+ set=LearningFramework, type=Mention, th=0.9864, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9864, Incorrect Strict: 184
+ set=LearningFramework, type=Mention, th=0.9864, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9864, Missing Strict: 769
+ set=LearningFramework, type=Mention, th=0.9864, True Missing Strict: 585
+ set=LearningFramework, type=Mention, th=0.9864, Missing Lenient: 769
+ set=LearningFramework, type=Mention, th=0.9864, True Missing Lenient: 585
+ set=LearningFramework, type=Mention, th=0.9864, Spurious Strict: 184
+ set=LearningFramework, type=Mention, th=0.9864, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9864, Spurious Lenient: 184
+ set=LearningFramework, type=Mention, th=0.9864, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9864, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9864, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9868, Precision Strict: 0.7337
+ set=LearningFramework, type=Mention, th=0.9868, Recall Strict: 0.3964
+ set=LearningFramework, type=Mention, th=0.9868, F1.0 Strict: 0.5147
+ set=LearningFramework, type=Mention, th=0.9868, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9868, Precision Lenient: 0.7337
+ set=LearningFramework, type=Mention, th=0.9868, Recall Lenient: 0.3964
+ set=LearningFramework, type=Mention, th=0.9868, F1.0 Lenient: 0.5147
+ set=LearningFramework, type=Mention, th=0.9868, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9868, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9868, Responses: 691
+ set=LearningFramework, type=Mention, th=0.9868, Correct Strict: 507
+ set=LearningFramework, type=Mention, th=0.9868, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9868, Incorrect Strict: 184
+ set=LearningFramework, type=Mention, th=0.9868, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9868, Missing Strict: 772
+ set=LearningFramework, type=Mention, th=0.9868, True Missing Strict: 588
+ set=LearningFramework, type=Mention, th=0.9868, Missing Lenient: 772
+ set=LearningFramework, type=Mention, th=0.9868, True Missing Lenient: 588
+ set=LearningFramework, type=Mention, th=0.9868, Spurious Strict: 184
+ set=LearningFramework, type=Mention, th=0.9868, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9868, Spurious Lenient: 184
+ set=LearningFramework, type=Mention, th=0.9868, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9868, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9868, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9877, Precision Strict: 0.8046
+ set=LearningFramework, type=Mention, th=0.9877, Recall Strict: 0.3284
+ set=LearningFramework, type=Mention, th=0.9877, F1.0 Strict: 0.4664
+ set=LearningFramework, type=Mention, th=0.9877, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9877, Precision Lenient: 0.8046
+ set=LearningFramework, type=Mention, th=0.9877, Recall Lenient: 0.3284
+ set=LearningFramework, type=Mention, th=0.9877, F1.0 Lenient: 0.4664
+ set=LearningFramework, type=Mention, th=0.9877, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9877, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9877, Responses: 522
+ set=LearningFramework, type=Mention, th=0.9877, Correct Strict: 420
+ set=LearningFramework, type=Mention, th=0.9877, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9877, Incorrect Strict: 102
+ set=LearningFramework, type=Mention, th=0.9877, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9877, Missing Strict: 859
+ set=LearningFramework, type=Mention, th=0.9877, True Missing Strict: 757
+ set=LearningFramework, type=Mention, th=0.9877, Missing Lenient: 859
+ set=LearningFramework, type=Mention, th=0.9877, True Missing Lenient: 757
+ set=LearningFramework, type=Mention, th=0.9877, Spurious Strict: 102
+ set=LearningFramework, type=Mention, th=0.9877, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9877, Spurious Lenient: 102
+ set=LearningFramework, type=Mention, th=0.9877, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9877, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9877, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9895, Precision Strict: 0.8016
+ set=LearningFramework, type=Mention, th=0.9895, Recall Strict: 0.3159
+ set=LearningFramework, type=Mention, th=0.9895, F1.0 Strict: 0.4532
+ set=LearningFramework, type=Mention, th=0.9895, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9895, Precision Lenient: 0.8016
+ set=LearningFramework, type=Mention, th=0.9895, Recall Lenient: 0.3159
+ set=LearningFramework, type=Mention, th=0.9895, F1.0 Lenient: 0.4532
+ set=LearningFramework, type=Mention, th=0.9895, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9895, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9895, Responses: 504
+ set=LearningFramework, type=Mention, th=0.9895, Correct Strict: 404
+ set=LearningFramework, type=Mention, th=0.9895, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9895, Incorrect Strict: 100
+ set=LearningFramework, type=Mention, th=0.9895, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9895, Missing Strict: 875
+ set=LearningFramework, type=Mention, th=0.9895, True Missing Strict: 775
+ set=LearningFramework, type=Mention, th=0.9895, Missing Lenient: 875
+ set=LearningFramework, type=Mention, th=0.9895, True Missing Lenient: 775
+ set=LearningFramework, type=Mention, th=0.9895, Spurious Strict: 100
+ set=LearningFramework, type=Mention, th=0.9895, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9895, Spurious Lenient: 100
+ set=LearningFramework, type=Mention, th=0.9895, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9895, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9895, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9896, Precision Strict: 0.7996
+ set=LearningFramework, type=Mention, th=0.9896, Recall Strict: 0.312
+ set=LearningFramework, type=Mention, th=0.9896, F1.0 Strict: 0.4488
+ set=LearningFramework, type=Mention, th=0.9896, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9896, Precision Lenient: 0.7996
+ set=LearningFramework, type=Mention, th=0.9896, Recall Lenient: 0.312
+ set=LearningFramework, type=Mention, th=0.9896, F1.0 Lenient: 0.4488
+ set=LearningFramework, type=Mention, th=0.9896, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9896, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9896, Responses: 499
+ set=LearningFramework, type=Mention, th=0.9896, Correct Strict: 399
+ set=LearningFramework, type=Mention, th=0.9896, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9896, Incorrect Strict: 100
+ set=LearningFramework, type=Mention, th=0.9896, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9896, Missing Strict: 880
+ set=LearningFramework, type=Mention, th=0.9896, True Missing Strict: 780
+ set=LearningFramework, type=Mention, th=0.9896, Missing Lenient: 880
+ set=LearningFramework, type=Mention, th=0.9896, True Missing Lenient: 780
+ set=LearningFramework, type=Mention, th=0.9896, Spurious Strict: 100
+ set=LearningFramework, type=Mention, th=0.9896, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9896, Spurious Lenient: 100
+ set=LearningFramework, type=Mention, th=0.9896, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9896, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9896, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9919, Precision Strict: 0.8501
+ set=LearningFramework, type=Mention, th=0.9919, Recall Strict: 0.2838
+ set=LearningFramework, type=Mention, th=0.9919, F1.0 Strict: 0.4256
+ set=LearningFramework, type=Mention, th=0.9919, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9919, Precision Lenient: 0.8501
+ set=LearningFramework, type=Mention, th=0.9919, Recall Lenient: 0.2838
+ set=LearningFramework, type=Mention, th=0.9919, F1.0 Lenient: 0.4256
+ set=LearningFramework, type=Mention, th=0.9919, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9919, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9919, Responses: 427
+ set=LearningFramework, type=Mention, th=0.9919, Correct Strict: 363
+ set=LearningFramework, type=Mention, th=0.9919, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9919, Incorrect Strict: 64
+ set=LearningFramework, type=Mention, th=0.9919, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9919, Missing Strict: 916
+ set=LearningFramework, type=Mention, th=0.9919, True Missing Strict: 852
+ set=LearningFramework, type=Mention, th=0.9919, Missing Lenient: 916
+ set=LearningFramework, type=Mention, th=0.9919, True Missing Lenient: 852
+ set=LearningFramework, type=Mention, th=0.9919, Spurious Strict: 64
+ set=LearningFramework, type=Mention, th=0.9919, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9919, Spurious Lenient: 64
+ set=LearningFramework, type=Mention, th=0.9919, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9919, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9919, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9928, Precision Strict: 0.8511
+ set=LearningFramework, type=Mention, th=0.9928, Recall Strict: 0.2682
+ set=LearningFramework, type=Mention, th=0.9928, F1.0 Strict: 0.4078
+ set=LearningFramework, type=Mention, th=0.9928, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9928, Precision Lenient: 0.8511
+ set=LearningFramework, type=Mention, th=0.9928, Recall Lenient: 0.2682
+ set=LearningFramework, type=Mention, th=0.9928, F1.0 Lenient: 0.4078
+ set=LearningFramework, type=Mention, th=0.9928, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9928, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9928, Responses: 403
+ set=LearningFramework, type=Mention, th=0.9928, Correct Strict: 343
+ set=LearningFramework, type=Mention, th=0.9928, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9928, Incorrect Strict: 60
+ set=LearningFramework, type=Mention, th=0.9928, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9928, Missing Strict: 936
+ set=LearningFramework, type=Mention, th=0.9928, True Missing Strict: 876
+ set=LearningFramework, type=Mention, th=0.9928, Missing Lenient: 936
+ set=LearningFramework, type=Mention, th=0.9928, True Missing Lenient: 876
+ set=LearningFramework, type=Mention, th=0.9928, Spurious Strict: 60
+ set=LearningFramework, type=Mention, th=0.9928, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9928, Spurious Lenient: 60
+ set=LearningFramework, type=Mention, th=0.9928, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9928, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9928, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9928, Precision Strict: 0.8504
+ set=LearningFramework, type=Mention, th=0.9928, Recall Strict: 0.2666
+ set=LearningFramework, type=Mention, th=0.9928, F1.0 Strict: 0.406
+ set=LearningFramework, type=Mention, th=0.9928, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9928, Precision Lenient: 0.8504
+ set=LearningFramework, type=Mention, th=0.9928, Recall Lenient: 0.2666
+ set=LearningFramework, type=Mention, th=0.9928, F1.0 Lenient: 0.406
+ set=LearningFramework, type=Mention, th=0.9928, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9928, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9928, Responses: 401
+ set=LearningFramework, type=Mention, th=0.9928, Correct Strict: 341
+ set=LearningFramework, type=Mention, th=0.9928, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9928, Incorrect Strict: 60
+ set=LearningFramework, type=Mention, th=0.9928, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9928, Missing Strict: 938
+ set=LearningFramework, type=Mention, th=0.9928, True Missing Strict: 878
+ set=LearningFramework, type=Mention, th=0.9928, Missing Lenient: 938
+ set=LearningFramework, type=Mention, th=0.9928, True Missing Lenient: 878
+ set=LearningFramework, type=Mention, th=0.9928, Spurious Strict: 60
+ set=LearningFramework, type=Mention, th=0.9928, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9928, Spurious Lenient: 60
+ set=LearningFramework, type=Mention, th=0.9928, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9928, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9928, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9946, Precision Strict: 0.8654
+ set=LearningFramework, type=Mention, th=0.9946, Recall Strict: 0.2111
+ set=LearningFramework, type=Mention, th=0.9946, F1.0 Strict: 0.3394
+ set=LearningFramework, type=Mention, th=0.9946, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9946, Precision Lenient: 0.8654
+ set=LearningFramework, type=Mention, th=0.9946, Recall Lenient: 0.2111
+ set=LearningFramework, type=Mention, th=0.9946, F1.0 Lenient: 0.3394
+ set=LearningFramework, type=Mention, th=0.9946, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9946, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9946, Responses: 312
+ set=LearningFramework, type=Mention, th=0.9946, Correct Strict: 270
+ set=LearningFramework, type=Mention, th=0.9946, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9946, Incorrect Strict: 42
+ set=LearningFramework, type=Mention, th=0.9946, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9946, Missing Strict: 1009
+ set=LearningFramework, type=Mention, th=0.9946, True Missing Strict: 967
+ set=LearningFramework, type=Mention, th=0.9946, Missing Lenient: 1009
+ set=LearningFramework, type=Mention, th=0.9946, True Missing Lenient: 967
+ set=LearningFramework, type=Mention, th=0.9946, Spurious Strict: 42
+ set=LearningFramework, type=Mention, th=0.9946, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9946, Spurious Lenient: 42
+ set=LearningFramework, type=Mention, th=0.9946, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9946, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9946, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9961, Precision Strict: 0.862
+ set=LearningFramework, type=Mention, th=0.9961, Recall Strict: 0.2002
+ set=LearningFramework, type=Mention, th=0.9961, F1.0 Strict: 0.3249
+ set=LearningFramework, type=Mention, th=0.9961, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9961, Precision Lenient: 0.862
+ set=LearningFramework, type=Mention, th=0.9961, Recall Lenient: 0.2002
+ set=LearningFramework, type=Mention, th=0.9961, F1.0 Lenient: 0.3249
+ set=LearningFramework, type=Mention, th=0.9961, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9961, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9961, Responses: 297
+ set=LearningFramework, type=Mention, th=0.9961, Correct Strict: 256
+ set=LearningFramework, type=Mention, th=0.9961, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9961, Incorrect Strict: 41
+ set=LearningFramework, type=Mention, th=0.9961, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9961, Missing Strict: 1023
+ set=LearningFramework, type=Mention, th=0.9961, True Missing Strict: 982
+ set=LearningFramework, type=Mention, th=0.9961, Missing Lenient: 1023
+ set=LearningFramework, type=Mention, th=0.9961, True Missing Lenient: 982
+ set=LearningFramework, type=Mention, th=0.9961, Spurious Strict: 41
+ set=LearningFramework, type=Mention, th=0.9961, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9961, Spurious Lenient: 41
+ set=LearningFramework, type=Mention, th=0.9961, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9961, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9961, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9962, Precision Strict: 0.8673
+ set=LearningFramework, type=Mention, th=0.9962, Recall Strict: 0.1994
+ set=LearningFramework, type=Mention, th=0.9962, F1.0 Strict: 0.3242
+ set=LearningFramework, type=Mention, th=0.9962, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9962, Precision Lenient: 0.8673
+ set=LearningFramework, type=Mention, th=0.9962, Recall Lenient: 0.1994
+ set=LearningFramework, type=Mention, th=0.9962, F1.0 Lenient: 0.3242
+ set=LearningFramework, type=Mention, th=0.9962, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9962, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9962, Responses: 294
+ set=LearningFramework, type=Mention, th=0.9962, Correct Strict: 255
+ set=LearningFramework, type=Mention, th=0.9962, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9962, Incorrect Strict: 39
+ set=LearningFramework, type=Mention, th=0.9962, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9962, Missing Strict: 1024
+ set=LearningFramework, type=Mention, th=0.9962, True Missing Strict: 985
+ set=LearningFramework, type=Mention, th=0.9962, Missing Lenient: 1024
+ set=LearningFramework, type=Mention, th=0.9962, True Missing Lenient: 985
+ set=LearningFramework, type=Mention, th=0.9962, Spurious Strict: 39
+ set=LearningFramework, type=Mention, th=0.9962, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9962, Spurious Lenient: 39
+ set=LearningFramework, type=Mention, th=0.9962, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9962, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9962, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9966, Precision Strict: 0.9209
+ set=LearningFramework, type=Mention, th=0.9966, Recall Strict: 0.1822
+ set=LearningFramework, type=Mention, th=0.9966, F1.0 Strict: 0.3042
+ set=LearningFramework, type=Mention, th=0.9966, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9966, Precision Lenient: 0.9209
+ set=LearningFramework, type=Mention, th=0.9966, Recall Lenient: 0.1822
+ set=LearningFramework, type=Mention, th=0.9966, F1.0 Lenient: 0.3042
+ set=LearningFramework, type=Mention, th=0.9966, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9966, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9966, Responses: 253
+ set=LearningFramework, type=Mention, th=0.9966, Correct Strict: 233
+ set=LearningFramework, type=Mention, th=0.9966, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9966, Incorrect Strict: 20
+ set=LearningFramework, type=Mention, th=0.9966, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9966, Missing Strict: 1046
+ set=LearningFramework, type=Mention, th=0.9966, True Missing Strict: 1026
+ set=LearningFramework, type=Mention, th=0.9966, Missing Lenient: 1046
+ set=LearningFramework, type=Mention, th=0.9966, True Missing Lenient: 1026
+ set=LearningFramework, type=Mention, th=0.9966, Spurious Strict: 20
+ set=LearningFramework, type=Mention, th=0.9966, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9966, Spurious Lenient: 20
+ set=LearningFramework, type=Mention, th=0.9966, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9966, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9966, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.997, Precision Strict: 0.9206
+ set=LearningFramework, type=Mention, th=0.997, Recall Strict: 0.1814
+ set=LearningFramework, type=Mention, th=0.997, F1.0 Strict: 0.3031
+ set=LearningFramework, type=Mention, th=0.997, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.997, Precision Lenient: 0.9206
+ set=LearningFramework, type=Mention, th=0.997, Recall Lenient: 0.1814
+ set=LearningFramework, type=Mention, th=0.997, F1.0 Lenient: 0.3031
+ set=LearningFramework, type=Mention, th=0.997, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.997, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.997, Responses: 252
+ set=LearningFramework, type=Mention, th=0.997, Correct Strict: 232
+ set=LearningFramework, type=Mention, th=0.997, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.997, Incorrect Strict: 20
+ set=LearningFramework, type=Mention, th=0.997, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.997, Missing Strict: 1047
+ set=LearningFramework, type=Mention, th=0.997, True Missing Strict: 1027
+ set=LearningFramework, type=Mention, th=0.997, Missing Lenient: 1047
+ set=LearningFramework, type=Mention, th=0.997, True Missing Lenient: 1027
+ set=LearningFramework, type=Mention, th=0.997, Spurious Strict: 20
+ set=LearningFramework, type=Mention, th=0.997, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.997, Spurious Lenient: 20
+ set=LearningFramework, type=Mention, th=0.997, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.997, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.997, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9979, Precision Strict: 0.9194
+ set=LearningFramework, type=Mention, th=0.9979, Recall Strict: 0.1783
+ set=LearningFramework, type=Mention, th=0.9979, F1.0 Strict: 0.2986
+ set=LearningFramework, type=Mention, th=0.9979, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9979, Precision Lenient: 0.9194
+ set=LearningFramework, type=Mention, th=0.9979, Recall Lenient: 0.1783
+ set=LearningFramework, type=Mention, th=0.9979, F1.0 Lenient: 0.2986
+ set=LearningFramework, type=Mention, th=0.9979, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9979, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9979, Responses: 248
+ set=LearningFramework, type=Mention, th=0.9979, Correct Strict: 228
+ set=LearningFramework, type=Mention, th=0.9979, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9979, Incorrect Strict: 20
+ set=LearningFramework, type=Mention, th=0.9979, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9979, Missing Strict: 1051
+ set=LearningFramework, type=Mention, th=0.9979, True Missing Strict: 1031
+ set=LearningFramework, type=Mention, th=0.9979, Missing Lenient: 1051
+ set=LearningFramework, type=Mention, th=0.9979, True Missing Lenient: 1031
+ set=LearningFramework, type=Mention, th=0.9979, Spurious Strict: 20
+ set=LearningFramework, type=Mention, th=0.9979, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9979, Spurious Lenient: 20
+ set=LearningFramework, type=Mention, th=0.9979, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9979, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9979, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9979, Precision Strict: 0.9224
+ set=LearningFramework, type=Mention, th=0.9979, Recall Strict: 0.1767
+ set=LearningFramework, type=Mention, th=0.9979, F1.0 Strict: 0.2966
+ set=LearningFramework, type=Mention, th=0.9979, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9979, Precision Lenient: 0.9224
+ set=LearningFramework, type=Mention, th=0.9979, Recall Lenient: 0.1767
+ set=LearningFramework, type=Mention, th=0.9979, F1.0 Lenient: 0.2966
+ set=LearningFramework, type=Mention, th=0.9979, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9979, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9979, Responses: 245
+ set=LearningFramework, type=Mention, th=0.9979, Correct Strict: 226
+ set=LearningFramework, type=Mention, th=0.9979, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9979, Incorrect Strict: 19
+ set=LearningFramework, type=Mention, th=0.9979, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9979, Missing Strict: 1053
+ set=LearningFramework, type=Mention, th=0.9979, True Missing Strict: 1034
+ set=LearningFramework, type=Mention, th=0.9979, Missing Lenient: 1053
+ set=LearningFramework, type=Mention, th=0.9979, True Missing Lenient: 1034
+ set=LearningFramework, type=Mention, th=0.9979, Spurious Strict: 19
+ set=LearningFramework, type=Mention, th=0.9979, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9979, Spurious Lenient: 19
+ set=LearningFramework, type=Mention, th=0.9979, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9979, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9979, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9996, Precision Strict: 0.9218
+ set=LearningFramework, type=Mention, th=0.9996, Recall Strict: 0.1751
+ set=LearningFramework, type=Mention, th=0.9996, F1.0 Strict: 0.2943
+ set=LearningFramework, type=Mention, th=0.9996, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9996, Precision Lenient: 0.9218
+ set=LearningFramework, type=Mention, th=0.9996, Recall Lenient: 0.1751
+ set=LearningFramework, type=Mention, th=0.9996, F1.0 Lenient: 0.2943
+ set=LearningFramework, type=Mention, th=0.9996, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9996, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9996, Responses: 243
+ set=LearningFramework, type=Mention, th=0.9996, Correct Strict: 224
+ set=LearningFramework, type=Mention, th=0.9996, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9996, Incorrect Strict: 19
+ set=LearningFramework, type=Mention, th=0.9996, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9996, Missing Strict: 1055
+ set=LearningFramework, type=Mention, th=0.9996, True Missing Strict: 1036
+ set=LearningFramework, type=Mention, th=0.9996, Missing Lenient: 1055
+ set=LearningFramework, type=Mention, th=0.9996, True Missing Lenient: 1036
+ set=LearningFramework, type=Mention, th=0.9996, Spurious Strict: 19
+ set=LearningFramework, type=Mention, th=0.9996, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9996, Spurious Lenient: 19
+ set=LearningFramework, type=Mention, th=0.9996, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9996, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9996, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9997, Precision Strict: 0.9277
+ set=LearningFramework, type=Mention, th=0.9997, Recall Strict: 0.1704
+ set=LearningFramework, type=Mention, th=0.9997, F1.0 Strict: 0.288
+ set=LearningFramework, type=Mention, th=0.9997, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9997, Precision Lenient: 0.9277
+ set=LearningFramework, type=Mention, th=0.9997, Recall Lenient: 0.1704
+ set=LearningFramework, type=Mention, th=0.9997, F1.0 Lenient: 0.288
+ set=LearningFramework, type=Mention, th=0.9997, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9997, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9997, Responses: 235
+ set=LearningFramework, type=Mention, th=0.9997, Correct Strict: 218
+ set=LearningFramework, type=Mention, th=0.9997, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9997, Incorrect Strict: 17
+ set=LearningFramework, type=Mention, th=0.9997, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9997, Missing Strict: 1061
+ set=LearningFramework, type=Mention, th=0.9997, True Missing Strict: 1044
+ set=LearningFramework, type=Mention, th=0.9997, Missing Lenient: 1061
+ set=LearningFramework, type=Mention, th=0.9997, True Missing Lenient: 1044
+ set=LearningFramework, type=Mention, th=0.9997, Spurious Strict: 17
+ set=LearningFramework, type=Mention, th=0.9997, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9997, Spurious Lenient: 17
+ set=LearningFramework, type=Mention, th=0.9997, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9997, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9997, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9997, Precision Strict: 0.9333
+ set=LearningFramework, type=Mention, th=0.9997, Recall Strict: 0.1642
+ set=LearningFramework, type=Mention, th=0.9997, F1.0 Strict: 0.2793
+ set=LearningFramework, type=Mention, th=0.9997, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9997, Precision Lenient: 0.9333
+ set=LearningFramework, type=Mention, th=0.9997, Recall Lenient: 0.1642
+ set=LearningFramework, type=Mention, th=0.9997, F1.0 Lenient: 0.2793
+ set=LearningFramework, type=Mention, th=0.9997, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9997, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9997, Responses: 225
+ set=LearningFramework, type=Mention, th=0.9997, Correct Strict: 210
+ set=LearningFramework, type=Mention, th=0.9997, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9997, Incorrect Strict: 15
+ set=LearningFramework, type=Mention, th=0.9997, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9997, Missing Strict: 1069
+ set=LearningFramework, type=Mention, th=0.9997, True Missing Strict: 1054
+ set=LearningFramework, type=Mention, th=0.9997, Missing Lenient: 1069
+ set=LearningFramework, type=Mention, th=0.9997, True Missing Lenient: 1054
+ set=LearningFramework, type=Mention, th=0.9997, Spurious Strict: 15
+ set=LearningFramework, type=Mention, th=0.9997, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9997, Spurious Lenient: 15
+ set=LearningFramework, type=Mention, th=0.9997, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9997, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9997, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9998, Precision Strict: 0.9312
+ set=LearningFramework, type=Mention, th=0.9998, Recall Strict: 0.1587
+ set=LearningFramework, type=Mention, th=0.9998, F1.0 Strict: 0.2712
+ set=LearningFramework, type=Mention, th=0.9998, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9998, Precision Lenient: 0.9312
+ set=LearningFramework, type=Mention, th=0.9998, Recall Lenient: 0.1587
+ set=LearningFramework, type=Mention, th=0.9998, F1.0 Lenient: 0.2712
+ set=LearningFramework, type=Mention, th=0.9998, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9998, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9998, Responses: 218
+ set=LearningFramework, type=Mention, th=0.9998, Correct Strict: 203
+ set=LearningFramework, type=Mention, th=0.9998, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9998, Incorrect Strict: 15
+ set=LearningFramework, type=Mention, th=0.9998, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9998, Missing Strict: 1076
+ set=LearningFramework, type=Mention, th=0.9998, True Missing Strict: 1061
+ set=LearningFramework, type=Mention, th=0.9998, Missing Lenient: 1076
+ set=LearningFramework, type=Mention, th=0.9998, True Missing Lenient: 1061
+ set=LearningFramework, type=Mention, th=0.9998, Spurious Strict: 15
+ set=LearningFramework, type=Mention, th=0.9998, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9998, Spurious Lenient: 15
+ set=LearningFramework, type=Mention, th=0.9998, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9998, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9998, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9998, Precision Strict: 0.9235
+ set=LearningFramework, type=Mention, th=0.9998, Recall Strict: 0.1415
+ set=LearningFramework, type=Mention, th=0.9998, F1.0 Strict: 0.2454
+ set=LearningFramework, type=Mention, th=0.9998, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9998, Precision Lenient: 0.9235
+ set=LearningFramework, type=Mention, th=0.9998, Recall Lenient: 0.1415
+ set=LearningFramework, type=Mention, th=0.9998, F1.0 Lenient: 0.2454
+ set=LearningFramework, type=Mention, th=0.9998, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9998, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9998, Responses: 196
+ set=LearningFramework, type=Mention, th=0.9998, Correct Strict: 181
+ set=LearningFramework, type=Mention, th=0.9998, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9998, Incorrect Strict: 15
+ set=LearningFramework, type=Mention, th=0.9998, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9998, Missing Strict: 1098
+ set=LearningFramework, type=Mention, th=0.9998, True Missing Strict: 1083
+ set=LearningFramework, type=Mention, th=0.9998, Missing Lenient: 1098
+ set=LearningFramework, type=Mention, th=0.9998, True Missing Lenient: 1083
+ set=LearningFramework, type=Mention, th=0.9998, Spurious Strict: 15
+ set=LearningFramework, type=Mention, th=0.9998, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9998, Spurious Lenient: 15
+ set=LearningFramework, type=Mention, th=0.9998, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9998, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9998, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9999, Precision Strict: 0.9231
+ set=LearningFramework, type=Mention, th=0.9999, Recall Strict: 0.1407
+ set=LearningFramework, type=Mention, th=0.9999, F1.0 Strict: 0.2442
+ set=LearningFramework, type=Mention, th=0.9999, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9999, Precision Lenient: 0.9231
+ set=LearningFramework, type=Mention, th=0.9999, Recall Lenient: 0.1407
+ set=LearningFramework, type=Mention, th=0.9999, F1.0 Lenient: 0.2442
+ set=LearningFramework, type=Mention, th=0.9999, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9999, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9999, Responses: 195
+ set=LearningFramework, type=Mention, th=0.9999, Correct Strict: 180
+ set=LearningFramework, type=Mention, th=0.9999, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9999, Incorrect Strict: 15
+ set=LearningFramework, type=Mention, th=0.9999, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9999, Missing Strict: 1099
+ set=LearningFramework, type=Mention, th=0.9999, True Missing Strict: 1084
+ set=LearningFramework, type=Mention, th=0.9999, Missing Lenient: 1099
+ set=LearningFramework, type=Mention, th=0.9999, True Missing Lenient: 1084
+ set=LearningFramework, type=Mention, th=0.9999, Spurious Strict: 15
+ set=LearningFramework, type=Mention, th=0.9999, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9999, Spurious Lenient: 15
+ set=LearningFramework, type=Mention, th=0.9999, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9999, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9999, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9999, Precision Strict: 0.9138
+ set=LearningFramework, type=Mention, th=0.9999, Recall Strict: 0.1243
+ set=LearningFramework, type=Mention, th=0.9999, F1.0 Strict: 0.2189
+ set=LearningFramework, type=Mention, th=0.9999, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9999, Precision Lenient: 0.9138
+ set=LearningFramework, type=Mention, th=0.9999, Recall Lenient: 0.1243
+ set=LearningFramework, type=Mention, th=0.9999, F1.0 Lenient: 0.2189
+ set=LearningFramework, type=Mention, th=0.9999, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9999, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9999, Responses: 174
+ set=LearningFramework, type=Mention, th=0.9999, Correct Strict: 159
+ set=LearningFramework, type=Mention, th=0.9999, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9999, Incorrect Strict: 15
+ set=LearningFramework, type=Mention, th=0.9999, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9999, Missing Strict: 1120
+ set=LearningFramework, type=Mention, th=0.9999, True Missing Strict: 1105
+ set=LearningFramework, type=Mention, th=0.9999, Missing Lenient: 1120
+ set=LearningFramework, type=Mention, th=0.9999, True Missing Lenient: 1105
+ set=LearningFramework, type=Mention, th=0.9999, Spurious Strict: 15
+ set=LearningFramework, type=Mention, th=0.9999, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9999, Spurious Lenient: 15
+ set=LearningFramework, type=Mention, th=0.9999, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9999, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9999, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9999, Precision Strict: 0.9102
+ set=LearningFramework, type=Mention, th=0.9999, Recall Strict: 0.1188
+ set=LearningFramework, type=Mention, th=0.9999, F1.0 Strict: 0.2102
+ set=LearningFramework, type=Mention, th=0.9999, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=0.9999, Precision Lenient: 0.9102
+ set=LearningFramework, type=Mention, th=0.9999, Recall Lenient: 0.1188
+ set=LearningFramework, type=Mention, th=0.9999, F1.0 Lenient: 0.2102
+ set=LearningFramework, type=Mention, th=0.9999, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=0.9999, Targets: 1279
+ set=LearningFramework, type=Mention, th=0.9999, Responses: 167
+ set=LearningFramework, type=Mention, th=0.9999, Correct Strict: 152
+ set=LearningFramework, type=Mention, th=0.9999, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=0.9999, Incorrect Strict: 15
+ set=LearningFramework, type=Mention, th=0.9999, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=0.9999, Missing Strict: 1127
+ set=LearningFramework, type=Mention, th=0.9999, True Missing Strict: 1112
+ set=LearningFramework, type=Mention, th=0.9999, Missing Lenient: 1127
+ set=LearningFramework, type=Mention, th=0.9999, True Missing Lenient: 1112
+ set=LearningFramework, type=Mention, th=0.9999, Spurious Strict: 15
+ set=LearningFramework, type=Mention, th=0.9999, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=0.9999, Spurious Lenient: 15
+ set=LearningFramework, type=Mention, th=0.9999, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=0.9999, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=0.9999, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=1.0, Precision Strict: 0.9051
+ set=LearningFramework, type=Mention, th=1.0, Recall Strict: 0.1118
+ set=LearningFramework, type=Mention, th=1.0, F1.0 Strict: 0.199
+ set=LearningFramework, type=Mention, th=1.0, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=1.0, Precision Lenient: 0.9051
+ set=LearningFramework, type=Mention, th=1.0, Recall Lenient: 0.1118
+ set=LearningFramework, type=Mention, th=1.0, F1.0 Lenient: 0.199
+ set=LearningFramework, type=Mention, th=1.0, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=1.0, Targets: 1279
+ set=LearningFramework, type=Mention, th=1.0, Responses: 158
+ set=LearningFramework, type=Mention, th=1.0, Correct Strict: 143
+ set=LearningFramework, type=Mention, th=1.0, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=1.0, Incorrect Strict: 15
+ set=LearningFramework, type=Mention, th=1.0, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=1.0, Missing Strict: 1136
+ set=LearningFramework, type=Mention, th=1.0, True Missing Strict: 1121
+ set=LearningFramework, type=Mention, th=1.0, Missing Lenient: 1136
+ set=LearningFramework, type=Mention, th=1.0, True Missing Lenient: 1121
+ set=LearningFramework, type=Mention, th=1.0, Spurious Strict: 15
+ set=LearningFramework, type=Mention, th=1.0, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=1.0, Spurious Lenient: 15
+ set=LearningFramework, type=Mention, th=1.0, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=1.0, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=1.0, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=1.0, Precision Strict: 0.8855
+ set=LearningFramework, type=Mention, th=1.0, Recall Strict: 0.0907
+ set=LearningFramework, type=Mention, th=1.0, F1.0 Strict: 0.1645
+ set=LearningFramework, type=Mention, th=1.0, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=1.0, Precision Lenient: 0.8855
+ set=LearningFramework, type=Mention, th=1.0, Recall Lenient: 0.0907
+ set=LearningFramework, type=Mention, th=1.0, F1.0 Lenient: 0.1645
+ set=LearningFramework, type=Mention, th=1.0, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=1.0, Targets: 1279
+ set=LearningFramework, type=Mention, th=1.0, Responses: 131
+ set=LearningFramework, type=Mention, th=1.0, Correct Strict: 116
+ set=LearningFramework, type=Mention, th=1.0, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=1.0, Incorrect Strict: 15
+ set=LearningFramework, type=Mention, th=1.0, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=1.0, Missing Strict: 1163
+ set=LearningFramework, type=Mention, th=1.0, True Missing Strict: 1148
+ set=LearningFramework, type=Mention, th=1.0, Missing Lenient: 1163
+ set=LearningFramework, type=Mention, th=1.0, True Missing Lenient: 1148
+ set=LearningFramework, type=Mention, th=1.0, Spurious Strict: 15
+ set=LearningFramework, type=Mention, th=1.0, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=1.0, Spurious Lenient: 15
+ set=LearningFramework, type=Mention, th=1.0, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=1.0, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=1.0, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=1.0, Precision Strict: 0.8846
+ set=LearningFramework, type=Mention, th=1.0, Recall Strict: 0.0899
+ set=LearningFramework, type=Mention, th=1.0, F1.0 Strict: 0.1632
+ set=LearningFramework, type=Mention, th=1.0, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=1.0, Precision Lenient: 0.8846
+ set=LearningFramework, type=Mention, th=1.0, Recall Lenient: 0.0899
+ set=LearningFramework, type=Mention, th=1.0, F1.0 Lenient: 0.1632
+ set=LearningFramework, type=Mention, th=1.0, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=1.0, Targets: 1279
+ set=LearningFramework, type=Mention, th=1.0, Responses: 130
+ set=LearningFramework, type=Mention, th=1.0, Correct Strict: 115
+ set=LearningFramework, type=Mention, th=1.0, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=1.0, Incorrect Strict: 15
+ set=LearningFramework, type=Mention, th=1.0, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=1.0, Missing Strict: 1164
+ set=LearningFramework, type=Mention, th=1.0, True Missing Strict: 1149
+ set=LearningFramework, type=Mention, th=1.0, Missing Lenient: 1164
+ set=LearningFramework, type=Mention, th=1.0, True Missing Lenient: 1149
+ set=LearningFramework, type=Mention, th=1.0, Spurious Strict: 15
+ set=LearningFramework, type=Mention, th=1.0, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=1.0, Spurious Lenient: 15
+ set=LearningFramework, type=Mention, th=1.0, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=1.0, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=1.0, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=1.0, Precision Strict: 0.8837
+ set=LearningFramework, type=Mention, th=1.0, Recall Strict: 0.0891
+ set=LearningFramework, type=Mention, th=1.0, F1.0 Strict: 0.1619
+ set=LearningFramework, type=Mention, th=1.0, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=1.0, Precision Lenient: 0.8837
+ set=LearningFramework, type=Mention, th=1.0, Recall Lenient: 0.0891
+ set=LearningFramework, type=Mention, th=1.0, F1.0 Lenient: 0.1619
+ set=LearningFramework, type=Mention, th=1.0, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=1.0, Targets: 1279
+ set=LearningFramework, type=Mention, th=1.0, Responses: 129
+ set=LearningFramework, type=Mention, th=1.0, Correct Strict: 114
+ set=LearningFramework, type=Mention, th=1.0, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=1.0, Incorrect Strict: 15
+ set=LearningFramework, type=Mention, th=1.0, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=1.0, Missing Strict: 1165
+ set=LearningFramework, type=Mention, th=1.0, True Missing Strict: 1150
+ set=LearningFramework, type=Mention, th=1.0, Missing Lenient: 1165
+ set=LearningFramework, type=Mention, th=1.0, True Missing Lenient: 1150
+ set=LearningFramework, type=Mention, th=1.0, Spurious Strict: 15
+ set=LearningFramework, type=Mention, th=1.0, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=1.0, Spurious Lenient: 15
+ set=LearningFramework, type=Mention, th=1.0, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=1.0, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=1.0, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=1.0001, Precision Strict: 0.8992
+ set=LearningFramework, type=Mention, th=1.0001, Recall Strict: 0.0837
+ set=LearningFramework, type=Mention, th=1.0001, F1.0 Strict: 0.1531
+ set=LearningFramework, type=Mention, th=1.0001, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=1.0001, Precision Lenient: 0.8992
+ set=LearningFramework, type=Mention, th=1.0001, Recall Lenient: 0.0837
+ set=LearningFramework, type=Mention, th=1.0001, F1.0 Lenient: 0.1531
+ set=LearningFramework, type=Mention, th=1.0001, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=1.0001, Targets: 1279
+ set=LearningFramework, type=Mention, th=1.0001, Responses: 119
+ set=LearningFramework, type=Mention, th=1.0001, Correct Strict: 107
+ set=LearningFramework, type=Mention, th=1.0001, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=1.0001, Incorrect Strict: 12
+ set=LearningFramework, type=Mention, th=1.0001, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=1.0001, Missing Strict: 1172
+ set=LearningFramework, type=Mention, th=1.0001, True Missing Strict: 1160
+ set=LearningFramework, type=Mention, th=1.0001, Missing Lenient: 1172
+ set=LearningFramework, type=Mention, th=1.0001, True Missing Lenient: 1160
+ set=LearningFramework, type=Mention, th=1.0001, Spurious Strict: 12
+ set=LearningFramework, type=Mention, th=1.0001, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=1.0001, Spurious Lenient: 12
+ set=LearningFramework, type=Mention, th=1.0001, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=1.0001, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=1.0001, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=1.0001, Precision Strict: 0.8983
+ set=LearningFramework, type=Mention, th=1.0001, Recall Strict: 0.0829
+ set=LearningFramework, type=Mention, th=1.0001, F1.0 Strict: 0.1518
+ set=LearningFramework, type=Mention, th=1.0001, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=1.0001, Precision Lenient: 0.8983
+ set=LearningFramework, type=Mention, th=1.0001, Recall Lenient: 0.0829
+ set=LearningFramework, type=Mention, th=1.0001, F1.0 Lenient: 0.1518
+ set=LearningFramework, type=Mention, th=1.0001, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=1.0001, Targets: 1279
+ set=LearningFramework, type=Mention, th=1.0001, Responses: 118
+ set=LearningFramework, type=Mention, th=1.0001, Correct Strict: 106
+ set=LearningFramework, type=Mention, th=1.0001, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=1.0001, Incorrect Strict: 12
+ set=LearningFramework, type=Mention, th=1.0001, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=1.0001, Missing Strict: 1173
+ set=LearningFramework, type=Mention, th=1.0001, True Missing Strict: 1161
+ set=LearningFramework, type=Mention, th=1.0001, Missing Lenient: 1173
+ set=LearningFramework, type=Mention, th=1.0001, True Missing Lenient: 1161
+ set=LearningFramework, type=Mention, th=1.0001, Spurious Strict: 12
+ set=LearningFramework, type=Mention, th=1.0001, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=1.0001, Spurious Lenient: 12
+ set=LearningFramework, type=Mention, th=1.0001, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=1.0001, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=1.0001, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=1.0002, Precision Strict: 0.8974
+ set=LearningFramework, type=Mention, th=1.0002, Recall Strict: 0.0821
+ set=LearningFramework, type=Mention, th=1.0002, F1.0 Strict: 0.1504
+ set=LearningFramework, type=Mention, th=1.0002, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=1.0002, Precision Lenient: 0.8974
+ set=LearningFramework, type=Mention, th=1.0002, Recall Lenient: 0.0821
+ set=LearningFramework, type=Mention, th=1.0002, F1.0 Lenient: 0.1504
+ set=LearningFramework, type=Mention, th=1.0002, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=1.0002, Targets: 1279
+ set=LearningFramework, type=Mention, th=1.0002, Responses: 117
+ set=LearningFramework, type=Mention, th=1.0002, Correct Strict: 105
+ set=LearningFramework, type=Mention, th=1.0002, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=1.0002, Incorrect Strict: 12
+ set=LearningFramework, type=Mention, th=1.0002, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=1.0002, Missing Strict: 1174
+ set=LearningFramework, type=Mention, th=1.0002, True Missing Strict: 1162
+ set=LearningFramework, type=Mention, th=1.0002, Missing Lenient: 1174
+ set=LearningFramework, type=Mention, th=1.0002, True Missing Lenient: 1162
+ set=LearningFramework, type=Mention, th=1.0002, Spurious Strict: 12
+ set=LearningFramework, type=Mention, th=1.0002, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=1.0002, Spurious Lenient: 12
+ set=LearningFramework, type=Mention, th=1.0002, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=1.0002, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=1.0002, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=1.0003, Precision Strict: 0.8899
+ set=LearningFramework, type=Mention, th=1.0003, Recall Strict: 0.0758
+ set=LearningFramework, type=Mention, th=1.0003, F1.0 Strict: 0.1398
+ set=LearningFramework, type=Mention, th=1.0003, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=1.0003, Precision Lenient: 0.8899
+ set=LearningFramework, type=Mention, th=1.0003, Recall Lenient: 0.0758
+ set=LearningFramework, type=Mention, th=1.0003, F1.0 Lenient: 0.1398
+ set=LearningFramework, type=Mention, th=1.0003, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=1.0003, Targets: 1279
+ set=LearningFramework, type=Mention, th=1.0003, Responses: 109
+ set=LearningFramework, type=Mention, th=1.0003, Correct Strict: 97
+ set=LearningFramework, type=Mention, th=1.0003, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=1.0003, Incorrect Strict: 12
+ set=LearningFramework, type=Mention, th=1.0003, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=1.0003, Missing Strict: 1182
+ set=LearningFramework, type=Mention, th=1.0003, True Missing Strict: 1170
+ set=LearningFramework, type=Mention, th=1.0003, Missing Lenient: 1182
+ set=LearningFramework, type=Mention, th=1.0003, True Missing Lenient: 1170
+ set=LearningFramework, type=Mention, th=1.0003, Spurious Strict: 12
+ set=LearningFramework, type=Mention, th=1.0003, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=1.0003, Spurious Lenient: 12
+ set=LearningFramework, type=Mention, th=1.0003, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=1.0003, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=1.0003, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=1.0003, Precision Strict: 0.8952
+ set=LearningFramework, type=Mention, th=1.0003, Recall Strict: 0.0735
+ set=LearningFramework, type=Mention, th=1.0003, F1.0 Strict: 0.1358
+ set=LearningFramework, type=Mention, th=1.0003, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=1.0003, Precision Lenient: 0.8952
+ set=LearningFramework, type=Mention, th=1.0003, Recall Lenient: 0.0735
+ set=LearningFramework, type=Mention, th=1.0003, F1.0 Lenient: 0.1358
+ set=LearningFramework, type=Mention, th=1.0003, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=1.0003, Targets: 1279
+ set=LearningFramework, type=Mention, th=1.0003, Responses: 105
+ set=LearningFramework, type=Mention, th=1.0003, Correct Strict: 94
+ set=LearningFramework, type=Mention, th=1.0003, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=1.0003, Incorrect Strict: 11
+ set=LearningFramework, type=Mention, th=1.0003, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=1.0003, Missing Strict: 1185
+ set=LearningFramework, type=Mention, th=1.0003, True Missing Strict: 1174
+ set=LearningFramework, type=Mention, th=1.0003, Missing Lenient: 1185
+ set=LearningFramework, type=Mention, th=1.0003, True Missing Lenient: 1174
+ set=LearningFramework, type=Mention, th=1.0003, Spurious Strict: 11
+ set=LearningFramework, type=Mention, th=1.0003, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=1.0003, Spurious Lenient: 11
+ set=LearningFramework, type=Mention, th=1.0003, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=1.0003, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=1.0003, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=1.0003, Precision Strict: 0.8922
+ set=LearningFramework, type=Mention, th=1.0003, Recall Strict: 0.0711
+ set=LearningFramework, type=Mention, th=1.0003, F1.0 Strict: 0.1318
+ set=LearningFramework, type=Mention, th=1.0003, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=1.0003, Precision Lenient: 0.8922
+ set=LearningFramework, type=Mention, th=1.0003, Recall Lenient: 0.0711
+ set=LearningFramework, type=Mention, th=1.0003, F1.0 Lenient: 0.1318
+ set=LearningFramework, type=Mention, th=1.0003, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=1.0003, Targets: 1279
+ set=LearningFramework, type=Mention, th=1.0003, Responses: 102
+ set=LearningFramework, type=Mention, th=1.0003, Correct Strict: 91
+ set=LearningFramework, type=Mention, th=1.0003, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=1.0003, Incorrect Strict: 11
+ set=LearningFramework, type=Mention, th=1.0003, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=1.0003, Missing Strict: 1188
+ set=LearningFramework, type=Mention, th=1.0003, True Missing Strict: 1177
+ set=LearningFramework, type=Mention, th=1.0003, Missing Lenient: 1188
+ set=LearningFramework, type=Mention, th=1.0003, True Missing Lenient: 1177
+ set=LearningFramework, type=Mention, th=1.0003, Spurious Strict: 11
+ set=LearningFramework, type=Mention, th=1.0003, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=1.0003, Spurious Lenient: 11
+ set=LearningFramework, type=Mention, th=1.0003, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=1.0003, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=1.0003, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=1.0005, Precision Strict: 0.8817
+ set=LearningFramework, type=Mention, th=1.0005, Recall Strict: 0.0641
+ set=LearningFramework, type=Mention, th=1.0005, F1.0 Strict: 0.1195
+ set=LearningFramework, type=Mention, th=1.0005, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=1.0005, Precision Lenient: 0.8817
+ set=LearningFramework, type=Mention, th=1.0005, Recall Lenient: 0.0641
+ set=LearningFramework, type=Mention, th=1.0005, F1.0 Lenient: 0.1195
+ set=LearningFramework, type=Mention, th=1.0005, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=1.0005, Targets: 1279
+ set=LearningFramework, type=Mention, th=1.0005, Responses: 93
+ set=LearningFramework, type=Mention, th=1.0005, Correct Strict: 82
+ set=LearningFramework, type=Mention, th=1.0005, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=1.0005, Incorrect Strict: 11
+ set=LearningFramework, type=Mention, th=1.0005, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=1.0005, Missing Strict: 1197
+ set=LearningFramework, type=Mention, th=1.0005, True Missing Strict: 1186
+ set=LearningFramework, type=Mention, th=1.0005, Missing Lenient: 1197
+ set=LearningFramework, type=Mention, th=1.0005, True Missing Lenient: 1186
+ set=LearningFramework, type=Mention, th=1.0005, Spurious Strict: 11
+ set=LearningFramework, type=Mention, th=1.0005, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=1.0005, Spurious Lenient: 11
+ set=LearningFramework, type=Mention, th=1.0005, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=1.0005, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=1.0005, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=1.0031, Precision Strict: 0.7692
+ set=LearningFramework, type=Mention, th=1.0031, Recall Strict: 0.0235
+ set=LearningFramework, type=Mention, th=1.0031, F1.0 Strict: 0.0455
+ set=LearningFramework, type=Mention, th=1.0031, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=1.0031, Precision Lenient: 0.7692
+ set=LearningFramework, type=Mention, th=1.0031, Recall Lenient: 0.0235
+ set=LearningFramework, type=Mention, th=1.0031, F1.0 Lenient: 0.0455
+ set=LearningFramework, type=Mention, th=1.0031, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=1.0031, Targets: 1279
+ set=LearningFramework, type=Mention, th=1.0031, Responses: 39
+ set=LearningFramework, type=Mention, th=1.0031, Correct Strict: 30
+ set=LearningFramework, type=Mention, th=1.0031, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=1.0031, Incorrect Strict: 9
+ set=LearningFramework, type=Mention, th=1.0031, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=1.0031, Missing Strict: 1249
+ set=LearningFramework, type=Mention, th=1.0031, True Missing Strict: 1240
+ set=LearningFramework, type=Mention, th=1.0031, Missing Lenient: 1249
+ set=LearningFramework, type=Mention, th=1.0031, True Missing Lenient: 1240
+ set=LearningFramework, type=Mention, th=1.0031, Spurious Strict: 9
+ set=LearningFramework, type=Mention, th=1.0031, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=1.0031, Spurious Lenient: 9
+ set=LearningFramework, type=Mention, th=1.0031, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=1.0031, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=1.0031, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=1.0064, Precision Strict: 0.8
+ set=LearningFramework, type=Mention, th=1.0064, Recall Strict: 0.0156
+ set=LearningFramework, type=Mention, th=1.0064, F1.0 Strict: 0.0307
+ set=LearningFramework, type=Mention, th=1.0064, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=1.0064, Precision Lenient: 0.8
+ set=LearningFramework, type=Mention, th=1.0064, Recall Lenient: 0.0156
+ set=LearningFramework, type=Mention, th=1.0064, F1.0 Lenient: 0.0307
+ set=LearningFramework, type=Mention, th=1.0064, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=1.0064, Targets: 1279
+ set=LearningFramework, type=Mention, th=1.0064, Responses: 25
+ set=LearningFramework, type=Mention, th=1.0064, Correct Strict: 20
+ set=LearningFramework, type=Mention, th=1.0064, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=1.0064, Incorrect Strict: 5
+ set=LearningFramework, type=Mention, th=1.0064, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=1.0064, Missing Strict: 1259
+ set=LearningFramework, type=Mention, th=1.0064, True Missing Strict: 1254
+ set=LearningFramework, type=Mention, th=1.0064, Missing Lenient: 1259
+ set=LearningFramework, type=Mention, th=1.0064, True Missing Lenient: 1254
+ set=LearningFramework, type=Mention, th=1.0064, Spurious Strict: 5
+ set=LearningFramework, type=Mention, th=1.0064, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=1.0064, Spurious Lenient: 5
+ set=LearningFramework, type=Mention, th=1.0064, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=1.0064, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=1.0064, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=1.0094, Precision Strict: 0.8889
+ set=LearningFramework, type=Mention, th=1.0094, Recall Strict: 0.0125
+ set=LearningFramework, type=Mention, th=1.0094, F1.0 Strict: 0.0247
+ set=LearningFramework, type=Mention, th=1.0094, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=1.0094, Precision Lenient: 0.8889
+ set=LearningFramework, type=Mention, th=1.0094, Recall Lenient: 0.0125
+ set=LearningFramework, type=Mention, th=1.0094, F1.0 Lenient: 0.0247
+ set=LearningFramework, type=Mention, th=1.0094, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=1.0094, Targets: 1279
+ set=LearningFramework, type=Mention, th=1.0094, Responses: 18
+ set=LearningFramework, type=Mention, th=1.0094, Correct Strict: 16
+ set=LearningFramework, type=Mention, th=1.0094, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=1.0094, Incorrect Strict: 2
+ set=LearningFramework, type=Mention, th=1.0094, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=1.0094, Missing Strict: 1263
+ set=LearningFramework, type=Mention, th=1.0094, True Missing Strict: 1261
+ set=LearningFramework, type=Mention, th=1.0094, Missing Lenient: 1263
+ set=LearningFramework, type=Mention, th=1.0094, True Missing Lenient: 1261
+ set=LearningFramework, type=Mention, th=1.0094, Spurious Strict: 2
+ set=LearningFramework, type=Mention, th=1.0094, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=1.0094, Spurious Lenient: 2
+ set=LearningFramework, type=Mention, th=1.0094, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=1.0094, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=1.0094, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=1.0122, Precision Strict: 0.75
+ set=LearningFramework, type=Mention, th=1.0122, Recall Strict: 0.0047
+ set=LearningFramework, type=Mention, th=1.0122, F1.0 Strict: 0.0093
+ set=LearningFramework, type=Mention, th=1.0122, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=1.0122, Precision Lenient: 0.75
+ set=LearningFramework, type=Mention, th=1.0122, Recall Lenient: 0.0047
+ set=LearningFramework, type=Mention, th=1.0122, F1.0 Lenient: 0.0093
+ set=LearningFramework, type=Mention, th=1.0122, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=1.0122, Targets: 1279
+ set=LearningFramework, type=Mention, th=1.0122, Responses: 8
+ set=LearningFramework, type=Mention, th=1.0122, Correct Strict: 6
+ set=LearningFramework, type=Mention, th=1.0122, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=1.0122, Incorrect Strict: 2
+ set=LearningFramework, type=Mention, th=1.0122, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=1.0122, Missing Strict: 1273
+ set=LearningFramework, type=Mention, th=1.0122, True Missing Strict: 1271
+ set=LearningFramework, type=Mention, th=1.0122, Missing Lenient: 1273
+ set=LearningFramework, type=Mention, th=1.0122, True Missing Lenient: 1271
+ set=LearningFramework, type=Mention, th=1.0122, Spurious Strict: 2
+ set=LearningFramework, type=Mention, th=1.0122, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=1.0122, Spurious Lenient: 2
+ set=LearningFramework, type=Mention, th=1.0122, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=1.0122, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=1.0122, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=1.0145, Precision Strict: 0.3333
+ set=LearningFramework, type=Mention, th=1.0145, Recall Strict: 8.0E-4
+ set=LearningFramework, type=Mention, th=1.0145, F1.0 Strict: 0.0016
+ set=LearningFramework, type=Mention, th=1.0145, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=1.0145, Precision Lenient: 0.3333
+ set=LearningFramework, type=Mention, th=1.0145, Recall Lenient: 8.0E-4
+ set=LearningFramework, type=Mention, th=1.0145, F1.0 Lenient: 0.0016
+ set=LearningFramework, type=Mention, th=1.0145, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=1.0145, Targets: 1279
+ set=LearningFramework, type=Mention, th=1.0145, Responses: 3
+ set=LearningFramework, type=Mention, th=1.0145, Correct Strict: 1
+ set=LearningFramework, type=Mention, th=1.0145, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=1.0145, Incorrect Strict: 2
+ set=LearningFramework, type=Mention, th=1.0145, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=1.0145, Missing Strict: 1278
+ set=LearningFramework, type=Mention, th=1.0145, True Missing Strict: 1276
+ set=LearningFramework, type=Mention, th=1.0145, Missing Lenient: 1278
+ set=LearningFramework, type=Mention, th=1.0145, True Missing Lenient: 1276
+ set=LearningFramework, type=Mention, th=1.0145, Spurious Strict: 2
+ set=LearningFramework, type=Mention, th=1.0145, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=1.0145, Spurious Lenient: 2
+ set=LearningFramework, type=Mention, th=1.0145, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=1.0145, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=1.0145, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=1.0164, Precision Strict: 0.0
+ set=LearningFramework, type=Mention, th=1.0164, Recall Strict: 0.0
+ set=LearningFramework, type=Mention, th=1.0164, F1.0 Strict: 0.0
+ set=LearningFramework, type=Mention, th=1.0164, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=1.0164, Precision Lenient: 0.0
+ set=LearningFramework, type=Mention, th=1.0164, Recall Lenient: 0.0
+ set=LearningFramework, type=Mention, th=1.0164, F1.0 Lenient: 0.0
+ set=LearningFramework, type=Mention, th=1.0164, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=1.0164, Targets: 1279
+ set=LearningFramework, type=Mention, th=1.0164, Responses: 1
+ set=LearningFramework, type=Mention, th=1.0164, Correct Strict: 0
+ set=LearningFramework, type=Mention, th=1.0164, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=1.0164, Incorrect Strict: 1
+ set=LearningFramework, type=Mention, th=1.0164, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=1.0164, Missing Strict: 1279
+ set=LearningFramework, type=Mention, th=1.0164, True Missing Strict: 1278
+ set=LearningFramework, type=Mention, th=1.0164, Missing Lenient: 1279
+ set=LearningFramework, type=Mention, th=1.0164, True Missing Lenient: 1278
+ set=LearningFramework, type=Mention, th=1.0164, Spurious Strict: 1
+ set=LearningFramework, type=Mention, th=1.0164, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=1.0164, Spurious Lenient: 1
+ set=LearningFramework, type=Mention, th=1.0164, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=1.0164, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=1.0164, Single Correct Lenient: 0
+ set=LearningFramework, type=Mention, th=inf, Precision Strict: 1.0
+ set=LearningFramework, type=Mention, th=inf, Recall Strict: 0.0
+ set=LearningFramework, type=Mention, th=inf, F1.0 Strict: 0.0
+ set=LearningFramework, type=Mention, th=inf, Accuracy Strict: 0.0
+ set=LearningFramework, type=Mention, th=inf, Precision Lenient: 1.0
+ set=LearningFramework, type=Mention, th=inf, Recall Lenient: 0.0
+ set=LearningFramework, type=Mention, th=inf, F1.0 Lenient: 0.0
+ set=LearningFramework, type=Mention, th=inf, Accuracy Lenient: 0.0
+ set=LearningFramework, type=Mention, th=inf, Targets: 1279
+ set=LearningFramework, type=Mention, th=inf, Responses: 0
+ set=LearningFramework, type=Mention, th=inf, Correct Strict: 0
+ set=LearningFramework, type=Mention, th=inf, Correct Partial: 0
+ set=LearningFramework, type=Mention, th=inf, Incorrect Strict: 0
+ set=LearningFramework, type=Mention, th=inf, Incorrect Partial: 0
+ set=LearningFramework, type=Mention, th=inf, Missing Strict: 1279
+ set=LearningFramework, type=Mention, th=inf, True Missing Strict: 1279
+ set=LearningFramework, type=Mention, th=inf, Missing Lenient: 1279
+ set=LearningFramework, type=Mention, th=inf, True Missing Lenient: 1279
+ set=LearningFramework, type=Mention, th=inf, Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=inf, True Spurious Strict: 0
+ set=LearningFramework, type=Mention, th=inf, Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=inf, True Spurious Lenient: 0
+ set=LearningFramework, type=Mention, th=inf, Single Correct Strict: 0
+ set=LearningFramework, type=Mention, th=inf, Single Correct Lenient: 0
+ -ReferenceKey/LearningFramework(strict)correct/correct: 0
+ -ReferenceKey/LearningFramework(strict)correct/wrong: 0
+ -ReferenceKey/LearningFramework(strict)wrong/correct: 653
+ -ReferenceKey/LearningFramework(strict)wrong/wrong: 626
+ -ReferenceKey/LearningFramework(lenient)correct/correct: 0
+ -ReferenceKey/LearningFramework(lenient)correct/wrong: 0
+ -ReferenceKey/LearningFramework(lenient)wrong/correct: 653
+ -ReferenceKey/LearningFramework(lenient)wrong/wrong: 626
+Processing completed, processed: 50, errors: 0, skipped: 0, saved: 50
