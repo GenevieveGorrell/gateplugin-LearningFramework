@@ -13,9 +13,9 @@ import gate.Annotation;
 import gate.AnnotationSet;
 import gate.Document;
 import gate.Utils;
-import gate.plugin.learningframework.features.FeatureInfo.AttributeList;
-import gate.plugin.learningframework.features.FeatureInfo.Ngram;
-import gate.plugin.learningframework.features.FeatureInfo.SimpleAttribute;
+import gate.plugin.learningframework.features.AttributeList;
+import gate.plugin.learningframework.features.Ngram;
+import gate.plugin.learningframework.features.SimpleAttribute;
 import gate.util.GateRuntimeException;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,18 +42,27 @@ public class FeatureExtraction {
   private static Logger logger = Logger.getLogger(FeatureExtraction.class.getName());
 
   /**
-   * Extract the featureName value for some instance.
-   * If annType is null then the value of featureName is taken from the instanceAnnotation, otherwise
- from the coextensive, or overlapping annotation of annType annType. If there is more than
- one coextensive or overlapping annotation, the one with smallest annotation ID is used.
- 
- If the featureName is null, then the clean string for the respective annotation is used instead
- of the value of the feature featureName. 
- 
- If the document text is wanted, it must be in a feature
- If no feature is specified, we give an indicator of the presence, artificial feature name for binary feature. 
- * 
+   * Extract the instance features for a simple attribute.
    * 
+   * This adds the internal features to the inst object and also updates any 
+   * alphabets, if they allow growth.
+   * If the annotation types of the instance annotation and the annotation specified for the attribute
+   * are the same, then the instance annotation is directly used, otherwise, if there is a single
+   * overlapping annotation of the type specified in the attribute, that one is used.
+   * If there is no overlapping annotation, nothing is extracted for that instance and implicitly,
+   * all features are set to 0.0 (TODO: this should probably get treated as if all features were
+   * missing so that for each feature, the proper missing value treatment can be applied!)
+   * If there are several overlapping annotations, an exception is thrown, this should not happen.
+   * 
+   * If no feature is specified, we give an indicator of the presence, artificial feature name 
+   * for binary feature. 
+   * 
+   * 
+   * @param inst
+   * @param att
+   * @param inputASname
+   * @param instanceAnnotation
+   * @param doc
    */
   public static void extractFeature(
           Instance inst,
@@ -72,9 +81,9 @@ public class FeatureExtraction {
     AugmentableFeatureVector fv = (AugmentableFeatureVector) inst.getData();
     String annType = att.annType;
     String featureName = att.feature;
-    FeatureInfo.MissingValueTreatment mvt = att.missingValueTreatment;
-    FeatureInfo.CodeAs codeas = att.codeas;
-    FeatureInfo.Datatype dt = att.datatype;
+    MissingValueTreatment mvt = att.missingValueTreatment;
+    CodeAs codeas = att.codeas;
+    Datatype dt = att.datatype;
     Alphabet alphabet = att.alphabet;
     // first of all get the annotation from where we want to construct the annotation.
     // If the annType is the same as the type of the instance annotation, use the 
@@ -93,6 +102,7 @@ public class FeatureExtraction {
                 gate.Utils.start(instanceAnnotation)+" in document "+doc.getName());
       } else if(overlappings.size() == 0) {
         // if there is no overlapping annotation of type annType, we simply do nothing
+        // TODO: handle this as if all features have missing values!!!
         return;
       }
       // we have exactly one annotation, use that one
@@ -121,8 +131,8 @@ public class FeatureExtraction {
         inst.setProperty("haveMV", true);
       }
       // if the datatype is nominal, we have to first check what the codeas setting is.
-      if(dt==FeatureInfo.Datatype.nominal) {
-        if(codeas==FeatureInfo.CodeAs.one_of_k) {
+      if(dt==Datatype.nominal) {
+        if(codeas==CodeAs.one_of_k) {
           if(valObj != null) {
             // it is not a missing value
             String val = valObj.toString();
@@ -144,7 +154,7 @@ public class FeatureExtraction {
                 throw new NotImplementedException("MV-Handling");
             }                      
           }
-        } else if(codeas==FeatureInfo.CodeAs.number) {
+        } else if(codeas==CodeAs.number) {
           if(valObj!=null) {
             // For this representation, we need to maintain a dictionary that maps values to 
             // numbers! This is also done using an Alphabet, and if a value is not in the alphabet,
@@ -188,7 +198,7 @@ public class FeatureExtraction {
         } else {  // codeas setting for the nominal attribute
           throw new NotImplementedException("CodeAs method not implemented");
         }
-      } else if(dt == FeatureInfo.Datatype.numeric) {
+      } else if(dt == Datatype.numeric) {
         if(valObj != null) {
           // just add the value, if possible and if the object can be interpreted as a number
           double val = 0.0;
@@ -210,7 +220,7 @@ public class FeatureExtraction {
         } else {
           // we got a missing value for a numeric attribute
         }
-      } else if(dt == FeatureInfo.Datatype.bool) {
+      } else if(dt == Datatype.bool) {
         if(valObj != null) {
           double val = 0.0;
           if(valObj instanceof Boolean) {
@@ -236,7 +246,7 @@ public class FeatureExtraction {
       }
     
     }
-  }
+  } // extractFeature (SimpleAttribute)
 
   
   /*
@@ -319,7 +329,7 @@ public class FeatureExtraction {
           // we have got our ngram now, count it, but only add if we are allowed to!
           addToFeatureVector(fv, ngram, 1.0);
         }
-  } // extractNGramFeature
+  } // extractFeature(NGram)
   
   
   // TODO: add to an existing augmentable feature vector or simply return a feature vector
@@ -333,7 +343,7 @@ public class FeatureExtraction {
           Annotation instanceAnnotation, 
           Document doc) {
     String textToReturn = "";
-    FeatureInfo.Datatype datatype = al.datatype;
+    Datatype datatype = al.datatype;
     String type = al.annType;
     String feature = al.feature;
     int from = al.from;
@@ -354,15 +364,15 @@ public class FeatureExtraction {
           if(feat == null){
             // TODO: process as the feature specification demands
             // for now, we use a datatype specific default value instead
-            if(datatype == FeatureInfo.Datatype.nominal) {
+            if(datatype == Datatype.nominal) {
               feat = "%%%NA%%%";
-            } else if(datatype == FeatureInfo.Datatype.numeric) {
+            } else if(datatype == Datatype.numeric) {
               feat = (Double)0.0;
             }
             // TODO: eventually we should return something here where we can set a flag that
             // the instance contains at least one missing value!
           }
-          if (datatype == FeatureInfo.Datatype.nominal) {
+          if (datatype == Datatype.nominal) {
             // TODO: if the encoding is not one-of-k but numbered, set to the value from the dictionary!
             // TODO: once we return a feature vecto instance or similar, this should be 
             // key = 1.0 for one-of-k and key = k for numbered
@@ -392,7 +402,7 @@ public class FeatureExtraction {
     }
     // make compiler happy for now
     //return textToReturn;
-  }
+  } // extractFeature (AttributeList)
 
   
   
