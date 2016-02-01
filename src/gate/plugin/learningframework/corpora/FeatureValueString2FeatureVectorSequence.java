@@ -47,6 +47,8 @@ public class FeatureValueString2FeatureVectorSequence extends Pipe implements Se
 		this.lexer = new CharSequenceLexer (regex);
 	}
 
+        // JP: NOTE! This seems to only handle the data part of the string represenation of 
+        // a sequence of feature vectors.
 	public Instance pipe(Instance carrier) {
 		if (! (carrier.getData() instanceof CharSequence)) {
 			throw new IllegalArgumentException("Data must be of type CharSequence");
@@ -56,13 +58,20 @@ public class FeatureValueString2FeatureVectorSequence extends Pipe implements Se
 
 		List<String> instances = new ArrayList<String>();
 
+                // JP: this spluts the data part of the instance by the "#" character again,
+                // so we get one instance per instance annotation
 		while(lexer.hasNext()){
 			String t = (String)lexer.next();
 			instances.add(t);
 		}
 
+                // We want to create an array of feature vectors: each individual feature vector
+                // represents one instance from the sequnce
 		FeatureVector[] fva = new FeatureVector[instances.size()];
 
+                // This now creates the actual FeatureVector representation from the string 
+                // representation, we want to do this already much earlier instead (at the point 
+                // where we now create the string representation!)
 		for(int i=0;i<instances.size();i++){
 			String instance = instances.get(i);
 

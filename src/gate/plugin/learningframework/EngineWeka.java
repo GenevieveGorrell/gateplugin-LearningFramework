@@ -108,6 +108,9 @@ public class EngineWeka extends Engine {
 				ObjectInputStream ois =
 						new ObjectInputStream (new FileInputStream(pf));
 				pipe = (Pipe) ois.readObject();
+                                // if there are new, unseen features in the test set, do not 
+                                // allow them to get added. 
+                                pipe.getDataAlphabet().stopGrowth();
 				ois.close();
         //System.out.println("Read pipe: "+pipe);
 			} catch(Exception e){
@@ -264,6 +267,10 @@ public class EngineWeka extends Engine {
 			
 			cc.mallet.types.Instance malletInstance = null;
 
+                        
+                        // TODO: JP: either here or in the next statement we should take care
+                        // that a feature is not added to the instance if it is not already known
+                        // 
 			malletInstance = 
 					CorpusWriterMallet.instanceFromInstanceAnnotationNoClass(
 					this.getSavedConfFile(), instanceAnnotation, inputASname, doc,
@@ -288,7 +295,7 @@ public class EngineWeka extends Engine {
 					gcs.add(gc);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					e.printStackTrace();                                        
 				}
        } else {
         
