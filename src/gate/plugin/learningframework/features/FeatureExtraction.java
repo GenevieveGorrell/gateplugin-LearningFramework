@@ -33,14 +33,45 @@ import org.apache.log4j.Logger;
 public class FeatureExtraction {
   
   // NOTE: currently these strings are hard-coded but it may make sense to look if there 
-  // are better choices or make these configurable in some advanced section of the feature config
+  // are better choices or make these configurable in some advanced section of the featureName config
   // file.
+  /**
+   * Separates the grams in an n-gram with n>1.
+   */
   private static final String NGRAMSEP = "_";
+  /**
+   * Separates the featureName name from the type and also from the attribute kind.
+   * Attribute kind is "!N!" for ngram and "!L!" for attribute list, not kind is added for a 
+   * simple attribute. Also separates the location index or ngram number.
+   */
   private static final String NAMESEP = ":";
+  /**
+   * Separates the featureName name part from the value part for featureName names of features that 
+ indicate the presence of that value.
+   * For example a simple attribute extracted from annotation "Person" from featureName "category" 
+ with the value "NN" has the instance featureName name "Person:category:NN";
+   */
+  private static final String VALSEP = "=";
+  
   private static final String MVVALUE = "%%%NA%%%";
   
   private static Logger logger = Logger.getLogger(FeatureExtraction.class.getName());
 
+  public static void extractFeature(        
+          Instance inst,
+          Attribute att,
+          String inputASname, 
+          Annotation instanceAnnotation, 
+          Document doc) {
+    if(att instanceof AttributeList) extractFeature(inst,(AttributeList)att,inputASname,instanceAnnotation,doc);
+    else if(att instanceof SimpleAttribute) extractFeature(inst,(SimpleAttribute)att,inputASname,instanceAnnotation,doc);
+    else if(att instanceof Ngram) extractFeature(inst,(Ngram)att,inputASname,instanceAnnotation,doc);
+    else {
+      throw new GateRuntimeException("Attempt to call extractFeature with type "+att.getClass());
+    }
+  }
+  
+  
   /**
    * Extract the instance features for a simple attribute.
    * 
@@ -51,11 +82,11 @@ public class FeatureExtraction {
  overlapping annotation of the annType specified in the attribute, that one is used.
  If there is no overlapping annotation, nothing is extracted for that instance and implicitly,
  all features are set to 0.0 (TODO: this should probably get treated inputAS if all features were
- missing so that for each feature, the proper missing value treatment can be applied!)
+ missing so that for each featureName, the proper missing value treatment can be applied!)
  If there are several overlapping annotations, an exception is thrown, this should not happen.
  
- If no feature is specified, we give an indicator of the presence, artificial feature name 
- for binary feature. 
+ If no featureName is specified, we give an indicator of the presence, artificial featureName name 
+ for binary featureName. 
    * 
    * 
    * @param inst
@@ -64,7 +95,7 @@ public class FeatureExtraction {
    * @param instanceAnnotation
    * @param doc
    */
-  public static void extractFeature(
+  private static void extractFeature(
           Instance inst,
           SimpleAttribute att,
           String inputASname, 
@@ -108,9 +139,9 @@ public class FeatureExtraction {
       // we have exactly one annotation, use that one
       sourceAnnotation = overlappings.get(0);
     }
-    // NOTE: there should be no way of how a feature we encounter now is already in the feature
-    // vector, so we do not even check, we simply add the feature.
-    // How we add the feature depends on the datatype, on the codeas setting if it is nominal,
+    // NOTE: there should be no way of how a featureName we encounter now is already in the featureName
+    // vector, so we do not even check, we simply add the featureName.
+    // How we add the featureName depends on the datatype, on the codeas setting if it is nominal,
     // and also on how we treat missing values.
     extractFeatureWorker(inst,sourceAnnotation,doc,annType,featureName,alphabet,dt,mvt,codeas);
   }
@@ -127,14 +158,14 @@ public class FeatureExtraction {
           CodeAs codeas) {
     
     AugmentableFeatureVector fv = (AugmentableFeatureVector)inst.getData();
-    // if the feature name is empty, then all we want is indicate the presence of the annotation
+    // if the featureName name is empty, then all we want is indicate the presence of the annotation
     // inputAS a boolean. No matter what the datatype is, this is always indicated by setting the
-    // feature to 1.0 (while for all instances, where the annotation is missing, the value will
+    // featureName to 1.0 (while for all instances, where the annotation is missing, the value will
     // implicitly be set to 0.0). 
-    if(featureName==null) {
-      // construct the feature name and set to 1.0
-      // however, only add the feature if the feature alphabet is allowed to grow.
-      String fname = annType + NAMESEP + "ISPRESENT";
+    if(featureName==null||featureName.isEmpty()) {
+      // construct the featureName name and set to 1.0
+      // however, only add the featureName if the featureName alphabet is allowed to grow.
+      String fname = annType + NAMESEP + NAMESEP + "ISPRESENT";
       addToFeatureVector(fv, fname, 1.0);
     } else {    
       // First get the value inputAS an Object, if there is no value, we have an Object that is null
@@ -150,19 +181,19 @@ public class FeatureExtraction {
           if(valObj != null) {
             // it is not a missing value
             String val = valObj.toString();
-            // TODO: do we have to escape the feature name in some way here?
-            addToFeatureVector(fv, annType+NAMESEP+featureName+val, 1.0);
+            // TODO: do we have to escape the featureName name in some way here?
+            addToFeatureVector(fv, annType+NAMESEP+featureName+VALSEP+val, 1.0);
           } else {
             // we have a missing value, check the missing value treatment for what to do now
             switch(mvt) {
               case ignore_instance: // this is handled elsewhere, nothing to do
                 break;
-              case keep:  // this represents the MV by not setting any indicator feature, so nothing to do
+              case keep:  // this represents the MV by not setting any indicator featureName, so nothing to do
                 break;
               case zero_value: // for one-of-k we treat this identically to keep, nothing to do
                 break;
               case special_value: // we use the predefined special value
-                addToFeatureVector(fv,annType+NAMESEP+featureName+MVVALUE,1.0);
+                addToFeatureVector(fv,annType+NAMESEP+featureName+VALSEP+MVVALUE,1.0);
                 break; 
               default:
                 throw new NotImplementedException("MV-Handling");
@@ -179,12 +210,12 @@ public class FeatureExtraction {
             // before we handle the value, we need to convert it to a string
             String val = valObj.toString();
             if(alphabet.contains(val)) {
-              // add the feature, using the value we have stored for it, but only if the feature
+              // add the featureName, using the value we have stored for it, but only if the featureName
               // itself can be added
               addToFeatureVector(fv, annType+NAMESEP+featureName, alphabet.lookupIndex(val));
             } else {
               // we have not seen this value: if the alphabet is allowed to grow add it and
-              // then try to add the feature, otherwise, do nothing
+              // then try to add the featureName, otherwise, do nothing
               if(!alphabet.growthStopped()) {
                 // the lookupIndex method automatically adds the value if it is not there yet
                 addToFeatureVector(fv, annType+NAMESEP+featureName, alphabet.lookupIndex(val));
@@ -277,8 +308,8 @@ public class FeatureExtraction {
   // TODO: check what to do if the contained annotations are not in non-overlapping order: should we
   // create an ngram if the second annotations starts before the end of the first or even at the same 
   // offset inputAS the first? If that is the case, what should the order of the annotations then be?
-  // NOTE: if the feature is missing, i.e. it is null or the empty string, then the whole annotation gets ignored
-  public static void extractFeature(
+  // NOTE: if the featureName is missing, i.e. it is null or the empty string, then the whole annotation gets ignored
+  private static void extractFeature(
           Instance inst,
           Ngram ng, 
           String inputASname, 
@@ -287,23 +318,23 @@ public class FeatureExtraction {
     AugmentableFeatureVector fv = (AugmentableFeatureVector) inst.getData();
     int number = ng.number;
     String annType = ng.annType;
-    String feature = ng.feature;
+    String featureName = ng.feature;
     AnnotationSet inputAS = doc.getAnnotations(inputASname);
     // TODO: this we rely on the ngram only having allowed field values, e.g. annType
     // has to be non-null and non-empty and number has to be > 0.
-    // If feature is null, then for ngrams, the string comes from the covered document
+    // If featureName is null, then for ngrams, the string comes from the covered document
       String[] gram = new String[number];
       List<Annotation> al = Utils.getContainedAnnotations(inputAS, instanceAnnotation, annType).inDocumentOrder();
       // If we have less annotations than our n for n-gram, there is certainly nothing to do, 
-      // leave the feature vector untouched.
+      // leave the featureName vector untouched.
       if (al.size() < number) return;
         // this will hold the actual token strings to use for creating the n-grams
         List<String> strings = new ArrayList<String>();
         for(Annotation ann : al) {
-          // for ngrams we either have a feature name 
-          if(feature != null) {
-            // NOTE: if the feature is not a string, we convert it to string
-            Object obj = ann.getFeatures().get(feature);
+          // for ngrams we either have a featureName name 
+          if(featureName != null) {
+            // NOTE: if the featureName is not a string, we convert it to string
+            Object obj = ann.getFeatures().get(featureName);
             // if there is no value at all, then the annotation is ignored
             if(obj!=null) {
               String tmp =obj.toString().trim();
@@ -313,14 +344,17 @@ public class FeatureExtraction {
               }
             }
           } else {
-            // if the feature is null, we get the string from the cleaned document text
+            // if the featureName is null, we get the string from the cleaned document text
             String tmp = gate.Utils.cleanStringFor(doc, ann).trim();
             if(!tmp.isEmpty()) {
               strings.add(tmp);
             }
           }
         } // for Annotation ann : al
-        // Now construct the actual ngrams and add them to the augmentable feature vector. 
+        // Now construct the actual ngrams and add them to the augmentable featureName vector. 
+        // In the process, check first if such a featureName is already there, and if yes, just 
+        // increment the value.
+        // To avoid overhead, we only create the ngrams on the fly// Now construct the actual ngrams and add them to the augmentable feature vector. 
         // In the process, check first if such a feature is already there, and if yes, just 
         // increment the value.
         // To avoid overhead, we only create the ngrams on the fly
@@ -341,12 +375,12 @@ public class FeatureExtraction {
           }
           String ngram = sb.toString();
           // we have got our ngram now, count it, but only add if we are allowed to!
-          addToFeatureVector(fv, ngram, 1.0);
+          addToFeatureVector(fv, annType+NAMESEP+featureName+NAMESEP+"!N!"+NAMESEP+number+NAMESEP+ngram, 1.0);
         }
   } // extractFeature(NGram)
   
   
-  public static void extractFeature(
+  private static void extractFeature(
           Instance inst, 
           AttributeList al, 
           String inputASname, 
@@ -369,7 +403,7 @@ public class FeatureExtraction {
     List<Annotation> annlistbackward = inputAS.get(annType, 0L, centre).inDocumentOrder();
     // go through each of the members in the attribute list and get the annotation
     // then process each annotation just like a simple annotation, only that the name of 
-    // feature gets derived from this list attribute plus the location in the list.
+    // featureName gets derived from this list attribute plus the location in the list.
     for (int i = from; i < to; i++) {
       Annotation ann = null;
       if (i < 0) {
@@ -379,11 +413,11 @@ public class FeatureExtraction {
       } else if (i < annlistforward.size()) {
           ann = annlistforward.get(i);
           // make compiler happy for now
-          //textToReturn = textToReturn + separator + annType + ":" + feature + ":r" + i + ":" + extractFeature(annType, feature, datatype, inputASname, ann, doc);
+          //textToReturn = textToReturn + separator + annType + ":" + featureName + ":r" + i + ":" + extractFeature(annType, featureName, datatype, inputASname, ann, doc);
       }
       if(ann != null) {
-        // now extract the actual feature for that entry:
-        String typeName = annType + NAMESEP + i;
+        // now extract the actual featureName for that entry:
+        String typeName = annType + NAMESEP + "!L!" + NAMESEP + i;
         extractFeatureWorker(inst,ann,doc,typeName,featureName,alphabet,dt,mvt,codeas);    
       }
     }
@@ -409,19 +443,19 @@ public class FeatureExtraction {
   }
         
         
-  // NOTE: we use an AugmentableFeatureVector to represent the growing feature vector inputAS we 
+  // NOTE: we use an AugmentableFeatureVector to represent the growing featureName vector inputAS we 
   // build it.
   // The Mallet documentation is close to non-existing ATM, so here is what the methods we use do:
-  // afv.add("x",val) adds val to whatever the current value for "x" is oder adds the feature, if
+  // afv.add("x",val) adds val to whatever the current value for "x" is oder adds the featureName, if
   //   the Alphabet can grow. If the Alphabet cannot grow, the method does nothing.
   //   UPDATE: this does not work! if one tries to do that, the indices get messed up and 
   //   the fv will throw an ArrayIndexOutOfBoundsException!!!!
-  //   So we have always to explicitly check if the feature is in the alphabet!!!
+  //   So we have always to explicitly check if the featureName is in the alphabet!!!
   //   UPDATE: Mallet uses assert for checking things like this, so if assertsions are not enable,
   //   no exception is thrown until it is too late!
   // afv.value("x") retrieves the value if "x" is in the vector, otherwise an exception is thrown,
   //   even if "x" is in the alphabet. 
-  // afv.contains("x") is true if the feature vector contains a value for "x" (which implies it must
+  // afv.contains("x") is true if the featureName vector contains a value for "x" (which implies it must
   //   be in the alphabet)
   // afv.getAlphabet().contains("x") is true if "x" is in the alphabet. 
         

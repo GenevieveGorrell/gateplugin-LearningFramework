@@ -30,10 +30,9 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
 /**
- * Parse a feature specification file and extract features based on the specification. This contains
- * the code for parsing a feature specification and creating a FeatureInfo object.
+ * Parse a feature specification and create an initial FeatureInfo object. 
  *
- * @author johann
+ * @author Johann Petrak
  */
 public class FeatureSpecification {
 
@@ -252,7 +251,9 @@ public class FeatureSpecification {
 
     List<Element> elements = rootElement.getChildren();
 
-    attributes = new ArrayList<Attribute>();
+    // In this method, we directly modify the attributes list from the featureinfo we have 
+    // stored. 
+    List<Attribute> attributes = featureInfo.getAttributes();
     
     int n = 0;
     for (Element element : elements) {
@@ -275,10 +276,18 @@ public class FeatureSpecification {
 
   private SimpleAttribute parseSimpleAttribute(Element attributeElement, int i) {
 
+    String feat = getChildTextOrElse(attributeElement, "FEATURE", "");
     String dtstr = getChildTextOrElse(attributeElement, "DATATYPE", null);
-    if (dtstr == null) {
+    if (!feat.isEmpty() && dtstr == null) {
       throw new GateRuntimeException("DATATYPE not specified for ATTRIBUTE " + i);
     }
+    if(feat.isEmpty()) {
+      if(dtstr == null) dtstr = "bool";
+      else if(!dtstr.equals("bool") && !dtstr.equals("boolean")) {
+        throw new GateRuntimeException("DATATYPE must be bool or not specified if no feature given in ATTRIBUTE "+i);
+      }
+    }
+    if(dtstr.equals("boolean")) dtstr = "bool"; // allow both but internally we use bool to avoid keyword clash.
     Datatype dt = Datatype.valueOf(dtstr);
     // TODO: this should be named ANNOTATIONTYPE or ANNTYPE to avoid confusion
     // with the datatype
@@ -287,7 +296,6 @@ public class FeatureSpecification {
     if (atype.isEmpty()) {
       throw new GateRuntimeException("TYPE in ATTRIBUTE " + i + " must not be missing or empty");
     }
-    String feat = getChildTextOrElse(attributeElement, "FEATURE", "");
     String codeasstr = getChildTextOrElse(attributeElement, "CODEAS", "one_of_k").toLowerCase();
     if (!codeasstr.equals("one_of_k") && codeasstr.equals("number")) {
       throw new GateRuntimeException("CODES for ATTRIBUTE " + i + " not one-of-k or number but " + codeasstr);
@@ -330,15 +338,17 @@ public class FeatureSpecification {
     return ng;
   }
 
-  List<Attribute> attributes;
+  private FeatureInfo featureInfo = new FeatureInfo();
   
   /**
-   * Return the stored list of attributes.
-   * This is the original list, not a shallow or deep copy. 
+   * Return the FeatureInfo object for this specification.
+   * This will always return a new deep copy of the FeatureInfo that corresponds
+   * to the information inf the FeatureSepcification. 
+   * 
    * @return 
    */
-  public List<Attribute> getAttributes() {
-    return attributes;
+  public FeatureInfo getFeatureInfo() {
+    return new FeatureInfo(featureInfo); // this returns a cloned copy of the original
   }
 
   //// HELPER METHODS

@@ -8,12 +8,16 @@ package gate.plugin.learningframework.features;
 
 import cc.mallet.types.Alphabet;
 import java.io.Serializable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author Johann Petrak
  */
-public class SimpleAttribute extends Attribute implements Serializable {
+public class SimpleAttribute extends Attribute implements Serializable, Cloneable {
+
+  private static final long serialVersionUID = -2346560362547132478L;
 
   public SimpleAttribute(String type, String feature, Datatype datatype, CodeAs codeas, MissingValueTreatment missingValueTreatment, String missingValueValue, String scalingMethod, String transformMethod) {
     this.annType = type;
@@ -48,5 +52,11 @@ public class SimpleAttribute extends Attribute implements Serializable {
             ",missingvaluetreatment="+missingValueTreatment+
             ",codeas="+codeas;
   }
+  
+  @Override
+  public SimpleAttribute clone() {
+      return (SimpleAttribute) super.clone();
+  }
+  
 
 }

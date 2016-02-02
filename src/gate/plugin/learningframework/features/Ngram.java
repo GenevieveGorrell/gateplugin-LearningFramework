@@ -7,12 +7,14 @@
 package gate.plugin.learningframework.features;
 
 import java.io.Serializable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author Johann Petrak
  */
-public class Ngram extends Attribute implements Serializable {
+public class Ngram extends Attribute implements Serializable, Cloneable {
 
   public Ngram(int number, String type, String feature) {
     this.number = number;
@@ -38,5 +40,9 @@ public class Ngram extends Attribute implements Serializable {
             ",number="+number;
   }
   
+  @Override
+  public Ngram clone() {
+      return (Ngram) super.clone();
+  }
   
 }

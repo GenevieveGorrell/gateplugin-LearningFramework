@@ -6,6 +6,10 @@
 
 package gate.plugin.learningframework.tests;
 
+import cc.mallet.types.Alphabet;
+import cc.mallet.types.AugmentableFeatureVector;
+import cc.mallet.types.Instance;
+import gate.Annotation;
 import gate.AnnotationSet;
 import gate.Document;
 import gate.Factory;
@@ -35,11 +39,14 @@ public class Utils {
   /**
    * Add an annotation to the set with the given name and return the set.
    */  
-  public static AnnotationSet addAnn(Document doc, String setName, int from, int to, String type, FeatureMap fm) {
+  public static Annotation addAnn(Document doc, String setName, int from, int to, String type, FeatureMap fm) {
     AnnotationSet set = doc.getAnnotations(setName);
-    gate.Utils.addAnn(set, from, to, type, fm);
-    return set;
+    int id = gate.Utils.addAnn(set, from, to, type, fm);
+    return set.get(id);
   }
   
+  public static Instance newInstance() {
+    return new Instance(new AugmentableFeatureVector(new Alphabet()),null,null,null);    
+  }
 
 }

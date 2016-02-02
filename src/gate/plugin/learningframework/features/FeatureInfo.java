@@ -25,6 +25,24 @@ public class FeatureInfo implements Serializable {
   private static final long serialVersionUID = 1;
   protected boolean growthStopped = false;
 
+  /**
+   * Create an instance with an empty list of attributes.
+   */
+  public FeatureInfo() {
+    attributes = new ArrayList<Attribute>();
+  }
+
+  /**
+   * Create an instance that is a deep copy of another one.
+   */
+  public FeatureInfo(FeatureInfo other) {
+    this.growthStopped = other.growthStopped;
+    attributes = new ArrayList<Attribute>();
+    for(Attribute attr : other.getAttributes()) {
+      attributes.add(attr.clone());
+    }
+  }
+  
   public void stopGrowth() {
     // make sure that all alphabets we have stored with some of the attributes are
     // locked too!
@@ -44,11 +62,8 @@ public class FeatureInfo implements Serializable {
 
   protected List<Attribute> attributes;
 
-  public FeatureInfo() {
-    attributes = new ArrayList<Attribute>();
-  }
 
-  public List<Attribute> getFeatureInfo() { return attributes; }
+  public List<Attribute> getAttributes() { return attributes; }
   
 
 

@@ -12,7 +12,9 @@ import java.io.Serializable;
  *
  * @author Johann Petrak
  */
-public class AttributeList extends SimpleAttribute implements Serializable {
+public class AttributeList extends SimpleAttribute implements Serializable, Cloneable {
+
+  private static final long serialVersionUID = -4627730393276173588L;
 
   public AttributeList(String type, String feature, Datatype datatype, CodeAs codeas, MissingValueTreatment missingValueTreatment, String missingValueValue, String scalingMethod, String transformMethod, int from, int to) {
     super(type, feature, datatype, codeas, missingValueTreatment, missingValueValue, scalingMethod, transformMethod);
@@ -46,6 +48,11 @@ public class AttributeList extends SimpleAttribute implements Serializable {
             ",codeas="+codeas+
             ",from="+from+
             ",to="+to;
+  }
+  
+  @Override
+  public AttributeList clone() {
+    return (AttributeList) super.clone();
   }
   
   
