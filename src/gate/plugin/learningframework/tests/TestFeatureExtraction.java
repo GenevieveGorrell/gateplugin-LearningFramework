@@ -19,6 +19,7 @@ import gate.plugin.learningframework.features.Attribute;
 import gate.plugin.learningframework.features.FeatureExtraction;
 import gate.plugin.learningframework.features.FeatureInfo;
 import gate.plugin.learningframework.features.FeatureSpecification;
+import gate.plugin.learningframework.features.SimpleAttribute;
 import static gate.plugin.learningframework.tests.Utils.*;
 import gate.util.GateException;
 import java.util.List;
@@ -66,7 +67,7 @@ public class TestFeatureExtraction {
   }
   
   @Test
-  public void extractNominal1() {
+  public void extractSimple1() {
     String spec = "<ROOT>"+
             "<ATTRIBUTE><TYPE>theType</TYPE><FEATURE>theFeature</FEATURE><DATATYPE>nominal</DATATYPE></ATTRIBUTE>"+
             "<ATTRIBUTE><TYPE>theType</TYPE><FEATURE>feature2</FEATURE><DATATYPE>nominal</DATATYPE></ATTRIBUTE>"+
@@ -184,9 +185,11 @@ public class TestFeatureExtraction {
     spec = "<ROOT>"+
             "<ATTRIBUTE><TYPE>theType</TYPE><FEATURE>nomFeat1</FEATURE><DATATYPE>nominal</DATATYPE></ATTRIBUTE>"+
             "<ATTRIBUTE><TYPE>theType</TYPE><FEATURE>nomFeat2</FEATURE><DATATYPE>nominal</DATATYPE></ATTRIBUTE>"+
+            "<ATTRIBUTE><TYPE>theType</TYPE><FEATURE>nomFeat3</FEATURE><DATATYPE>nominal</DATATYPE><CODEAS>number</CODEAS></ATTRIBUTE>"+
             "</ROOT>";
     instAnn.getFeatures().put("nomFeat1", 7.7);
     instAnn.getFeatures().put("nomFeat2", "xxxx");
+    instAnn.getFeatures().put("nomFeat3", "xxxx");
     
     List<Attribute> as2 = new FeatureSpecification(spec).getFeatureInfo().getAttributes();
 
@@ -215,8 +218,33 @@ public class TestFeatureExtraction {
     assertTrue(inst.getAlphabet().contains("theType:nomFeat2=xxxx"));
     assertEquals(13,((FeatureVector)inst.getData()).numLocations());
     assertEquals(1.0,((FeatureVector)inst.getData()).value("theType:nomFeat2=xxxx"),EPS);
+
+    //nominal feature coded as number
+    FeatureExtraction.extractFeature(inst, as2.get(2), "theType", instAnn, doc);
+    System.err.println("After "+as2.get(2)+" unlocked FV="+inst.getData());
+    assertEquals(14,inst.getAlphabet().size());
+    assertTrue(inst.getAlphabet().contains("theType:nomFeat3"));
+    assertEquals(14,((FeatureVector)inst.getData()).numLocations());
+    assertEquals(0.0,((FeatureVector)inst.getData()).value("theType:nomFeat3"),EPS);
     
+    // add another annotation, so we get another value for nomFeat3. The number of 
+    // entries in the feature name alphabet and the feature vector has to remain the same!
+    instAnn = addAnn(doc, "", 2, 2, "theType", gate.Utils.featureMap("nomFeat3","yyyy"));
+    FeatureExtraction.extractFeature(inst, as2.get(2), "theType", instAnn, doc);
+    System.err.println("After "+as2.get(2)+" unlocked FV="+inst.getData());
+    assertEquals(14,inst.getAlphabet().size());
+    assertTrue(inst.getAlphabet().contains("theType:nomFeat3"));
+    assertEquals(14,((FeatureVector)inst.getData()).numLocations());
+    assertEquals(1.0,((FeatureVector)inst.getData()).value("theType:nomFeat3"),EPS);
     
+    // check if we do have the proper value alphabet
+    assertTrue(as2.get(2) instanceof SimpleAttribute);
+    SimpleAttribute att2 = (SimpleAttribute)as2.get(2);
+    Alphabet att2a = att2.alphabet;
+    System.err.println("Alphabet for nomFeat3="+att2a);
+    assertEquals(2,att2a.size());
+    assertEquals(0,att2a.lookupIndex("xxxx"));
+    assertEquals(1,att2a.lookupIndex("yyyy"));
   }  
  
 }
