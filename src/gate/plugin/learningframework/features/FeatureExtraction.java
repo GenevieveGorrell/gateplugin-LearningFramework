@@ -131,13 +131,14 @@ public class FeatureExtraction {
       if(overlappings.size() > 1) {
         throw new GateRuntimeException("More than one overlapping annotation of type "+annType+" for instance annotation at offset "+
                 gate.Utils.start(instanceAnnotation)+" in document "+doc.getName());
-      } else if(overlappings.size() == 0) {
+      } 
+      if(overlappings.size() == 0) {
         // if there is no overlapping annotation of annType annType, we simply do nothing
-        // TODO: handle this inputAS if all features have missing values!!!
+        // TODO: handle this inputAS if all features have missing values!!!!!!
         return;
       }
       // we have exactly one annotation, use that one
-      sourceAnnotation = overlappings.get(0);
+      sourceAnnotation = gate.Utils.getOnlyAnn(overlappings);
     }
     // NOTE: there should be no way of how a featureName we encounter now is already in the featureName
     // vector, so we do not even check, we simply add the featureName.
@@ -402,7 +403,7 @@ public class FeatureExtraction {
         // n stings using the pre-defined separator character.
         
         StringBuilder sb = new StringBuilder();
-        for(int i = 0; i < (strings.size()-number); i++ ) {
+        for(int i = 0; i < (strings.size()-number+1); i++ ) {
           sb.setLength(0);
           for(int j = 0; j < number; j++) {
             if(j!=0) sb.append(NGRAMSEP);
