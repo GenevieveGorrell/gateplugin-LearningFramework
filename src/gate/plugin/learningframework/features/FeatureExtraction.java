@@ -264,6 +264,24 @@ public class FeatureExtraction {
           addToFeatureVector(fv,annType+NAMESEP+featureName,val);
         } else {
           // we got a missing value for a numeric attribute
+          // TODO!!
+            // we have a numeric missing value!
+            switch(mvt) {
+              case ignore_instance: // this is handled elsewhere, nothing to do
+                break;
+              case keep:  // for this kind of codeas, we use the value NaN
+                addToFeatureVector(fv,annType+NAMESEP+featureName, Double.NaN );
+                break;
+              case zero_value: // use the first value, does not make much sense really, but ...
+                // TODO: document that this combination should be avoided, probably
+                addToFeatureVector(fv,annType+NAMESEP+featureName, 0.0 );
+                break;
+              case special_value: // we use the special value -1.0 which should get handled by Mallet somehow
+                addToFeatureVector(fv,annType+NAMESEP+featureName,-1.0);
+                break; 
+              default:
+                throw new NotImplementedException("MV-Handling");
+            }                                  
         }
       } else if(dt == Datatype.bool) {
         if(valObj != null) {
@@ -284,6 +302,23 @@ public class FeatureExtraction {
           }
           addToFeatureVector(fv,annType+NAMESEP+featureName,val);
         } else {
+            // we have a missing boolean value
+            switch(mvt) {
+              case ignore_instance: // this is handled elsewhere, nothing to do
+                break;
+              case keep:  // for this kind of codeas, we use the value NaN
+                addToFeatureVector(fv,annType+NAMESEP+featureName, Double.NaN );
+                break;
+              case zero_value: // use the first value, does not make much sense really, but ...
+                // TODO: document that this combination should be avoided, probably
+                addToFeatureVector(fv,annType+NAMESEP+featureName, 0.0 );
+                break;
+              case special_value: // we use the special value -1.0 which should get handled by Mallet somehow
+                addToFeatureVector(fv,annType+NAMESEP+featureName,0.5);
+                break; 
+              default:
+                throw new NotImplementedException("MV-Handling");
+            }                                  
           
         }
       } else {

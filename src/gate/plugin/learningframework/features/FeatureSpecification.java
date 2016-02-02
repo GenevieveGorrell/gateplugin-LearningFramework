@@ -296,10 +296,24 @@ public class FeatureSpecification {
     if (atype.isEmpty()) {
       throw new GateRuntimeException("TYPE in ATTRIBUTE " + i + " must not be missing or empty");
     }
-    String codeasstr = getChildTextOrElse(attributeElement, "CODEAS", "one_of_k").toLowerCase();
-    if (!codeasstr.equals("one_of_k") && codeasstr.equals("number")) {
-      throw new GateRuntimeException("CODES for ATTRIBUTE " + i + " not one-of-k or number but " + codeasstr);
+    String codeasstr = getChildTextOrElse(attributeElement, "CODEAS", "").toLowerCase();
+    if (!codeasstr.isEmpty() && !codeasstr.equals("one_of_k") && !codeasstr.equals("number")) {
+      throw new GateRuntimeException("CODEAS for ATTRIBUTE " + i + " specified but not one_of_k or number but " + codeasstr);
     }
+    // codeas currently only makes sense and is used for nominal, so complain if it is specified
+    // for other datatypes
+    if(!codeasstr.isEmpty() && (dt != Datatype.nominal) ) {
+      throw new GateRuntimeException("CODEAS can only be used with DATATYPE nominal for ATTRIBUTE "+i);
+    }
+    // for non-nominal, we always really use number
+    if(codeasstr.isEmpty() && dt != Datatype.nominal) {
+      codeasstr = "number";
+    }
+    // for nominal the default when not specified is on_of_k
+    if(codeasstr.isEmpty() && dt == Datatype.nominal) {
+      codeasstr = "one_of_k";
+    }
+    
     CodeAs codeas = CodeAs.valueOf(codeasstr);
     String missingValueTreatmentStr = getChildTextOrElse(attributeElement, "MISSINGVALUETREATMENT", "special_value");
     MissingValueTreatment mvt = MissingValueTreatment.valueOf(missingValueTreatmentStr);

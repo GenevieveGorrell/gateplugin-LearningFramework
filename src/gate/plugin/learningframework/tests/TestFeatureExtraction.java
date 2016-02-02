@@ -75,11 +75,15 @@ public class TestFeatureExtraction {
             "<ATTRIBUTE><TYPE>theType</TYPE><FEATURE>boolfeature1</FEATURE><DATATYPE>boolean</DATATYPE></ATTRIBUTE>"+
             "<ATTRIBUTE><TYPE>theType</TYPE><FEATURE>boolfeature2</FEATURE><DATATYPE>bool</DATATYPE></ATTRIBUTE>"+
             "<ATTRIBUTE><TYPE>theType</TYPE></ATTRIBUTE>"+
+            "<ATTRIBUTE><TYPE>theType</TYPE><FEATURE>missing2nominal</FEATURE><DATATYPE>nominal</DATATYPE></ATTRIBUTE>"+
+            "<ATTRIBUTE><TYPE>theType</TYPE><FEATURE>missing3nominal</FEATURE><DATATYPE>nominal</DATATYPE><CODEAS>number</CODEAS></ATTRIBUTE>"+
+            "<ATTRIBUTE><TYPE>theType</TYPE><FEATURE>missing1bool</FEATURE><DATATYPE>bool</DATATYPE></ATTRIBUTE>"+
+            "<ATTRIBUTE><TYPE>theType</TYPE><FEATURE>missing3numeric</FEATURE><DATATYPE>numeric</DATATYPE></ATTRIBUTE>"+
             "</ROOT>";
     FeatureInfo fi = new FeatureSpecification(spec).getFeatureInfo();
     List<Attribute> as = fi.getAttributes();
     assertNotNull(as);
-    assertEquals(7,as.size());
+    assertEquals(11,as.size());
 
     Alphabet a = new Alphabet();
     AugmentableFeatureVector afv = new AugmentableFeatureVector(a);
@@ -137,6 +141,82 @@ public class TestFeatureExtraction {
     assertTrue(inst.getAlphabet().contains("theType:boolfeature2"));
     assertEquals(7,((FeatureVector)inst.getData()).numLocations());
     assertEquals(1.0,((FeatureVector)inst.getData()).value("theType::ISPRESENT"),EPS);
+    
+    // 2) check the kind of missing value we get by default
+    
+    // for a nominal, with the default one_of_k coding, and mvt "special value" 
+    // a new special value is added
+    FeatureExtraction.extractFeature(inst, as.get(7), "theType", instAnn, doc);
+    System.err.println("After "+as.get(7)+" FV="+inst.getData());
+    assertEquals(8,inst.getAlphabet().size());
+    assertTrue(inst.getAlphabet().contains("theType:missing2nominal=%%%NA%%%"));
+    assertEquals(8,((FeatureVector)inst.getData()).numLocations());
+    assertEquals(1.0,((FeatureVector)inst.getData()).value("theType:missing2nominal=%%%NA%%%"),EPS);
+    
+    // for a nominal coded as number, we should the special value -1
+    FeatureExtraction.extractFeature(inst, as.get(8), "theType", instAnn, doc);
+    System.err.println("After "+as.get(8)+" FV="+inst.getData());
+    assertEquals(9,inst.getAlphabet().size());
+    assertTrue(inst.getAlphabet().contains("theType:missing3nominal"));
+    assertEquals(9,((FeatureVector)inst.getData()).numLocations());
+    assertEquals(-1.0,((FeatureVector)inst.getData()).value("theType:missing3nominal"),EPS);
+    
+    // for a boolean we should get 0.5
+    FeatureExtraction.extractFeature(inst, as.get(9), "theType", instAnn, doc);
+    System.err.println("After "+as.get(9)+" FV="+inst.getData());
+    assertEquals(10,inst.getAlphabet().size());
+    assertTrue(inst.getAlphabet().contains("theType:missing1bool"));
+    assertEquals(10,((FeatureVector)inst.getData()).numLocations());
+    assertEquals(0.5,((FeatureVector)inst.getData()).value("theType:missing1bool"),EPS);
+
+    FeatureExtraction.extractFeature(inst, as.get(10), "theType", instAnn, doc);
+    System.err.println("After "+as.get(10)+" FV="+inst.getData());
+    assertEquals(11,inst.getAlphabet().size());
+    assertTrue(inst.getAlphabet().contains("theType:missing3numeric"));
+    assertEquals(11,((FeatureVector)inst.getData()).numLocations());
+    assertEquals(-1.0,((FeatureVector)inst.getData()).value("theType:missing3numeric"),EPS);
+    
+    // 3) it does not matter where the attribute comes from, we can just as well get it from 
+    // a different specification.
+    // Test this, than do it once more, but after locking the alphabet and check if the new
+    // feature is indeed ignored!
+    
+    spec = "<ROOT>"+
+            "<ATTRIBUTE><TYPE>theType</TYPE><FEATURE>nomFeat1</FEATURE><DATATYPE>nominal</DATATYPE></ATTRIBUTE>"+
+            "<ATTRIBUTE><TYPE>theType</TYPE><FEATURE>nomFeat2</FEATURE><DATATYPE>nominal</DATATYPE></ATTRIBUTE>"+
+            "</ROOT>";
+    instAnn.getFeatures().put("nomFeat1", 7.7);
+    instAnn.getFeatures().put("nomFeat2", "xxxx");
+    
+    List<Attribute> as2 = new FeatureSpecification(spec).getFeatureInfo().getAttributes();
+
+    FeatureExtraction.extractFeature(inst, as2.get(0), "theType", instAnn, doc);
+    System.err.println("After "+as2.get(0)+" FV="+inst.getData());
+    assertEquals(12,inst.getAlphabet().size());
+    assertTrue(inst.getAlphabet().contains("theType:nomFeat1=7.7"));
+    assertEquals(12,((FeatureVector)inst.getData()).numLocations());
+    assertEquals(1.0,((FeatureVector)inst.getData()).value("theType:nomFeat1=7.7"),EPS);
+    
+    inst.getAlphabet().stopGrowth();
+    as2.get(1).stopGrowth();
+    FeatureExtraction.extractFeature(inst, as2.get(1), "theType", instAnn, doc);
+    System.err.println("After "+as2.get(1)+" FV="+inst.getData());
+    assertEquals(12,inst.getAlphabet().size());
+    //assertTrue(inst.getAlphabet().contains("theType:nomFeat1=7.7"));
+    assertEquals(12,((FeatureVector)inst.getData()).numLocations());
+    //assertEquals(1.0,((FeatureVector)inst.getData()).value("theType:nomFeat1=7.7"),EPS);
+    
+    // unlock and try again
+    inst.getAlphabet().startGrowth();
+    as2.get(1).startGrowth();
+    FeatureExtraction.extractFeature(inst, as2.get(1), "theType", instAnn, doc);
+    System.err.println("After "+as2.get(1)+" unlocked FV="+inst.getData());
+    assertEquals(13,inst.getAlphabet().size());
+    assertTrue(inst.getAlphabet().contains("theType:nomFeat2=xxxx"));
+    assertEquals(13,((FeatureVector)inst.getData()).numLocations());
+    assertEquals(1.0,((FeatureVector)inst.getData()).value("theType:nomFeat2=xxxx"),EPS);
+    
+    
   }  
  
 }
