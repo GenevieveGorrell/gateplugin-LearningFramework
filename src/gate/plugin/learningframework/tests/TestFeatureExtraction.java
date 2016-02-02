@@ -312,46 +312,79 @@ public class TestFeatureExtraction {
     FeatureExtraction.extractFeature(inst, as.get(0), "", instAnn, doc);
     System.err.println("After "+as.get(0)+" (one-grams) FV="+inst.getData());
     assertEquals(5,inst.getAlphabet().size());
-    assertTrue(inst.getAlphabet().contains("theType:theFeature:!N!:1:tok1"));
-    assertTrue(inst.getAlphabet().contains("theType:theFeature:!N!:1:tok2"));
-    assertTrue(inst.getAlphabet().contains("theType:theFeature:!N!:1:tok3"));
-    assertTrue(inst.getAlphabet().contains("theType:theFeature:!N!:1:tok4"));
-    assertTrue(inst.getAlphabet().contains("theType:theFeature:!N!:1:tok5"));
+    assertTrue(inst.getAlphabet().contains("theType:theFeature:!N!:1=tok1"));
+    assertTrue(inst.getAlphabet().contains("theType:theFeature:!N!:1=tok2"));
+    assertTrue(inst.getAlphabet().contains("theType:theFeature:!N!:1=tok3"));
+    assertTrue(inst.getAlphabet().contains("theType:theFeature:!N!:1=tok4"));
+    assertTrue(inst.getAlphabet().contains("theType:theFeature:!N!:1=tok5"));
     assertEquals(5,((FeatureVector)inst.getData()).numLocations());
-    assertEquals(1.0,((FeatureVector)inst.getData()).value("theType:theFeature:!N!:1:tok1"),EPS);
-    assertEquals(1.0,((FeatureVector)inst.getData()).value("theType:theFeature:!N!:1:tok2"),EPS);
-    assertEquals(1.0,((FeatureVector)inst.getData()).value("theType:theFeature:!N!:1:tok3"),EPS);
-    assertEquals(1.0,((FeatureVector)inst.getData()).value("theType:theFeature:!N!:1:tok4"),EPS);
-    assertEquals(1.0,((FeatureVector)inst.getData()).value("theType:theFeature:!N!:1:tok5"),EPS);
+    assertEquals(1.0,((FeatureVector)inst.getData()).value("theType:theFeature:!N!:1=tok1"),EPS);
+    assertEquals(1.0,((FeatureVector)inst.getData()).value("theType:theFeature:!N!:1=tok2"),EPS);
+    assertEquals(1.0,((FeatureVector)inst.getData()).value("theType:theFeature:!N!:1=tok3"),EPS);
+    assertEquals(1.0,((FeatureVector)inst.getData()).value("theType:theFeature:!N!:1=tok4"),EPS);
+    assertEquals(1.0,((FeatureVector)inst.getData()).value("theType:theFeature:!N!:1=tok5"),EPS);
     
     // now the bigrams
     inst = newInstance();
     FeatureExtraction.extractFeature(inst, as.get(1), "", instAnn, doc);
     System.err.println("After "+as.get(1)+" (bi-grams) FV="+inst.getData());
     assertEquals(4,inst.getAlphabet().size());
-    assertTrue(inst.getAlphabet().contains("theType:theFeature:!N!:2:tok1_tok2"));
-    assertTrue(inst.getAlphabet().contains("theType:theFeature:!N!:2:tok2_tok3"));
-    assertTrue(inst.getAlphabet().contains("theType:theFeature:!N!:2:tok3_tok4"));
-    assertTrue(inst.getAlphabet().contains("theType:theFeature:!N!:2:tok4_tok5"));
+    assertTrue(inst.getAlphabet().contains("theType:theFeature:!N!:2=tok1_tok2"));
+    assertTrue(inst.getAlphabet().contains("theType:theFeature:!N!:2=tok2_tok3"));
+    assertTrue(inst.getAlphabet().contains("theType:theFeature:!N!:2=tok3_tok4"));
+    assertTrue(inst.getAlphabet().contains("theType:theFeature:!N!:2=tok4_tok5"));
     assertEquals(4,((FeatureVector)inst.getData()).numLocations());
-    assertEquals(1.0,((FeatureVector)inst.getData()).value("theType:theFeature:!N!:2:tok1_tok2"),EPS);
-    assertEquals(1.0,((FeatureVector)inst.getData()).value("theType:theFeature:!N!:2:tok2_tok3"),EPS);
-    assertEquals(1.0,((FeatureVector)inst.getData()).value("theType:theFeature:!N!:2:tok3_tok4"),EPS);
-    assertEquals(1.0,((FeatureVector)inst.getData()).value("theType:theFeature:!N!:2:tok4_tok5"),EPS);
+    assertEquals(1.0,((FeatureVector)inst.getData()).value("theType:theFeature:!N!:2=tok1_tok2"),EPS);
+    assertEquals(1.0,((FeatureVector)inst.getData()).value("theType:theFeature:!N!:2=tok2_tok3"),EPS);
+    assertEquals(1.0,((FeatureVector)inst.getData()).value("theType:theFeature:!N!:2=tok3_tok4"),EPS);
+    assertEquals(1.0,((FeatureVector)inst.getData()).value("theType:theFeature:!N!:2=tok4_tok5"),EPS);
 
     // and the 3-grams
     inst = newInstance();
     FeatureExtraction.extractFeature(inst, as.get(2), "", instAnn, doc);
     System.err.println("After "+as.get(2)+" (bi-grams) FV="+inst.getData());
     assertEquals(3,inst.getAlphabet().size());
-    assertTrue(inst.getAlphabet().contains("theType:theFeature:!N!:3:tok1_tok2_tok3"));
-    assertTrue(inst.getAlphabet().contains("theType:theFeature:!N!:3:tok2_tok3_tok4"));
-    assertTrue(inst.getAlphabet().contains("theType:theFeature:!N!:3:tok3_tok4_tok5"));
+    assertTrue(inst.getAlphabet().contains("theType:theFeature:!N!:3=tok1_tok2_tok3"));
+    assertTrue(inst.getAlphabet().contains("theType:theFeature:!N!:3=tok2_tok3_tok4"));
+    assertTrue(inst.getAlphabet().contains("theType:theFeature:!N!:3=tok3_tok4_tok5"));
     assertEquals(3,((FeatureVector)inst.getData()).numLocations());
-    assertEquals(1.0,((FeatureVector)inst.getData()).value("theType:theFeature:!N!:3:tok1_tok2_tok3"),EPS);
-    assertEquals(1.0,((FeatureVector)inst.getData()).value("theType:theFeature:!N!:3:tok2_tok3_tok4"),EPS);
-    assertEquals(1.0,((FeatureVector)inst.getData()).value("theType:theFeature:!N!:3:tok3_tok4_tok5"),EPS);
+    assertEquals(1.0,((FeatureVector)inst.getData()).value("theType:theFeature:!N!:3=tok1_tok2_tok3"),EPS);
+    assertEquals(1.0,((FeatureVector)inst.getData()).value("theType:theFeature:!N!:3=tok2_tok3_tok4"),EPS);
+    assertEquals(1.0,((FeatureVector)inst.getData()).value("theType:theFeature:!N!:3=tok3_tok4_tok5"),EPS);
   }
   
+@Test
+  public void extractList1() {
+    String spec = "<ROOT>"+
+            "<ATTRIBUTELIST><TYPE>theType</TYPE><FEATURE>theFeature</FEATURE><DATATYPE>nominal</DATATYPE><FROM>-1</FROM><TO>1</TO></ATTRIBUTELIST>"+
+            "</ROOT>";
+    List<Attribute> as = new FeatureSpecification(spec).getFeatureInfo().getAttributes();
+    Instance inst = newInstance();
+    
+    // prepare the document
+    Annotation instAnn = addAnn(doc, "", 10, 10, "instanceType", gate.Utils.featureMap());
+    addAnn(doc,"",0,2,"theType",gate.Utils.featureMap("theFeature","tok1"));
+    addAnn(doc,"",2,4,"theType",gate.Utils.featureMap("theFeature","tok2"));
+    addAnn(doc,"",4,6,"theType",gate.Utils.featureMap("theFeature","tok3"));
+    addAnn(doc,"",6,8,"theType",gate.Utils.featureMap("theFeature","tok4"));
+    addAnn(doc,"",8,10,"theType",gate.Utils.featureMap("theFeature","tok5"));
+    addAnn(doc,"",10,12,"theType",gate.Utils.featureMap("theFeature","tok6"));
+    addAnn(doc,"",12,14,"theType",gate.Utils.featureMap("theFeature","tok7"));
+    addAnn(doc,"",14,16,"theType",gate.Utils.featureMap("theFeature","tok8"));
+    addAnn(doc,"",16,18,"theType",gate.Utils.featureMap("theFeature","tok9"));
+    addAnn(doc,"",18,20,"theType",gate.Utils.featureMap("theFeature","tok10"));
+    
+    FeatureExtraction.extractFeature(inst, as.get(0), "", instAnn, doc);
+    System.err.println("After "+as.get(0)+" (list -1to1) FV="+inst.getData());
+    assertEquals(3,inst.getAlphabet().size());
+    System.err.println("Alphabet is "+inst.getAlphabet());
+    assertTrue(inst.getAlphabet().contains("theType:!L!:-1:theFeature=tok5"));
+    assertTrue(inst.getAlphabet().contains("theType:!L!:0:theFeature=tok6"));
+    assertTrue(inst.getAlphabet().contains("theType:!L!:1:theFeature=tok7"));
+    assertEquals(3,((FeatureVector)inst.getData()).numLocations());
+    assertEquals(1.0,((FeatureVector)inst.getData()).value("theType:!L!:-1:theFeature=tok5"),EPS);
+    assertEquals(1.0,((FeatureVector)inst.getData()).value("theType:!L!:0:theFeature=tok6"),EPS);
+    assertEquals(1.0,((FeatureVector)inst.getData()).value("theType:!L!:1:theFeature=tok7"),EPS);
+  }
  
 }

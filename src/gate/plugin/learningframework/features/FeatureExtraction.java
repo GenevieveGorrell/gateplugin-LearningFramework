@@ -156,7 +156,7 @@ public class FeatureExtraction {
           Alphabet alphabet,
           Datatype dt,
           MissingValueTreatment mvt,
-          CodeAs codeas) {
+          CodeAs codeas)  {
     
     AugmentableFeatureVector fv = (AugmentableFeatureVector)inst.getData();
     // if the featureName name is empty, then all we want is indicate the presence of the annotation
@@ -411,7 +411,7 @@ public class FeatureExtraction {
           }
           String ngram = sb.toString();
           // we have got our ngram now, count it, but only add if we are allowed to!
-          addToFeatureVector(fv, annType+NAMESEP+featureName+NAMESEP+"!N!"+NAMESEP+number+NAMESEP+ngram, 1.0);
+          addToFeatureVector(fv, annType+NAMESEP+featureName+NAMESEP+"!N!"+NAMESEP+number+VALSEP+ngram, 1.0);
         }
   } // extractFeature(NGram)
   
@@ -440,7 +440,7 @@ public class FeatureExtraction {
     // go through each of the members in the attribute list and get the annotation
     // then process each annotation just like a simple annotation, only that the name of 
     // featureName gets derived from this list attribute plus the location in the list.
-    for (int i = from; i < to; i++) {
+    for (int i = from; i <= to; i++) {
       Annotation ann = null;
       if (i < 0) {
         if (-i <= annlistbackward.size()) {
@@ -453,8 +453,8 @@ public class FeatureExtraction {
       }
       if(ann != null) {
         // now extract the actual featureName for that entry:
-        String typeName = annType + NAMESEP + "!L!" + NAMESEP + i;
-        extractFeatureWorker(inst,ann,doc,typeName,featureName,alphabet,dt,mvt,codeas);    
+        String featureNamePrefix = annType + NAMESEP + "!L!" + NAMESEP + i;
+        extractFeatureWorker(inst,ann,doc,featureNamePrefix,featureName,alphabet,dt,mvt,codeas);    
       }
     }
   } // extractFeature (AttributeList)
