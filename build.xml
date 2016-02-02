@@ -78,6 +78,7 @@
     <junit fork="true">
       <classpath refid="run.classpath" />
       <formatter type="brief" usefile="false" />
+      <formatter type="brief" usefile="true" />
       <formatter type="xml" />
       <test name="gate.plugin.learningframework.tests.SuiteAllTests" />
     </junit>
