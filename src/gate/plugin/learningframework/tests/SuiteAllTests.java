@@ -6,6 +6,7 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+  TestFeatureSpecification.class,
   EngineWekaTest.class,
 })
 public class SuiteAllTests {

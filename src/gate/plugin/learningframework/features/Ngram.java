@@ -31,4 +31,12 @@ public class Ngram extends Attribute implements Serializable {
     /// we do not have any alphabets, do nothing
   }
 
+  @Override
+  public String toString() {
+    return "NgramAttribute(type="+annType+
+            ",feature="+feature+
+            ",number="+number;
+  }
+  
+  
 }

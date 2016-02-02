@@ -12,69 +12,50 @@
  *
  * Genevieve Gorrell, 9 Jan 2015
  */
-
 package gate.plugin.learningframework.features;
 
-import cc.mallet.types.Alphabet;
-import cc.mallet.types.AugmentableFeatureVector;
-import cc.mallet.types.Instance;
 import gate.Annotation;
-import gate.AnnotationSet;
 import gate.Document;
 import gate.Utils;
-import gate.plugin.learningframework.features.Attribute;
-import gate.plugin.learningframework.features.AttributeList;
-import gate.plugin.learningframework.features.CodeAs;
-import gate.plugin.learningframework.features.Datatype;
-import gate.plugin.learningframework.features.MissingValueTreatment;
-import gate.plugin.learningframework.features.Ngram;
-import gate.plugin.learningframework.features.SimpleAttribute;
 import gate.util.GateRuntimeException;
+import java.io.File;
+import java.io.StringReader;
 
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
-
-/** 
- * Parse a feature specification file and extract features based on the specification.
- * This contains the code for parsing a feature specification and creating a FeatureInfo
- * object.
+/**
+ * Parse a feature specification file and extract features based on the specification. This contains
+ * the code for parsing a feature specification and creating a FeatureInfo object.
+ *
  * @author johann
  */
 public class FeatureSpecification {
-  
-  /**
-   * The separator character used to construct n-gram values, which will eventually be used 
-   * as feature names.
-   */
-  private static final String NGRAMSEP = "_";
-  private static final String NAMESEP = ":";
-  private static final String MVVALUE = "%%%NA%%%";
-  
+
   private static Logger logger = Logger.getLogger(FeatureSpecification.class.getName());
 
   /**
    * Extract the class for an instance for sequence tagging.
-   * 
-   * In the case of sequence tagging, we construct the class based on the instance's
- position relative to the class annotation annType. If it occurs at the beginning of the class
- annotation, it's a "beginning". In the middle or at the end, it's an "inside". Instances that
- don't occur in the span of a class annotation are an "outside".
- 
- TODO: eventually the exact way of how to create class labels for sequence tagging should be
- parametrizable.
-   * 
-   * @param type The annotation annType name of the annotation that represents the class, e.g. "Person"
+   *
+   * In the case of sequence tagging, we construct the class based on the instance's position
+   * relative to the class annotation annType. If it occurs at the beginning of the class
+   * annotation, it's a "beginning". In the middle or at the end, it's an "inside". Instances that
+   * don't occur in the span of a class annotation are an "outside".
+   *
+   * TODO: eventually the exact way of how to create class labels for sequence tagging should be
+   * parametrizable.
+   *
+   * @param type The annotation annType name of the annotation that represents the class, e.g.
+   * "Person"
    * @param inputASname, the annotation set name of the set which contains the class annotations
    * @param instanceAnnotation, the instance annotation, e.g. "Token".
    * @param doc the document which is currently being processed
-   * @return 
+   * @return
    */
   public static String extractClassNER(String type, String inputASname, Annotation instanceAnnotation, Document doc) {
     if (type != null && !type.equals("")) {
@@ -94,11 +75,10 @@ public class FeatureSpecification {
       }
       return textToReturn;
     } else {
-      System.err.println("LF ERROR: class type is null or empty, doc="+doc.getName()+" instance="+instanceAnnotation);
+      System.err.println("LF ERROR: class type is null or empty, doc=" + doc.getName() + " instance=" + instanceAnnotation);
       return null;
     }
   }
-
 
   /**
    * Get the class for this instance.
@@ -119,14 +99,14 @@ public class FeatureSpecification {
         }
       }
     } else //On instance
-    if (feature != null) {
-      Object toReturn = (Object) instanceAnnotation.getFeatures().get(feature);
-      if (toReturn instanceof String) {
-        return Double.parseDouble((String) toReturn);
-      } else {
-        return ((Number) toReturn).doubleValue();
+     if (feature != null) {
+        Object toReturn = (Object) instanceAnnotation.getFeatures().get(feature);
+        if (toReturn instanceof String) {
+          return Double.parseDouble((String) toReturn);
+        } else {
+          return ((Number) toReturn).doubleValue();
+        }
       }
-    }
     logger.warn("LearningFramework: Failed to retrieve class.");
     return 0.0;
   }
@@ -187,65 +167,8 @@ public class FeatureSpecification {
   }
 
   /**
-   * Given an annotation and optional feature, find the feature or just the text of the annotation
-   * in the instance and return it.
-   *
-   * If no feature is specified, just return the text of the annotation.
-   *
-   * If no annotation is specified, use the instance.
-   *
-   * If it's a numeric feature, return in the format name=value, which gets used further down the
-   * line;
-   *
-   * If more than one of the annotation occurs within the span of the instance, the first one will
-   * be returned.
-   */
-  // TODO: would it be possible to return something that is not an object here?
-  // The better way would be to return a Pair(String,double) for the use of mallet or a
-  // Pair(String,Object) for the use of a generic representation that can also handle e.g.
-  // multivalued nominal simpleattributes in a single feature.
-  // TODO: we may want to handle true boolean features separately, because they will be represented
-  // by two orthogonal features, e.g. value:true and value:false, when one feature would be enough!
-  
-  public static String extractSingleFeature(SimpleAttribute att, String inputASname, Annotation instanceAnnotation, Document doc) {
-    if (att == null) {
-      return "null";
-    }
-    Datatype datatype = att.datatype;
-    String type = att.annType;
-    String feature = att.feature;
-    // make compiler happy for now
-    String feat = null;
-    //String feat = extractFeature(type, feature, datatype, inputASname, instanceAnnotation, doc);
-    if (type == null) {
-      type = instanceAnnotation.getType();
-    }
-    ;
-    if (feature == null) {
-      feature = "cleanstring";
-    }
-    ;
-    if (datatype == Datatype.nominal) {
-      return type + ":" + feature + ":" + feat;
-    } else {
-      try {
-        double df = Double.parseDouble(feat);
-        return type + ":" + feature + "=" + df;
-      } catch (NumberFormatException e) {
-        // JP: this was previously saying that it would "treat it as string" and it
-        // returned: annType + ":" + feature + ":" + value;
-        // In the cases I observed the value of value got printed as "null" so it was
-        // either null or the literal string "null"
-        // We have to look at this again in the light of the fact that "null" is used to
-        // represent missing values!!
-        logger.warn("LearningFramework: Failed to format numeric feature " + feature + "=" + feat + " as double. Treating as 0.0");
-        return type + ":" + feature + "=" + 0.0;
-      }
-    }
-  }
-
-  /**
    * Get the class for this instance.
+   *
    * @param type
    * @return
    */
@@ -270,158 +193,172 @@ public class FeatureSpecification {
     }
     return textToReturn.replaceAll("[\\n\\s]+", "-");
   }
-  
-  
-  // TODO: methos for directly extracting feature vectors and targets for classification and
-  // sequence tagging (and regression). Maybe make some of the static utility methods private, 
-  // if noone will need them!
 
-	private org.jdom.Document jdomDocConf = null;
-	
-	
-	private URL url;
-        
-	public FeatureSpecification(URL configFileURL) {
-		this.url = configFileURL;
-		
-		SAXBuilder saxBuilder = new SAXBuilder(false);
-		try {
-			try {
-				this.jdomDocConf = saxBuilder.build(configFileURL);
-			} catch(JDOMException jde){
-				throw new GateRuntimeException(jde);
-			}
-		} catch (java.io.IOException ex) {
-			throw new GateRuntimeException(ex);
-		}
+  private org.jdom.Document jdomDocConf = null;
 
-		Element rootElement = jdomDocConf.getRootElement();
-		
-		List<Element> attributeElements = rootElement.getChildren("ATTRIBUTE");
+  private URL url;
 
-		for(int i=0;i<attributeElements.size();i++){
-			Element attributeElement = attributeElements.get(i);
-			String dtstr = getChildTextOrElse(attributeElement, "DATATYPE", null);
-                        if(dtstr == null)
-                          throw new GateRuntimeException("DATATYPE not specified for ATTRIBUTE "+(i+1));
-                        Datatype dt = Datatype.valueOf(dtstr);
-                        // TODO: this should be named ANNOTATIONTYPE or ANNTYPE to avoid confusion
-                        // with the datatype
-                        String atype = getChildTextOrElse(attributeElement, "TYPE", "");
-                        // must not be empty
-                        if(atype.isEmpty()) {
-                          throw new GateRuntimeException("TYPE in ATTRIBUTE "+(i+1)+" must not be missing or empty");
-                        }
-                        String feat = getChildTextOrElse(attributeElement,"FEATURE","");
-                        String codeasstr = getChildTextOrElse(attributeElement,"CODEAS","one-of-k").toLowerCase();
-                        if(!codeasstr.equals("one_of_k") && codeasstr.equals("number")) {
-                          throw new GateRuntimeException("CODES for ATTRIBUTE "+(i+1)+" not one-of-k or number but "+codeasstr);
-                        }
-                        CodeAs codeas = CodeAs.valueOf(codeasstr);
-                        String missingValueTreatmentStr = getChildTextOrElse(attributeElement, "MISSINGVALUETREATMENT", "zero_value");
-                        MissingValueTreatment mvt = MissingValueTreatment.valueOf(missingValueTreatmentStr);
-                        // TODO: not implemented yet, but we should add this!!
-                        String scalingMethod = "";
-                        String transformMethod = "";
-                        String missingValueValue = ""; // if MVs should get replaced with a constant value, that value as a String
-			SimpleAttribute att = new SimpleAttribute(
-					atype,
-					feat,
-					dt,
-                                codeas,
-                                mvt,
-                                missingValueValue,
-                                scalingMethod,
-                                transformMethod
-			);
-                        // compiler happyness
-			//this.simpleattributes.add(att);
-		}
+  public FeatureSpecification(URL configFileURL) {
+    url = configFileURL;
 
-		List<Element> ngramElements = rootElement.getChildren("NGRAM");
+    SAXBuilder saxBuilder = new SAXBuilder(false);
+    try {
+      try {
+        this.jdomDocConf = saxBuilder.build(configFileURL);
+        parseConfigXml();
+      } catch (JDOMException jde) {
+        throw new GateRuntimeException(jde);
+      }
+    } catch (java.io.IOException ex) {
+      throw new GateRuntimeException("Error parsing config file URL " + url, ex);
+    }
+  }
 
-		for(int i=0;i<ngramElements.size();i++){
-			Element ngramElement = ngramElements.get(i);
-			Ngram ng = new Ngram(
-					Integer.parseInt(ngramElement.getChildText("NUMBER")),
-					ngramElement.getChildText("TYPE"),
-					ngramElement.getChildText("FEATURE")
-			);
-                        // compiler happyness
-			// this.ngrams.add(ng);
-		}
-		
-		List<Element> attributeListElements = rootElement.getChildren("ATTRIBUTELIST");
+  public FeatureSpecification(String configString) {
+    SAXBuilder saxBuilder = new SAXBuilder(false);
+    try {
+      try {
+        this.jdomDocConf = saxBuilder.build(new StringReader(configString));
+        parseConfigXml();
+      } catch (JDOMException jde) {
+        throw new GateRuntimeException(jde);
+      }
+    } catch (java.io.IOException ex) {
+      throw new GateRuntimeException("Error parsing config file String:\n" + configString, ex);
+    }
+  }
 
-		for(int i=0;i<attributeListElements.size();i++){
-			Element attributeListElement = attributeListElements.get(i);
-			Datatype dt = Datatype.valueOf("unset");
-			if(attributeListElement.getChildText("DATATYPE")!=null){
-				dt = Datatype.valueOf(attributeListElement.getChildText("DATATYPE"));
-			}
-                        /* happyness
-			AttributeList al = new AttributeList(
-					attributeListElement.getChildText("TYPE"),
-					attributeListElement.getChildText("FEATURE"),
-					dt,
-					Integer.parseInt(attributeListElement.getChildText("FROM")),
-					Integer.parseInt(attributeListElement.getChildText("TO"))
-			);
-			this.attributelists.add(al);
-                        */
-		}
-	}
-	/*
-	public List<SimpleAttribute> getAttributes() {
-		return simpleattributes;
-	}
+  public FeatureSpecification(File configFile) {
+    SAXBuilder saxBuilder = new SAXBuilder(false);
+    try {
+      try {
+        this.jdomDocConf = saxBuilder.build(configFile);
+        parseConfigXml();
+      } catch (JDOMException jde) {
+        throw new GateRuntimeException(jde);
+      }
+    } catch (java.io.IOException ex) {
+      throw new GateRuntimeException("Error parsing config file " + configFile, ex);
+    }
+  }
 
-	public void setAttributes(List<SimpleAttribute> attributes) {
-		this.simpleattributes = attributes;
-	}
+  private void parseConfigXml() {
 
-	public URL getUrl() {
-		return url;
-	}
+    // TODO: process children in order, then dispatch how to parse based on type.
+    // Then, parsing ATTRIBUTE and ATTRIBUTELIST is nearly identical except that 
+    // we parse the range in addition for ATTRIBUTELIST.
+    // Make an else part where we document how we might add additional stuff...
+    Element rootElement = jdomDocConf.getRootElement();
 
-	public void setUrl(URL url) {
-		this.url = url;
-	}
+    List<Element> elements = rootElement.getChildren();
 
-	public List<Ngram> getNgrams() {
-		return ngrams;
-	}
-
-	public void setNgrams(List<Ngram> ngrams) {
-		this.ngrams = ngrams;
-	}
-
-	public List<AttributeList> getAttributelists() {
-		return attributelists;
-	}
-
-	public void setAttributelists(List<AttributeList> attributelists) {
-		this.attributelists = attributelists;
-	}
-        */
-       //// HELPER METHODS
-        
-        /**
-         * Return the text of a single child element or a default value.
-         * This checks that there is at most one child of this annType and throws and exception
- if there are more than one. If there is no child of this name, then the value
- elseVal is returned. NOTE: the value returned is trimmed if it is a string, but 
- case is preserved
-         */
-  private static String getChildTextOrElse(Element parent, String name, String elseVal) {
-          List<Element> children = parent.getChildren(name);
-          if(children.size() > 1) {
-            throw new GateRuntimeException("Element "+parent.getName()+" has more than one nested "+name+" element");
-          }
-          String tmp = parent.getChildTextTrim(name);
-          if(tmp==null) return elseVal;
-          else return tmp;
-        }
+    attributes = new ArrayList<Attribute>();
     
-       
+    int n = 0;
+    for (Element element : elements) {
+      n++;
+      String elementName = element.getName().toLowerCase();
+      if (elementName.equals("attribute")) {
+        attributes.add(parseSimpleAttribute(element, n));
+      } else if (elementName.equals("attributelist")) {
+        SimpleAttribute att = parseSimpleAttribute(element, n);
+        int from = Integer.parseInt(element.getChildText("FROM"));
+        int to = Integer.parseInt(element.getChildText("TO"));
+        attributes.add(new AttributeList(att, from, to));
+      } else if (elementName.equals("ngram")) {
+        attributes.add(parseNgramAttribute(element, n));
+      } else {
+        throw new GateRuntimeException("Not a recognized element name for the LearningFramework config file: " + elementName);
+      }
+    }
+  } // parseConfigXml
+
+  private SimpleAttribute parseSimpleAttribute(Element attributeElement, int i) {
+
+    String dtstr = getChildTextOrElse(attributeElement, "DATATYPE", null);
+    if (dtstr == null) {
+      throw new GateRuntimeException("DATATYPE not specified for ATTRIBUTE " + i);
+    }
+    Datatype dt = Datatype.valueOf(dtstr);
+    // TODO: this should be named ANNOTATIONTYPE or ANNTYPE to avoid confusion
+    // with the datatype
+    String atype = getChildTextOrElse(attributeElement, "TYPE", "");
+    // must not be empty
+    if (atype.isEmpty()) {
+      throw new GateRuntimeException("TYPE in ATTRIBUTE " + i + " must not be missing or empty");
+    }
+    String feat = getChildTextOrElse(attributeElement, "FEATURE", "");
+    String codeasstr = getChildTextOrElse(attributeElement, "CODEAS", "one_of_k").toLowerCase();
+    if (!codeasstr.equals("one_of_k") && codeasstr.equals("number")) {
+      throw new GateRuntimeException("CODES for ATTRIBUTE " + i + " not one-of-k or number but " + codeasstr);
+    }
+    CodeAs codeas = CodeAs.valueOf(codeasstr);
+    String missingValueTreatmentStr = getChildTextOrElse(attributeElement, "MISSINGVALUETREATMENT", "special_value");
+    MissingValueTreatment mvt = MissingValueTreatment.valueOf(missingValueTreatmentStr);
+    // TODO: not implemented yet, but we should add this!!
+    String scalingMethod = "";
+    String transformMethod = "";
+    String missingValueValue = ""; // if MVs should get replaced with a constant value, that value as a String
+    SimpleAttribute att = new SimpleAttribute(
+            atype,
+            feat,
+            dt,
+            codeas,
+            mvt,
+            missingValueValue,
+            scalingMethod,
+            transformMethod
+    );
+    return att;
+  }
+
+  private Attribute parseNgramAttribute(Element ngramElement, int i) {
+    String annType = getChildTextOrElse(ngramElement,"TYPE","").trim();
+    if (annType.isEmpty()) {
+      throw new GateRuntimeException("TYPE in NGRAM " + i + " must not be missing or empty");
+    }
+    
+    String feature = getChildTextOrElse(ngramElement,"FEATURE","").trim();
+    if (feature.isEmpty()) {
+      throw new GateRuntimeException("TYPE in NGRAM " + i + " must not be missing or empty");
+    }
+    Ngram ng = new Ngram(
+            Integer.parseInt(ngramElement.getChildText("NUMBER")),
+            annType,
+            feature
+    );
+    return ng;
+  }
+
+  List<Attribute> attributes;
+  
+  /**
+   * Return the stored list of attributes.
+   * This is the original list, not a shallow or deep copy. 
+   * @return 
+   */
+  public List<Attribute> getAttributes() {
+    return attributes;
+  }
+
+  //// HELPER METHODS
+  /**
+   * Return the text of a single child element or a default value. This checks that there is at most
+   * one child of this annType and throws and exception if there are more than one. If there is no
+   * child of this name, then the value elseVal is returned. NOTE: the value returned is trimmed if
+   * it is a string, but case is preserved
+   */
+  private static String getChildTextOrElse(Element parent, String name, String elseVal) {
+    List<Element> children = parent.getChildren(name);
+    if (children.size() > 1) {
+      throw new GateRuntimeException("Element " + parent.getName() + " has more than one nested " + name + " element");
+    }
+    String tmp = parent.getChildTextTrim(name);
+    if (tmp == null) {
+      return elseVal;
+    } else {
+      return tmp;
+    }
+  }
+
 }

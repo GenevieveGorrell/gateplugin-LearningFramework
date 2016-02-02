@@ -39,5 +39,14 @@ public class SimpleAttribute extends Attribute implements Serializable {
   public void startGrowth() {
     if(alphabet!=null) { alphabet.startGrowth(); }
   }
+  
+  @Override
+  public String toString() {
+    return "SimpleAttribute(type="+annType+
+            ",feature="+feature+
+            ",datatype="+datatype+
+            ",missingvaluetreatment="+missingValueTreatment+
+            ",codeas="+codeas;
+  }
 
 }

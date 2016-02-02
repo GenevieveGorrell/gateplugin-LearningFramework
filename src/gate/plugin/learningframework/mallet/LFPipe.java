@@ -22,4 +22,6 @@ import java.io.Serializable;
  */
 public class LFPipe extends SerialPipes implements Serializable {
   private static final long serialVersionUID = 1;
+  
+  // TODO: add the feature info object!
 }

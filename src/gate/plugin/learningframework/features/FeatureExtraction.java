@@ -13,9 +13,6 @@ import gate.Annotation;
 import gate.AnnotationSet;
 import gate.Document;
 import gate.Utils;
-import gate.plugin.learningframework.features.AttributeList;
-import gate.plugin.learningframework.features.Ngram;
-import gate.plugin.learningframework.features.SimpleAttribute;
 import gate.util.GateRuntimeException;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +32,9 @@ import org.apache.log4j.Logger;
  */
 public class FeatureExtraction {
   
+  // NOTE: currently these strings are hard-coded but it may make sense to look if there 
+  // are better choices or make these configurable in some advanced section of the feature config
+  // file.
   private static final String NGRAMSEP = "_";
   private static final String NAMESEP = ":";
   private static final String MVVALUE = "%%%NA%%%";
@@ -45,17 +45,17 @@ public class FeatureExtraction {
    * Extract the instance features for a simple attribute.
    * 
    * This adds the internal features to the inst object and also updates any 
-   * alphabets, if they allow growth.
-   * If the annotation types of the instance annotation and the annotation specified for the attribute
-   * are the same, then the instance annotation is directly used, otherwise, if there is a single
-   * overlapping annotation of the type specified in the attribute, that one is used.
-   * If there is no overlapping annotation, nothing is extracted for that instance and implicitly,
-   * all features are set to 0.0 (TODO: this should probably get treated as if all features were
-   * missing so that for each feature, the proper missing value treatment can be applied!)
-   * If there are several overlapping annotations, an exception is thrown, this should not happen.
-   * 
-   * If no feature is specified, we give an indicator of the presence, artificial feature name 
-   * for binary feature. 
+ alphabets, if they allow growth.
+ If the annotation types of the instance annotation and the annotation specified for the attribute
+ are the same, then the instance annotation is directly used, otherwise, if there is a single
+ overlapping annotation of the annType specified in the attribute, that one is used.
+ If there is no overlapping annotation, nothing is extracted for that instance and implicitly,
+ all features are set to 0.0 (TODO: this should probably get treated inputAS if all features were
+ missing so that for each feature, the proper missing value treatment can be applied!)
+ If there are several overlapping annotations, an exception is thrown, this should not happen.
+ 
+ If no feature is specified, we give an indicator of the presence, artificial feature name 
+ for binary feature. 
    * 
    * 
    * @param inst
@@ -72,11 +72,11 @@ public class FeatureExtraction {
           Document doc) {
     String value = "null";
     /*Although the user needn't specify the annotation annType if it's the
-     * same as the instance, they may do so. It's intuitive that if they
+     * same inputAS the instance, they may do so. It's intuitive that if they
      * do so, they mean to extract the featureName from the instance, not just
      * the first colocated same annType annotation. This matters in
      * disambiguation, where we have many colocated same annType annotations.
-     * Fix it up front by wiping out annType if it's the same as the instance.
+     * Fix it up front by wiping out annType if it's the same inputAS the instance.
      */
     AugmentableFeatureVector fv = (AugmentableFeatureVector) inst.getData();
     String annType = att.annType;
@@ -86,8 +86,8 @@ public class FeatureExtraction {
     Datatype dt = att.datatype;
     Alphabet alphabet = att.alphabet;
     // first of all get the annotation from where we want to construct the annotation.
-    // If the annType is the same as the type of the instance annotation, use the 
-    // instance annotation directly. Otherwise, use an annotation of type annType that overlaps
+    // If the annType is the same inputAS the annType of the instance annotation, use the 
+    // instance annotation directly. Otherwise, use an annotation of annType annType that overlaps
     // with the instance annotation.
     // TODO: what do if there are several such overlapping annotations?
     // For now, we throw an exception if there are several!
@@ -101,8 +101,8 @@ public class FeatureExtraction {
         throw new GateRuntimeException("More than one overlapping annotation of type "+annType+" for instance annotation at offset "+
                 gate.Utils.start(instanceAnnotation)+" in document "+doc.getName());
       } else if(overlappings.size() == 0) {
-        // if there is no overlapping annotation of type annType, we simply do nothing
-        // TODO: handle this as if all features have missing values!!!
+        // if there is no overlapping annotation of annType annType, we simply do nothing
+        // TODO: handle this inputAS if all features have missing values!!!
         return;
       }
       // we have exactly one annotation, use that one
@@ -112,9 +112,23 @@ public class FeatureExtraction {
     // vector, so we do not even check, we simply add the feature.
     // How we add the feature depends on the datatype, on the codeas setting if it is nominal,
     // and also on how we treat missing values.
+    extractFeatureWorker(inst,sourceAnnotation,doc,annType,featureName,alphabet,dt,mvt,codeas);
+  }
     
+  private static void extractFeatureWorker(
+          Instance inst,
+          Annotation sourceAnnotation,
+          Document doc,
+          String annType,
+          String featureName,
+          Alphabet alphabet,
+          Datatype dt,
+          MissingValueTreatment mvt,
+          CodeAs codeas) {
+    
+    AugmentableFeatureVector fv = (AugmentableFeatureVector)inst.getData();
     // if the feature name is empty, then all we want is indicate the presence of the annotation
-    // as a boolean. No matter what the datatype is, this is always indicated by setting the
+    // inputAS a boolean. No matter what the datatype is, this is always indicated by setting the
     // feature to 1.0 (while for all instances, where the annotation is missing, the value will
     // implicitly be set to 0.0). 
     if(featureName==null) {
@@ -123,7 +137,7 @@ public class FeatureExtraction {
       String fname = annType + NAMESEP + "ISPRESENT";
       addToFeatureVector(fv, fname, 1.0);
     } else {    
-      // First get the value as an Object, if there is no value, we have an Object that is null
+      // First get the value inputAS an Object, if there is no value, we have an Object that is null
       Object valObj = sourceAnnotation.getFeatures().get(featureName);
       // no matter what the datatype is, a null is always a missing value, so we set the 
       // property that indicates the existence of a missing valuein the instance right here
@@ -200,7 +214,7 @@ public class FeatureExtraction {
         }
       } else if(dt == Datatype.numeric) {
         if(valObj != null) {
-          // just add the value, if possible and if the object can be interpreted as a number
+          // just add the value, if possible and if the object can be interpreted inputAS a number
           double val = 0.0;
           if(valObj instanceof Number) {
             val = ((Number)valObj).doubleValue();
@@ -254,7 +268,7 @@ public class FeatureExtraction {
    */
   
   // TODO: NOTE: this currently returns a single string which represents all N-grams 
-  // If there are at least n annotations as speficied by the Ngam TYPE contained in the span of 
+  // If there are at least n annotations inputAS speficied by the Ngam TYPE contained in the span of 
   // the instance annotation, then those annotations are arranged in document order and
   // - starting with the second index, up to the last
   // - 
@@ -262,7 +276,7 @@ public class FeatureExtraction {
   // times we should have 3.0
   // TODO: check what to do if the contained annotations are not in non-overlapping order: should we
   // create an ngram if the second annotations starts before the end of the first or even at the same 
-  // offset as the first? If that is the case, what should the order of the annotations then be?
+  // offset inputAS the first? If that is the case, what should the order of the annotations then be?
   // NOTE: if the feature is missing, i.e. it is null or the empty string, then the whole annotation gets ignored
   public static void extractFeature(
           Instance inst,
@@ -275,7 +289,7 @@ public class FeatureExtraction {
     String annType = ng.annType;
     String feature = ng.feature;
     AnnotationSet inputAS = doc.getAnnotations(inputASname);
-    // TODO: this we rely on the ngram only having allowed field values, e.g. type
+    // TODO: this we rely on the ngram only having allowed field values, e.g. annType
     // has to be non-null and non-empty and number has to be > 0.
     // If feature is null, then for ngrams, the string comes from the covered document
       String[] gram = new String[number];
@@ -314,7 +328,7 @@ public class FeatureExtraction {
         // first check if our strings array is actually big enough so we can create at least one n-gram
         if(strings.size()<number) return;
         
-        // now create the ngrams as follows: starting with the first element in strings, go
+        // now create the ngrams inputAS follows: starting with the first element in strings, go
         // through all the elements up to the (size-n)ths and concatenate with the subsequent 
         // n stings using the pre-defined separator character.
         
@@ -332,76 +346,47 @@ public class FeatureExtraction {
   } // extractFeature(NGram)
   
   
-  // TODO: add to an existing augmentable feature vector or simply return a feature vector
-  // so that the caller can add it to an augmentable feature vector.
-  // In any case optionally pass on an alphabet: if that is non-null, only add features which
-  // are present in the alphabet!
   public static void extractFeature(
           Instance inst, 
           AttributeList al, 
           String inputASname, 
           Annotation instanceAnnotation, 
           Document doc) {
-    String textToReturn = "";
-    Datatype datatype = al.datatype;
-    String type = al.annType;
-    String feature = al.feature;
+
+    AugmentableFeatureVector fv = (AugmentableFeatureVector) inst.getData();
+
+    Datatype dt = al.datatype;
+    String annType = al.annType;
+    String featureName = al.feature;
     int from = al.from;
     int to = al.to;
-    AnnotationSet as = doc.getAnnotations(inputASname);
+    Alphabet alphabet = al.alphabet;
+    MissingValueTreatment mvt = al.missingValueTreatment;
+    CodeAs codeas = al.codeas;
+    AnnotationSet inputAS = doc.getAnnotations(inputASname);
     long centre = instanceAnnotation.getStartNode().getOffset();
-    List<Annotation> annlistforward = as.get(type, centre, doc.getContent().size()).inDocumentOrder();
-    List<Annotation> annlistbackward = as.get(type, 0L, centre).inDocumentOrder();
+    List<Annotation> annlistforward = inputAS.get(annType, centre, doc.getContent().size()).inDocumentOrder();
+    List<Annotation> annlistbackward = inputAS.get(annType, 0L, centre).inDocumentOrder();
+    // go through each of the members in the attribute list and get the annotation
+    // then process each annotation just like a simple annotation, only that the name of 
+    // feature gets derived from this list attribute plus the location in the list.
     for (int i = from; i < to; i++) {
-      Annotation ann;
+      Annotation ann = null;
       if (i < 0) {
         if (-i <= annlistbackward.size()) {
           ann = annlistbackward.get(annlistbackward.size() + i);
-          // make compiler happy for now
-          Object feat = null;
-          //Object feat = extractFeature(inst,  type, feature, datatype, inputASname, ann, doc);
-          // check if this is a missing value
-          if(feat == null){
-            // TODO: process as the feature specification demands
-            // for now, we use a datatype specific default value instead
-            if(datatype == Datatype.nominal) {
-              feat = "%%%NA%%%";
-            } else if(datatype == Datatype.numeric) {
-              feat = (Double)0.0;
-            }
-            // TODO: eventually we should return something here where we can set a flag that
-            // the instance contains at least one missing value!
-          }
-          if (datatype == Datatype.nominal) {
-            // TODO: if the encoding is not one-of-k but numbered, set to the value from the dictionary!
-            // TODO: once we return a feature vecto instance or similar, this should be 
-            // key = 1.0 for one-of-k and key = k for numbered
-            //textToReturn = textToReturn + separator + type + ":" + feature + ":r" + i + ":" + feat.toString();
-          } else {
-            try {              
-              // TODO: once we return the actual feature vector, convert all numbers to double
-              // convert boolean to 1.0 or 0.0 and convert string to Double.parseDouble(string)
-              // if(feat instanceof Number) { ...
-              double df = Double.parseDouble(feat.toString());
-              //textToReturn = textToReturn + separator + type + ":" + feature + ":r" + i + "=" + df;
-            } catch (NumberFormatException e) {
-              logger.warn("LearningFramework: Failed to format numeric feature " + feature + "=" + feat + " as double. Treating as string.");
-              //textToReturn = textToReturn + separator + type + ":" + feature + ":r" + i + ":" + feat;
-            }
-          }
         }
       } else if (i < annlistforward.size()) {
-        ann = annlistforward.get(i);
-        // make compiler happy for now
-        //textToReturn = textToReturn + separator + type + ":" + feature + ":r" + i + ":" + extractFeature(type, feature, datatype, inputASname, ann, doc);
+          ann = annlistforward.get(i);
+          // make compiler happy for now
+          //textToReturn = textToReturn + separator + annType + ":" + feature + ":r" + i + ":" + extractFeature(annType, feature, datatype, inputASname, ann, doc);
+      }
+      if(ann != null) {
+        // now extract the actual feature for that entry:
+        String typeName = annType + NAMESEP + i;
+        extractFeatureWorker(inst,ann,doc,typeName,featureName,alphabet,dt,mvt,codeas);    
       }
     }
-    if (textToReturn.length() > 1) {
-      //Trim off the leading separator
-      textToReturn = textToReturn.substring(1);
-    }
-    // make compiler happy for now
-    //return textToReturn;
   } // extractFeature (AttributeList)
 
   
@@ -412,7 +397,7 @@ public class FeatureExtraction {
   ///=======================================
   
   /** 
-   * Same as the method, but makes sure a non-growable Alphabet is considered.
+   * Same inputAS the method, but makes sure a non-growable Alphabet is considered.
    * @param fv
    * @param key
    * @param val 
@@ -424,7 +409,7 @@ public class FeatureExtraction {
   }
         
         
-  // NOTE: we use an AugmentableFeatureVector to represent the growing feature vector as we 
+  // NOTE: we use an AugmentableFeatureVector to represent the growing feature vector inputAS we 
   // build it.
   // The Mallet documentation is close to non-existing ATM, so here is what the methods we use do:
   // afv.add("x",val) adds val to whatever the current value for "x" is oder adds the feature, if
