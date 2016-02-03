@@ -9,6 +9,7 @@ package gate.plugin.learningframework.features;
 import cc.mallet.types.Alphabet;
 import cc.mallet.types.AugmentableFeatureVector;
 import cc.mallet.types.Instance;
+import cc.mallet.types.LabelAlphabet;
 import gate.Annotation;
 import gate.AnnotationSet;
 import gate.Document;
@@ -54,6 +55,10 @@ public class FeatureExtraction {
   private static final String VALSEP = "=";
   
   private static final String MVVALUE = "%%%NA%%%";
+  
+  private static final String SEQ_INSIDE = "I";
+  private static final String SEQ_BEGINNING = "B";
+  private static final String SEQ_OUTSIDE = "O";
   
   private static Logger logger = Logger.getLogger(FeatureExtraction.class.getName());
 
@@ -459,6 +464,62 @@ public class FeatureExtraction {
     }
   } // extractFeature (AttributeList)
 
+  
+  
+  // *****************************************************************************
+  // Extract the target stuff
+  // *****************************************************************************
+  
+  /**
+   * Extract the class for an instance for sequence tagging.
+   *
+   * In the case of sequence tagging, we construct the class based on the instance's position
+   * relative to the class annotation annType. If it occurs at the beginning of the class
+   * annotation, it's a "beginning". In the middle or at the end, it's an "inside". Instances that
+   * don't occur in the span of a class annotation are an "outside".
+   * 
+   * This directly sets the target of the instance to a Label object that corresponds to one of the 
+   * three classes. In the case of NER classes, the target alphabet is always a labelalphabet
+   * and pre-filled with all possible class labels when this method is invoked, so it does not
+   * matter if the growth of the alphabet is stopped or not. 
+   *
+   * @param inst The instance where the target should be set
+   * @param classType The annotation name of the annotation that represents the class, e.g.
+   * "Person" (this is required for the sequence tagging task!)
+   * @param labelalph the label alphabet to use
+   * @param inputASname, the annotation set name of the set which contains the class annotations
+   * @param instanceAnnotation, the instance annotation, e.g. "Token".
+   * @param doc the document which is currently being processed
+   */
+  public static void extractClassNER(Instance inst, LabelAlphabet labelalph, String classType, String inputASname, Annotation instanceAnnotation, Document doc) {
+      String target = "";
+      List<Annotation> annotations = Utils.getOverlappingAnnotations(doc.getAnnotations(inputASname), instanceAnnotation, classType).inDocumentOrder();
+      // Note: each instance annotation should only overlap with at most one class annotation.
+      // Since it is weird to have more than one, we throw an exception if there is more than one
+      if (annotations.size() > 0) {
+        if(annotations.size() > 1) {
+          throw new GateRuntimeException("More than one class annotation for instance at offset "+
+                  gate.Utils.start(instanceAnnotation)+" in document "+doc.getName());
+        }
+        Annotation classAnn = annotations.get(0);
+        // NOTE: this does allow situations where an instance annotation starts with the class
+        // annotation and goes beyond the end of the class annotation or where it starts within
+        // a class annotation and goes beyond the end. This is weird, but still probably the best
+        // way to handle this. 
+        if (classAnn.getStartNode().getOffset().equals(instanceAnnotation.getStartNode().getOffset())) {
+          target = SEQ_BEGINNING;
+        } else {
+          target = SEQ_INSIDE;
+        }
+      } else {
+        //No overlapping mentions so it's an outside
+        target = SEQ_OUTSIDE;
+      }
+      // we now have the target label as a string, now set the target of the instance to 
+      // to the actual label
+      // NOTE: the target alphabet for such an instance MUST be a LabelAlphabet!
+      inst.setTarget(labelalph.lookupLabel(target));
+  }
   
   
   

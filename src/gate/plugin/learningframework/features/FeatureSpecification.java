@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.StringReader;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
 import org.jdom.Element;
@@ -38,46 +37,6 @@ public class FeatureSpecification {
 
   private static Logger logger = Logger.getLogger(FeatureSpecification.class.getName());
 
-  /**
-   * Extract the class for an instance for sequence tagging.
-   *
-   * In the case of sequence tagging, we construct the class based on the instance's position
-   * relative to the class annotation annType. If it occurs at the beginning of the class
-   * annotation, it's a "beginning". In the middle or at the end, it's an "inside". Instances that
-   * don't occur in the span of a class annotation are an "outside".
-   *
-   * TODO: eventually the exact way of how to create class labels for sequence tagging should be
-   * parametrizable.
-   *
-   * @param type The annotation annType name of the annotation that represents the class, e.g.
-   * "Person"
-   * @param inputASname, the annotation set name of the set which contains the class annotations
-   * @param instanceAnnotation, the instance annotation, e.g. "Token".
-   * @param doc the document which is currently being processed
-   * @return
-   */
-  public static String extractClassNER(String type, String inputASname, Annotation instanceAnnotation, Document doc) {
-    if (type != null && !type.equals("")) {
-      String textToReturn = "";
-      List<Annotation> annotations = Utils.getOverlappingAnnotations(doc.getAnnotations(inputASname), instanceAnnotation, type).inDocumentOrder();
-      if (annotations.size() > 0) {
-        //Pick a mention to focus on--there should be only one by rights.
-        Annotation mention = annotations.get(0);
-        if (mention.getStartNode().getOffset() == instanceAnnotation.getStartNode().getOffset()) {
-          textToReturn = "beginning";
-        } else {
-          textToReturn = "inside";
-        }
-      } else {
-        //No overlapping mentions so it's an outside
-        textToReturn = "outside";
-      }
-      return textToReturn;
-    } else {
-      System.err.println("LF ERROR: class type is null or empty, doc=" + doc.getName() + " instance=" + instanceAnnotation);
-      return null;
-    }
-  }
 
   /**
    * Get the class for this instance.
