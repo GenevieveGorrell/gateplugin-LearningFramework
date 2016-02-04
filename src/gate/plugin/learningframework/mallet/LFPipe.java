@@ -6,8 +6,11 @@
 
 package gate.plugin.learningframework.mallet;
 
+import cc.mallet.pipe.Pipe;
 import cc.mallet.pipe.SerialPipes;
+import gate.plugin.learningframework.features.FeatureInfo;
 import java.io.Serializable;
+import java.util.Collection;
 
 /**
  * An extended version of the Mallet SerialPipes class which allows us to store
@@ -19,9 +22,16 @@ import java.io.Serializable;
  * the features get extracted from documents to look up and store the relevant information. 
  * 
  * @author Johann Petrak
+ * 
+ * TODO: turns out we will probably not need this after all: it is probably easiest to 
+ * store the featureinfo object in whatever pipe we store as a property!
  */
 public class LFPipe extends SerialPipes implements Serializable {
   private static final long serialVersionUID = 1;
-  
-  // TODO: add the feature info object!
+  public LFPipe(Collection<Pipe> pipes) {
+    super(pipes);
+  }
+  protected FeatureInfo featureInfo;
+  public void setFeatureInfo(FeatureInfo info) { featureInfo = info; }
+  public FeatureInfo getFeatureInfo() { return featureInfo; }
 }

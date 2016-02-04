@@ -470,6 +470,41 @@ public class FeatureExtraction {
   // Extract the target stuff
   // *****************************************************************************
   
+  public void extractNumericTarget(Instance inst, String targetFeature, Annotation instanceAnnotation, Document doc) {
+    Object obj = instanceAnnotation.getFeatures().get(targetFeature);    
+    // Brilliant, we have a missing target, WTF? Throw an exception
+    if(obj == null) {
+      throw new GateRuntimeException("No target value for feature "+targetFeature+
+              " for instance at offset "+gate.Utils.start(instanceAnnotation)+" in document "+doc.getName());
+    }
+    double value = Double.NaN;
+    if(obj instanceof Number) {
+      value = ((Number)obj).doubleValue();
+    } else {
+      String asString = obj.toString();
+      try {
+        value = Double.parseDouble(asString);
+      } catch(Exception ex) {
+        throw new GateRuntimeException("Could not convert target value to a double for feature "+targetFeature+
+                " for instance at offset "+gate.Utils.start(instanceAnnotation)+" in document "+doc.getName());
+      }
+    }
+    inst.setTarget(value);
+  }
+  
+  public void extractClassTarget(Instance inst, LabelAlphabet alphabet, String targetFeature, Annotation instanceAnnotation, Document doc) {
+    Object obj = instanceAnnotation.getFeatures().get(targetFeature);    
+    // Brilliant, we have a missing target, WTF? Throw an exception
+    if(obj == null) {
+      throw new GateRuntimeException("No target value for feature "+targetFeature+
+              " for instance at offset "+gate.Utils.start(instanceAnnotation)+" in document "+doc.getName());
+    }
+    String value = obj.toString();
+    inst.setTarget(alphabet.lookupLabel(value));
+  }
+  
+  
+  
   /**
    * Extract the class for an instance for sequence tagging.
    *
@@ -520,6 +555,20 @@ public class FeatureExtraction {
       // NOTE: the target alphabet for such an instance MUST be a LabelAlphabet!
       inst.setTarget(labelalph.lookupLabel(target));
   }
+  
+
+  /**
+   * Extract the exact location of the instance for use as an instance name.
+   * The name string is made up of the document name plus the start and end offsets of the instance 
+   * annotation.
+   */
+  public static void extractName(Instance inst, Annotation instanceAnnotation, Document doc) {
+    String value = doc.getName() + ":" + gate.Utils.start(instanceAnnotation) + ":" +
+            gate.Utils.end(instanceAnnotation);
+    inst.setName(value);
+  }
+
+  
   
   
   
