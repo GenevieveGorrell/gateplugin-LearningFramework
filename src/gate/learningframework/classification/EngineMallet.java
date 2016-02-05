@@ -12,7 +12,7 @@
  *
  * Genevieve Gorrell, 9 Jan 2015
  */
-package gate.plugin.learningframework;
+package gate.learningframework.classification;
 
 import gate.Annotation;
 import gate.AnnotationSet;
@@ -49,6 +49,7 @@ import cc.mallet.classify.WinnowTrainer;
 import cc.mallet.types.InstanceList.CrossValidationIterator;
 import cc.mallet.types.Instance;
 import cc.mallet.types.InstanceList;
+import gate.plugin.learningframework.Mode;
 
 public class EngineMallet extends Engine {
 

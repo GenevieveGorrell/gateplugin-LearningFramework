@@ -10,6 +10,11 @@
  */
 package gate.plugin.learningframework;
 
+import gate.learningframework.classification.EngineLibSVM;
+import gate.learningframework.classification.EngineMalletSeq;
+import gate.learningframework.classification.EngineWeka;
+import gate.learningframework.classification.Engine;
+import gate.learningframework.classification.EngineMallet;
 import java.io.File;
 import java.net.URL;
 

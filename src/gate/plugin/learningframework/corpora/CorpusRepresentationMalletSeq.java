@@ -14,6 +14,7 @@
  */
 package gate.plugin.learningframework.corpora;
 
+import gate.plugin.learningframework.data.CorpusRepresentation;
 import gate.Annotation;
 import gate.AnnotationSet;
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ import cc.mallet.types.InstanceList;
 import cc.mallet.types.Label;
 import cc.mallet.types.LabelAlphabet;
 import gate.plugin.learningframework.ScalingMethod;
-import static gate.plugin.learningframework.corpora.CorpusRepresentationMallet.extractIndependentFeatures;
+import static gate.plugin.learningframework.data.CorpusRepresentationMallet.extractIndependentFeatures;
 import gate.plugin.learningframework.features.FeatureExtraction;
 import gate.plugin.learningframework.features.FeatureInfo;
 import gate.plugin.learningframework.features.TargetType;

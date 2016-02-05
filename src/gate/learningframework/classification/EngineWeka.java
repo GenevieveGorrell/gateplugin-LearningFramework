@@ -12,7 +12,7 @@
  *
  * Genevieve Gorrell, 9 Jan 2015
  */
-package gate.plugin.learningframework;
+package gate.learningframework.classification;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,6 +38,8 @@ import weka.core.Instances;
 import gate.Annotation;
 import gate.AnnotationSet;
 import gate.Document;
+import gate.plugin.learningframework.Algorithm;
+import gate.plugin.learningframework.Mode;
 import gate.plugin.learningframework.corpora.CorpusWriter;
 import gate.plugin.learningframework.corpora.CorpusWriterArff;
 import gate.plugin.learningframework.corpora.CorpusWriterArffNumericClass;

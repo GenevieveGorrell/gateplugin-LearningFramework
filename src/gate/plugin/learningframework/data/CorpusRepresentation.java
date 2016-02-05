@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package gate.plugin.learningframework.corpora;
+package gate.plugin.learningframework.data;
 
 import cc.mallet.types.InstanceList;
 import gate.plugin.learningframework.ScalingMethod;

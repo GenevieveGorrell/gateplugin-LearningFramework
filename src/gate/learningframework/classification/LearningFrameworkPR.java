@@ -15,12 +15,6 @@
 
 package gate.learningframework.classification;
 
-import gate.plugin.learningframework.EngineMalletSeq;
-import gate.plugin.learningframework.EngineWeka;
-import gate.plugin.learningframework.EngineLibSVM;
-import gate.plugin.learningframework.Engine;
-import gate.plugin.learningframework.GateClassification;
-import gate.plugin.learningframework.EngineMallet;
 import java.io.File;
 import java.io.Serializable;
 import java.net.URL;

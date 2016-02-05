@@ -12,7 +12,7 @@
  *
  * Genevieve Gorrell, 9 Jan 2015
  */
-package gate.plugin.learningframework.corpora;
+package gate.plugin.learningframework.data;
 
 import gate.Annotation;
 import gate.AnnotationSet;

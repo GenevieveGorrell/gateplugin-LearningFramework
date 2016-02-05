@@ -12,7 +12,7 @@
  *
  * Genevieve Gorrell, 9 Jan 2015
  */
-package gate.plugin.learningframework;
+package gate.learningframework.classification;
 
 import gate.Annotation;
 import gate.AnnotationSet;
@@ -43,6 +43,8 @@ import libsvm.svm_problem;
 import cc.mallet.pipe.Pipe;
 import cc.mallet.types.Alphabet;
 import cc.mallet.types.Instance;
+import gate.plugin.learningframework.Algorithm;
+import gate.plugin.learningframework.Mode;
 import java.util.Arrays;
 
 public class EngineLibSVM extends Engine {
