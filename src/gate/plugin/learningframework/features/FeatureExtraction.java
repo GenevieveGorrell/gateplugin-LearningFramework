@@ -548,15 +548,15 @@ public class FeatureExtraction {
                 " in document "+doc.getName());
       }
       LabelAlphabet labelalph = (LabelAlphabet)alph;
-      List<Annotation> annotations = Utils.getOverlappingAnnotations(classAS, instanceAnnotation).inDocumentOrder();
+      AnnotationSet overlappingClassAnns = Utils.getOverlappingAnnotations(classAS, instanceAnnotation);
       // Note: each instance annotation should only overlap with at most one class annotation.
       // Since it is weird to have more than one, we throw an exception if there is more than one
-      if (annotations.size() > 0) {
-        if(annotations.size() > 1) {
+      if (overlappingClassAnns.size() > 0) {
+        if(overlappingClassAnns.size() > 1) {
           throw new GateRuntimeException("More than one class annotation for instance at offset "+
                   gate.Utils.start(instanceAnnotation)+" in document "+doc.getName());
         }
-        Annotation classAnn = annotations.get(0);
+        Annotation classAnn = gate.Utils.getOnlyAnn(overlappingClassAnns);
         // NOTE: this does allow situations where an instance annotation starts with the class
         // annotation and goes beyond the end of the class annotation or where it starts within
         // a class annotation and goes beyond the end. This is weird, but still probably the best

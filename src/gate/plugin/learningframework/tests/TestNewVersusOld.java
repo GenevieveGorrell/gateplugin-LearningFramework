@@ -16,7 +16,9 @@ import gate.creole.ResourceInstantiationException;
 import gate.plugin.learningframework.Mode;
 import gate.plugin.learningframework.ScalingMethod;
 import gate.plugin.learningframework.corpora.CorpusRepresentationMallet;
+import gate.plugin.learningframework.corpora.CorpusRepresentationMalletSeq;
 import gate.plugin.learningframework.corpora.CorpusWriterMallet;
+import gate.plugin.learningframework.corpora.CorpusWriterMalletSeq;
 import gate.plugin.learningframework.features.Attribute;
 import gate.plugin.learningframework.features.FeatureInfo;
 import gate.plugin.learningframework.features.FeatureSpecification;
@@ -98,6 +100,68 @@ public class TestNewVersusOld {
     System.err.println("INSTANCE NEW 2 data="+instances_new.get(1).getData());
     System.err.println("INSTANCE NEW 1 target="+instances_new.get(0).getTarget());
     System.err.println("INSTANCE NEW 2 target="+instances_new.get(1).getTarget());
+    
+    // now do something similar for sequence tagging:
+    spec = "<ROOT>"+
+            "<ATTRIBUTE><TYPE>type1</TYPE><FEATURE>feat</FEATURE><DATATYPE>nominal</DATATYPE></ATTRIBUTE>"+
+            "<ATTRIBUTELIST><TYPE>type2</TYPE><FEATURE>feat</FEATURE><DATATYPE>nominal</DATATYPE><FROM>-1</FROM><TO>1</TO></ATTRIBUTELIST>"+
+            "</ROOT>";
+    
+    doc = newDocument();
+    instAnn1 = addAnn(doc, "",  5, 10, "type1", gate.Utils.featureMap("feat","value1"));
+    // 2 annotations for attributelist: one before and one overlapping
+    addAnn(doc,"",2,4,"type2",gate.Utils.featureMap("feat","tok1"));
+    addAnn(doc,"",6,8,"type2",gate.Utils.featureMap("feat","tok2"));
+    
+    instAnn2 = addAnn(doc, "", 25, 30, "type1", gate.Utils.featureMap("feat","value2"));
+    // 3 annotations for attributelist, one bfore, one overlapping, one after
+    addAnn(doc,"",11,13,"type2",gate.Utils.featureMap("feat","tok1"));
+    addAnn(doc,"",25,30,"type2",gate.Utils.featureMap("feat","tok2"));
+    addAnn(doc,"",33,37,"type2",gate.Utils.featureMap("feat","tok3"));
+    
+    // Add the class annotation, this time only for the first instance
+    addAnn(doc,"", 2,10, "Person", gate.Utils.featureMap());
+    
+    // add the sequence annotation.
+    addAnn(doc,"", 0, 50, "Sentence", gate.Utils.featureMap());
+    
+    // 1) Create the instances the old way.
+    fs_old = new gate.plugin.learningframework.corpora.FeatureSpecification(spec);
+    CorpusWriterMalletSeq cwm2 = new CorpusWriterMalletSeq(
+            fs_old, 
+            "type1",  // instance annotation type?
+            "",   // input annotation set name?
+            new File("."), // output directory
+            "Sentence",
+            Mode.NAMED_ENTITY_RECOGNITION, 
+            "Person",  // class type name
+            null,  // class feature name
+            null,  // identifier feature name
+            ScalingMethod.NONE);
+    cwm2.add(doc);
+    InstanceList instances_old2 = cwm2.getInstances();
+    assertNotNull(instances_old2);
+    assertEquals(1,instances_old2.size());
+    System.err.println("INSTANCE2 OLD 1 data="+instances_old2.get(0).getData());
+    System.err.println("INSTANCE2 OLD 1 target="+instances_old2.get(0).getTarget());
+    
+    // 2) Create the instances the new way.
+    FeatureInfo fi2 = new FeatureSpecification(spec).getFeatureInfo();
+    CorpusRepresentationMalletSeq crms = new CorpusRepresentationMalletSeq(fi2, ScalingMethod.NONE);
+    crms.add(
+            doc.getAnnotations().get("type1"), 
+            doc.getAnnotations().get("Sentence"), 
+            doc.getAnnotations(),
+            doc.getAnnotations().get("Person"), 
+            null, 
+            TargetType.NOMINAL, 
+            null);
+    InstanceList instances_new2 = crms.getInstances();
+    assertNotNull(instances_new2);
+    assertEquals(1,instances_new2.size());
+    System.err.println("INSTANCE2 NEW 1 data="+instances_new2.get(0).getData());
+    System.err.println("INSTANCE2 NEW 1 target="+instances_new2.get(0).getTarget());
+        
     
   }
 }

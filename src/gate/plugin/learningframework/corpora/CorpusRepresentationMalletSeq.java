@@ -92,7 +92,7 @@ public class CorpusRepresentationMalletSeq extends CorpusRepresentation {
     // as data and the labelsequence as target
     for (Annotation sequenceAnnotation : sequenceAS.inDocumentOrder()) {
       List<Instance> instanceList = new ArrayList<Instance>(sequenceAS.size());
-      List<Annotation> instanceAnnotations = instancesAS.inDocumentOrder();
+      List<Annotation> instanceAnnotations = gate.Utils.getContainedAnnotations(instancesAS, sequenceAnnotation).inDocumentOrder();
       for (Annotation instanceAnnotation : instanceAnnotations) {
         Instance inst = extractIndependentFeatures(instanceAnnotation, inputAS, targetFeatureName, featureInfo, pipe);
         if (classAS != null) {
@@ -104,24 +104,26 @@ public class CorpusRepresentationMalletSeq extends CorpusRepresentation {
           FeatureExtraction.extractNumericTarget(inst, targetFeatureName, instanceAnnotation, inputAS);
         }
         instanceList.add(inst);
-        // create a feature sequence from all the feature vectors in each of the instances in instanceList
-        // create a label index sequence from all the labels of the instances in instance list
-        FeatureVector[] vectors = new FeatureVector[instanceList.size()];
-        int[] labelidxs = new int[instanceList.size()];
-        for(int i = 0; i < vectors.length; i++) 
-          vectors[i] = ((AugmentableFeatureVector)instanceList.get(i).getData()).toFeatureVector();
-        FeatureVectorSequence fvseq = new FeatureVectorSequence(vectors);
-        for(int i = 0; i < labelidxs.length; i++) 
-          labelidxs[i] =  ((Label)inst.getTarget()).getIndex();
-        FeatureSequence fseq = new FeatureSequence(pipe.getTargetAlphabet(), labelidxs);
-        // create the final instance, if a name feature is given also add the name
-        Instance finalInst = new Instance(fvseq,fseq,null,null);
-        if (nameFeatureName != null) {
-          FeatureExtraction.extractName(finalInst, instanceAnnotation, inputAS.getDocument());
-        }
-        // add the instance to the instances 
-        instances.add(finalInst);
       }
+      // create a feature sequence from all the feature vectors in each of the instances in instanceList
+      // create a label index sequence from all the labels of the instances in instance list
+      FeatureVector[] vectors = new FeatureVector[instanceList.size()];
+      int[] labelidxs = new int[instanceList.size()];
+      for (int i = 0; i < vectors.length; i++) {
+        vectors[i] = (FeatureVector) instanceList.get(i).getData();
+      }
+      FeatureVectorSequence fvseq = new FeatureVectorSequence(vectors);
+      for (int i = 0; i < labelidxs.length; i++) {
+        labelidxs[i] = ((Label) instanceList.get(i).getTarget()).getIndex();
+      }
+      FeatureSequence fseq = new FeatureSequence(pipe.getTargetAlphabet(), labelidxs);
+      // create the final instance, if a name feature is given also add the name
+      Instance finalInst = new Instance(fvseq, fseq, null, null);
+      if (nameFeatureName != null) {
+        FeatureExtraction.extractName(finalInst, sequenceAnnotation, inputAS.getDocument());
+      }
+      // add the instance to the instances 
+      instances.add(finalInst);
     }
   }
 
