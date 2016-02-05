@@ -8,7 +8,6 @@ package gate.plugin.learningframework.tests;
 
 import cc.mallet.pipe.Noop;
 import cc.mallet.pipe.Pipe;
-import cc.mallet.pipe.SerialPipes;
 import cc.mallet.types.Alphabet;
 import cc.mallet.types.Instance;
 import cc.mallet.types.LabelAlphabet;
@@ -64,7 +63,7 @@ public class TestPipeSerialization {
     // make sure the attribute is a SimpleAttribute as expected
     assertEquals(SimpleAttribute.class, attr.getClass());
     SimpleAttribute sa = (SimpleAttribute)attr;
-    FeatureExtraction.extractFeature(inst, sa, "", instAnn, doc);
+    FeatureExtraction.extractFeature(inst, sa, doc.getAnnotations(), instAnn);
     // verify that we do have an alphabet in the attribute info
     assertNotNull(sa.alphabet);    
     System.err.println("DEBUG: the alphabet we have is "+sa.alphabet);

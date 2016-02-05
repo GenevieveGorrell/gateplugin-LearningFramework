@@ -6,18 +6,12 @@
 
 package gate.plugin.learningframework.tests;
 
-import gate.Document;
-import gate.Gate;
-import gate.creole.ResourceInstantiationException;
 import gate.plugin.learningframework.features.Attribute;
 import gate.plugin.learningframework.features.FeatureInfo;
 import gate.plugin.learningframework.features.FeatureSpecification;
-import static gate.plugin.learningframework.tests.Utils.*;
-import gate.util.GateException;
 import java.util.List;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.junit.BeforeClass;
 
 
 /**

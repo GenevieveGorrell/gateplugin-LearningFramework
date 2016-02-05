@@ -65,12 +65,11 @@ public class FeatureExtraction {
   public static void extractFeature(        
           Instance inst,
           Attribute att,
-          String inputASname, 
-          Annotation instanceAnnotation, 
-          Document doc) {
-    if(att instanceof AttributeList) extractFeature(inst,(AttributeList)att,inputASname,instanceAnnotation,doc);
-    else if(att instanceof SimpleAttribute) extractFeature(inst,(SimpleAttribute)att,inputASname,instanceAnnotation,doc);
-    else if(att instanceof Ngram) extractFeature(inst,(Ngram)att,inputASname,instanceAnnotation,doc);
+          AnnotationSet inputAS, 
+          Annotation instanceAnnotation) {
+    if(att instanceof AttributeList) extractFeature(inst,(AttributeList)att,inputAS,instanceAnnotation);
+    else if(att instanceof SimpleAttribute) extractFeature(inst,(SimpleAttribute)att,inputAS,instanceAnnotation);
+    else if(att instanceof Ngram) extractFeature(inst,(Ngram)att,inputAS,instanceAnnotation);
     else {
       throw new GateRuntimeException("Attempt to call extractFeature with type "+att.getClass());
     }
@@ -103,9 +102,9 @@ public class FeatureExtraction {
   private static void extractFeature(
           Instance inst,
           SimpleAttribute att,
-          String inputASname, 
-          Annotation instanceAnnotation, 
-          Document doc) {
+          AnnotationSet inputAS, 
+          Annotation instanceAnnotation) {
+    Document doc = inputAS.getDocument();
     String value = "null";
     /*Although the user needn't specify the annotation annType if it's the
      * same inputAS the instance, they may do so. It's intuitive that if they
@@ -132,7 +131,7 @@ public class FeatureExtraction {
     if (instanceAnnotation.getType().equals(annType)) {
       sourceAnnotation = instanceAnnotation;
     } else {
-      AnnotationSet overlappings = gate.Utils.getOverlappingAnnotations(doc.getAnnotations(inputASname), instanceAnnotation, annType);
+      AnnotationSet overlappings = gate.Utils.getOverlappingAnnotations(inputAS, instanceAnnotation, annType);
       if(overlappings.size() > 1) {
         throw new GateRuntimeException("More than one overlapping annotation of type "+annType+" for instance annotation at offset "+
                 gate.Utils.start(instanceAnnotation)+" in document "+doc.getName());
@@ -353,14 +352,14 @@ public class FeatureExtraction {
   private static void extractFeature(
           Instance inst,
           Ngram ng, 
-          String inputASname, 
-          Annotation instanceAnnotation, 
-          Document doc) {
+          AnnotationSet inputAS, 
+          Annotation instanceAnnotation
+          ) {
+    Document doc = inputAS.getDocument();
     AugmentableFeatureVector fv = (AugmentableFeatureVector) inst.getData();
     int number = ng.number;
     String annType = ng.annType;
     String featureName = ng.feature;
-    AnnotationSet inputAS = doc.getAnnotations(inputASname);
     // TODO: this we rely on the ngram only having allowed field values, e.g. annType
     // has to be non-null and non-empty and number has to be > 0.
     // If featureName is null, then for ngrams, the string comes from the covered document
@@ -424,10 +423,11 @@ public class FeatureExtraction {
   private static void extractFeature(
           Instance inst, 
           AttributeList al, 
-          String inputASname, 
-          Annotation instanceAnnotation, 
-          Document doc) {
+          AnnotationSet inputAS, 
+          Annotation instanceAnnotation
+          ) {
 
+    Document doc = inputAS.getDocument();
     AugmentableFeatureVector fv = (AugmentableFeatureVector) inst.getData();
 
     Datatype dt = al.datatype;
@@ -438,7 +438,6 @@ public class FeatureExtraction {
     Alphabet alphabet = al.alphabet;
     MissingValueTreatment mvt = al.missingValueTreatment;
     CodeAs codeas = al.codeas;
-    AnnotationSet inputAS = doc.getAnnotations(inputASname);
     long centre = instanceAnnotation.getStartNode().getOffset();
     List<Annotation> annlistforward = inputAS.get(annType, centre, doc.getContent().size()).inDocumentOrder();
     List<Annotation> annlistbackward = inputAS.get(annType, 0L, centre).inDocumentOrder();
@@ -470,7 +469,8 @@ public class FeatureExtraction {
   // Extract the target stuff
   // *****************************************************************************
   
-  public void extractNumericTarget(Instance inst, String targetFeature, Annotation instanceAnnotation, Document doc) {
+  public static void extractNumericTarget(Instance inst, String targetFeature, Annotation instanceAnnotation, AnnotationSet inputAS) {
+    Document doc = inputAS.getDocument();
     Object obj = instanceAnnotation.getFeatures().get(targetFeature);    
     // Brilliant, we have a missing target, WTF? Throw an exception
     if(obj == null) {
@@ -492,7 +492,20 @@ public class FeatureExtraction {
     inst.setTarget(value);
   }
   
-  public void extractClassTarget(Instance inst, LabelAlphabet alphabet, String targetFeature, Annotation instanceAnnotation, Document doc) {
+  /**
+   * Extract the class label for the given instance annotation.
+   * This gets used when the task performed is classification (using either a classification
+   * algorithm or a sequence tagging algorithm). In both cases, the class label is fetched
+   * from the instance annotation as the value of the targetFeature. 
+   * @param inst
+   * @param alphabet the label alphabet, must be of type LabelAlphabet
+   * @param targetFeature
+   * @param instanceAnnotation
+   * @param doc 
+   */
+  public static void extractClassTarget(Instance inst, Alphabet alphabet, String targetFeature, Annotation instanceAnnotation, AnnotationSet inputAS) {
+    LabelAlphabet labelalphabet = (LabelAlphabet)alphabet;
+    Document doc = inputAS.getDocument();
     Object obj = instanceAnnotation.getFeatures().get(targetFeature);    
     // Brilliant, we have a missing target, WTF? Throw an exception
     if(obj == null) {
@@ -500,7 +513,7 @@ public class FeatureExtraction {
               " for instance at offset "+gate.Utils.start(instanceAnnotation)+" in document "+doc.getName());
     }
     String value = obj.toString();
-    inst.setTarget(alphabet.lookupLabel(value));
+    inst.setTarget(labelalphabet.lookupLabel(value));
   }
   
   
@@ -521,14 +534,21 @@ public class FeatureExtraction {
    * @param inst The instance where the target should be set
    * @param classType The annotation name of the annotation that represents the class, e.g.
    * "Person" (this is required for the sequence tagging task!)
-   * @param labelalph the label alphabet to use
+   * @param alph the label alphabet to use, must be an instance of LabelAlphabet
    * @param inputASname, the annotation set name of the set which contains the class annotations
    * @param instanceAnnotation, the instance annotation, e.g. "Token".
    * @param doc the document which is currently being processed
    */
-  public static void extractClassNER(Instance inst, LabelAlphabet labelalph, String classType, String inputASname, Annotation instanceAnnotation, Document doc) {
+  public static void extractClassForSeqTagging(Instance inst, Alphabet alph, AnnotationSet classAS, Annotation instanceAnnotation) {
       String target = "";
-      List<Annotation> annotations = Utils.getOverlappingAnnotations(doc.getAnnotations(inputASname), instanceAnnotation, classType).inDocumentOrder();
+      Document doc = classAS.getDocument();
+      if(!(alph instanceof LabelAlphabet)) {
+        throw new GateRuntimeException("LF extractClassForSeqTagging: the alphabet must be of type LabelAlphabet"+
+                " for instance annotation at offset "+gate.Utils.start(instanceAnnotation)+
+                " in document "+doc.getName());
+      }
+      LabelAlphabet labelalph = (LabelAlphabet)alph;
+      List<Annotation> annotations = Utils.getOverlappingAnnotations(classAS, instanceAnnotation).inDocumentOrder();
       // Note: each instance annotation should only overlap with at most one class annotation.
       // Since it is weird to have more than one, we throw an exception if there is more than one
       if (annotations.size() > 0) {

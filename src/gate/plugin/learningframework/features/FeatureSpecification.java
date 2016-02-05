@@ -48,7 +48,7 @@ public class FeatureSpecification {
     SAXBuilder saxBuilder = new SAXBuilder(false);
     try {
       try {
-        this.jdomDocConf = saxBuilder.build(configFileURL);
+        jdomDocConf = saxBuilder.build(configFileURL);
         parseConfigXml();
       } catch (JDOMException jde) {
         throw new GateRuntimeException(jde);
@@ -62,7 +62,7 @@ public class FeatureSpecification {
     SAXBuilder saxBuilder = new SAXBuilder(false);
     try {
       try {
-        this.jdomDocConf = saxBuilder.build(new StringReader(configString));
+        jdomDocConf = saxBuilder.build(new StringReader(configString));
         parseConfigXml();
       } catch (JDOMException jde) {
         throw new GateRuntimeException(jde);

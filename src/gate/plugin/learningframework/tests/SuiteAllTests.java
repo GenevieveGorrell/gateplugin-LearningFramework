@@ -9,7 +9,8 @@ import org.junit.runners.Suite;
   TestFeatureSpecification.class,
   TestFeatureExtraction.class,
   EngineWekaTest.class,
-  TestPipeSerialization.class
+  TestPipeSerialization.class,
+  TestNewVersusOld.class
 })
 public class SuiteAllTests {
   // so we can run this test from the command line 

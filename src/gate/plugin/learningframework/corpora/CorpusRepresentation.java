@@ -6,8 +6,10 @@
 
 package gate.plugin.learningframework.corpora;
 
+import cc.mallet.types.InstanceList;
 import gate.plugin.learningframework.ScalingMethod;
 import gate.plugin.learningframework.features.FeatureInfo;
+import gate.plugin.learningframework.mallet.LFPipe;
 
 /**
  *
@@ -16,4 +18,8 @@ import gate.plugin.learningframework.features.FeatureInfo;
 public abstract class CorpusRepresentation {
   protected FeatureInfo featureInfo;
   protected ScalingMethod scalingMethod;
+  protected LFPipe pipe;
+  protected InstanceList instances;
+
+  public InstanceList getInstances() { return instances; }
 }

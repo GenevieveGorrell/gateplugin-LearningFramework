@@ -12,7 +12,6 @@
  *
  * Genevieve Gorrell, 9 Jan 2015
  */
-
 package gate.plugin.learningframework.corpora;
 
 import gate.Annotation;
@@ -35,203 +34,95 @@ import cc.mallet.pipe.Pipe;
 import cc.mallet.pipe.SerialPipes;
 import cc.mallet.types.Alphabet;
 import cc.mallet.types.AugmentableFeatureVector;
+import cc.mallet.types.FeatureSequence;
+import cc.mallet.types.FeatureVector;
+import cc.mallet.types.FeatureVectorSequence;
 import cc.mallet.types.Instance;
 import cc.mallet.types.InstanceList;
+import cc.mallet.types.Label;
 import cc.mallet.types.LabelAlphabet;
 import gate.plugin.learningframework.ScalingMethod;
+import static gate.plugin.learningframework.corpora.CorpusRepresentationMallet.extractIndependentFeatures;
+import gate.plugin.learningframework.features.FeatureExtraction;
+import gate.plugin.learningframework.features.FeatureInfo;
+import gate.plugin.learningframework.features.TargetType;
+import gate.plugin.learningframework.mallet.LFPipe;
+import gate.util.GateRuntimeException;
+import org.apache.log4j.Logger;
 
-public class CorpusRepresentationMalletSeq extends CorpusWriter{
+public class CorpusRepresentationMalletSeq extends CorpusRepresentation {
 
-	//SequenceSpan is a meaningful unit for the sequence. Mallet sequence
-	//learners want to do an entire sequence, for example, a whole sentence
-	//of tokens. So we need to define sequence span.
-	private String sequenceSpan;
+  static final Logger logger = Logger.getLogger("CorpusRepresentationMalletSeq");
 
-	public CorpusRepresentationMalletSeq(FeatureSpecification conf, String inst, String inpas, 
-			File outputFile, String sequenceSpan, Mode mode, String classType, 
-			String classFeature, String identifierFeature, ScalingMethod scaleFeatures){
-		super(conf, inst, inpas, outputFile, mode, classType, classFeature, 
-                        identifierFeature, scaleFeatures);
-		this.sequenceSpan = sequenceSpan;
+  public CorpusRepresentationMalletSeq(FeatureInfo fi, ScalingMethod sm) {
+    featureInfo = fi;
+    scalingMethod = sm;
 
-                
-                // TODO: as early as possible, initialize the data and target alphabets
-                // that will get used in the pipe and in each instance later!
-                // IMPORTANT: the target alphabet has to be a label alphabet!!
-                
-                // 1) create the alphabets
-                Alphabet dataAlphabet = new Alphabet();
-                LabelAlphabet targetAlphabet = new LabelAlphabet();
-                // 2) create the pipe, for doing nothing we use Noop
-                Pipe noop = new Noop(dataAlphabet,targetAlphabet);
-                // 3) create the instance list
-                InstanceList theInstances = new InstanceList(noop);
-                
-                // 4) later, when we extract stuff, we first create an "empty" instance 
-                // that gets filled (or for sequence tagging, we create one instance for each
-                // instance annotation inside the sequence annotation
-                // e.g.
-                AugmentableFeatureVector afv = new AugmentableFeatureVector(pipe.getDataAlphabet());
-                Instance toFill = new Instance(afv,null,null,null);
-                // That way we can access or use the alphabet for the feature vector, but for the 
-                // labeling, the extraction method needs to know about the target alphabet!
-                // !!! There is no way to store the label alphebet in the instance before we
-                // set the target to something that is AlphabetCarrying! 
-                // (both alphabets are retrieved from alphabetcaryying data or target objects!!!)
-                
-                
-                
-		/*
-		 * Mallet requires data to be passed through a pipe to create an instance.
-		 * The pipe not only ensures that instances have the same format at
-		 * train and application time, but also ensures they have the same
-		 * "alphabet". The alphabet maps from feature (such as string) to
-		 * index in the vectors used, so it's really important to use the
-		 * same pipe so as to use the same alphabet.
-		 */
+    Pipe innerPipe = new Noop(new Alphabet(), new LabelAlphabet());
+    List<Pipe> pipes = new ArrayList<Pipe>();
+    pipes.add(innerPipe);
+    pipe = new LFPipe(pipes);
+    pipe.setFeatureInfo(fi);
+    instances = new InstanceList(pipe);
+  }
 
-		ArrayList<Pipe> pipeList = new ArrayList<Pipe>();
-		
-		//Split on # when we create the instances.
-		Pattern tokenPattern =
-				Pattern.compile("[^#]+");
-
-		//Prepare the data as required
-		pipeList.add(new Input2CharSequence("UTF-8"));
-		//pipeList.add(new CharSequence2TokenSequence(tokenPattern));
-		//pipeList.add(new TokenSequence2FeatureSequence());
-		
-		//The next element is a class I wrote for this application, not
-		//part of standard Mallet
-		pipeList.add(new FeatureValueString2FeatureVectorSequence(tokenPattern));
-
-		//Prepare the target as required. I wrote this one too.
-		pipeList.add(new TargetStringToFeatureSequence(tokenPattern));
-
-		//pipeList.add(new PrintInputAndTarget());
-		pipe = new SerialPipes(pipeList);
-		
-		this.instances = new InstanceList(pipe);
-	}
-
-	/**
-	 * Prints instances list to the output location.
-	 */
-	public void append(Document doc){	
-		//Not implemented
-	}
-	
-	/**
-	 * Given a document, adds the required instances to the instance list.
-	 */
-	public void add(Document doc){
-		//  Get the output annotation set
-		AnnotationSet inputAS = null;
-		if(this.getInputASName() == null || this.getInputASName().equals("")) {
-			inputAS = doc.getAnnotations();
-		} else {
-			inputAS = doc.getAnnotations(this.getInputASName());
-		}
-
-		AnnotationSet spans = inputAS.get(this.sequenceSpan);
-
-		Iterator<Annotation> spansIt = spans.iterator();
-		while(spansIt.hasNext()){
-			Annotation span = spansIt.next();
-			Instance inst = sequenceInstanceFromSpanAnnotation(
-					this.getConf(), this.getInputASName(), doc, 
-					span, this.getInstanceName(), this.getMode(), 
-					this.getClassType(), this.getClassFeature());
-			//ALWAYS add through the pipe, to get the instance right.
-			
-			this.instances.addThruPipe(inst);
-		}
-	}
-	
-	/**
-	 * Builds a Mallet instance based on the config file and returns it.
-	 */
-	public static Instance sequenceInstanceFromSpanAnnotation(
-			FeatureSpecification conf, String inputASname, 
-			Document doc, Annotation spanAnn, String instanceAnn, 
-			Mode mode, String type, String feature){
-
-		AnnotationSet inputAS = doc.getAnnotations(inputASname);
-		
-		List<Annotation> instances = gate.Utils.getContainedAnnotations(
-				inputAS, spanAnn, instanceAnn).inDocumentOrder();
-
-		String data = "";
-		String classEl = "";
-		Iterator<Annotation> instanceAnnotationsIterator = instances.iterator();
-		while(instanceAnnotationsIterator.hasNext()){
-			Annotation instanceAnnotation = instanceAnnotationsIterator.next();
-
-			//One class per instance, #-separated
-			if(type!=null){
-				switch(mode){
-				case CLASSIFICATION:
-                                  if(feature!=null) {
-					classEl = classEl + "#" + FeatureExtractor.extractClassForClassification(
-							type, feature, inputASname, instanceAnnotation, 
-							doc).replace("#", "[hash]");
-                                  }
-					break;
-				case NAMED_ENTITY_RECOGNITION:
-				classEl = classEl + "#" + FeatureExtractor.extractClassNER(
-					type, inputASname, instanceAnnotation, 
-					doc);
-					break;
-				}
-			} else {
-				//If we have no class type, we can't extract class.
-				//This is probably being called in application mode.
-			}
-
-			String thisFeat = "";			
-			//Arbitrary number of attributes and n-grams, space separated
-			//within the instance
-			List<Attribute> attributeList = conf.getAttributes();
-			for(int i=0;i<attributeList.size();i++){
-				Attribute att = attributeList.get(i);
-				thisFeat = thisFeat + " " + FeatureExtractor.extractSingleFeature(
-						att, inputASname, instanceAnnotation, 
-						doc).replace("#", "[hash]");
-			}
-
-			List<Ngram> ngramList = conf.getNgrams();
-			for(int i=0;i<ngramList.size();i++){
-				Ngram ng = ngramList.get(i);
-				thisFeat = thisFeat + " " + FeatureExtractor.extractNgramFeature(
-						ng, inputASname, instanceAnnotation, 
-						doc, " ").replace("#", "[hash]");
-			}
-
-			List<AttributeList> attributeListList = conf.getAttributelists();
-			for(int i=0;i<attributeListList.size();i++){
-				AttributeList al = attributeListList.get(i);
-				thisFeat = thisFeat + " " + FeatureExtractor.extractRangeFeature(
-						al, inputASname, instanceAnnotation, 
-						doc, " ").replace("#", "[hash]");
-			}
-			
-			//To distinguish between different instances, we use a
-			//different separator.
-			data = data + "#" + thisFeat.trim();
-		}
-
-		//Remove leading #
-		if(classEl.length()>0){classEl = classEl.substring(1);}
-		if(data.length()>0){data = data.substring(1);}
-		return new Instance(data, classEl, "", "");
-	}
-
-	public void conclude(){
-	  if(scaleFeatures != ScalingMethod.NONE){
- 			logger.warn("LearningFramework: Feature scaling not implemented for sequence"
- 					+ " learners, sorry.");
-          }
-	}
-
+  /**
+   * Add instances. The exact way of how the target is created to the instances depends on which
+   * parameters are given and which are null. The parameter sequenceAS must always be non-null for
+   * this corpus representation since this corpus representation is always used with sequence
+   * tagging algorithms If the parameter classAS is non-null then instances for a sequence tagging
+   * task are created, in that case targetFeatureName must be null. If targetFeatureName is non-null
+   * then instances for a regression or classification problem are created (depending on targetType)
+   * and classAS must be null. if the parameter nameFeatureName is non-null, then a Mallet instance
+   * name is added from the source document and annotation.
+   *
+   * @param instancesAS
+   * @param inputAS
+   * @param nameFeatureName
+   */
+  public void add(AnnotationSet instancesAS, AnnotationSet sequenceAS, AnnotationSet inputAS, AnnotationSet classAS, String targetFeatureName, TargetType targetType, String nameFeatureName) {
+    if (sequenceAS == null) {
+      throw new GateRuntimeException("LF invalid call to CorpusRepresentationMallet.add: sequenceAS must not be null "
+              + " for document " + inputAS.getDocument().getName());
+    }
+    // First iterate through all the sequence annotations, then for each sequence annotation, get
+    // the instance annotations in order. For each of these instance annotations, create a Mallet
+    // Instance and record them all in an array, then create a featuresequence and a labelsequence
+    // from the array of instances and create a final Mallet instance with the featuresequence
+    // as data and the labelsequence as target
+    for (Annotation sequenceAnnotation : sequenceAS.inDocumentOrder()) {
+      List<Instance> instanceList = new ArrayList<Instance>(sequenceAS.size());
+      List<Annotation> instanceAnnotations = instancesAS.inDocumentOrder();
+      for (Annotation instanceAnnotation : instanceAnnotations) {
+        Instance inst = extractIndependentFeatures(instanceAnnotation, inputAS, targetFeatureName, featureInfo, pipe);
+        if (classAS != null) {
+          // extract the target as required for sequence tagging
+          FeatureExtraction.extractClassForSeqTagging(inst, pipe.getTargetAlphabet(), classAS, instanceAnnotation);
+        } else if (targetType == TargetType.NOMINAL) {
+          FeatureExtraction.extractClassTarget(inst, pipe.getTargetAlphabet(), targetFeatureName, instanceAnnotation, inputAS);
+        } else if (targetType == TargetType.NUMERIC) {
+          FeatureExtraction.extractNumericTarget(inst, targetFeatureName, instanceAnnotation, inputAS);
+        }
+        instanceList.add(inst);
+        // create a feature sequence from all the feature vectors in each of the instances in instanceList
+        // create a label index sequence from all the labels of the instances in instance list
+        FeatureVector[] vectors = new FeatureVector[instanceList.size()];
+        int[] labelidxs = new int[instanceList.size()];
+        for(int i = 0; i < vectors.length; i++) 
+          vectors[i] = ((AugmentableFeatureVector)instanceList.get(i).getData()).toFeatureVector();
+        FeatureVectorSequence fvseq = new FeatureVectorSequence(vectors);
+        for(int i = 0; i < labelidxs.length; i++) 
+          labelidxs[i] =  ((Label)inst.getTarget()).getIndex();
+        FeatureSequence fseq = new FeatureSequence(pipe.getTargetAlphabet(), labelidxs);
+        // create the final instance, if a name feature is given also add the name
+        Instance finalInst = new Instance(fvseq,fseq,null,null);
+        if (nameFeatureName != null) {
+          FeatureExtraction.extractName(finalInst, instanceAnnotation, inputAS.getDocument());
+        }
+        // add the instance to the instances 
+        instances.add(finalInst);
+      }
+    }
+  }
 
 }
