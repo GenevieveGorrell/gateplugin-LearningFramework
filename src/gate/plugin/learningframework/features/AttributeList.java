@@ -41,7 +41,8 @@ public class AttributeList extends SimpleAttribute implements Serializable, Clon
   
   @Override
   public String toString() {
-    return "AttributeList(type="+annType+
+    return "AttributeList(name="+name+
+            ",type="+annType+
             ",feature="+feature+
             ",datatype="+datatype+
             ",missingvaluetreatment="+missingValueTreatment+

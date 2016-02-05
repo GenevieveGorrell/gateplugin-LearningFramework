@@ -287,7 +287,7 @@ public class TestFeatureExtraction {
 
 
   
-@Test
+  @Test
   public void extractNgram1() {
     String spec = "<ROOT>"+
             "<NGRAM><TYPE>theType</TYPE><FEATURE>theFeature</FEATURE><NUMBER>1</NUMBER></NGRAM>"+
@@ -352,8 +352,77 @@ public class TestFeatureExtraction {
     assertEquals(1.0,((FeatureVector)inst.getData()).value("N3:theType:theFeature=tok2_tok3_tok4"),EPS);
     assertEquals(1.0,((FeatureVector)inst.getData()).value("N3:theType:theFeature=tok3_tok4_tok5"),EPS);
   }
+
+  @Test
+  public void extractNgram2() {
+    // essentially the same as extractNgram1 but explicitly specifies the name to use as internal
+    // feature name
+    String spec = "<ROOT>"+
+            "<NGRAM><NAME>ng1</NAME><TYPE>theType</TYPE><FEATURE>theFeature</FEATURE><NUMBER>1</NUMBER></NGRAM>"+
+            "<NGRAM><NAME>ngram2</NAME><TYPE>theType</TYPE><FEATURE>theFeature</FEATURE><NUMBER>2</NUMBER></NGRAM>"+
+            "<NGRAM><NAME>someName</NAME><TYPE>theType</TYPE><FEATURE>theFeature</FEATURE><NUMBER>3</NUMBER></NGRAM>"+
+            "</ROOT>";
+    FeatureInfo fi = new FeatureSpecification(spec).getFeatureInfo();
+    List<Attribute> as = fi.getAttributes();
+    System.err.println("NGRAMS with explicitly specified name!!");
+    Alphabet a = new Alphabet();
+    AugmentableFeatureVector afv = new AugmentableFeatureVector(a);
+    Instance inst = new Instance(afv,null,null,null);
+    
+    // prepare the document
+    Annotation instAnn = addAnn(doc, "", 0, 20, "instanceType", gate.Utils.featureMap());
+    addAnn(doc,"",0,2,"theType",gate.Utils.featureMap("theFeature","tok1"));
+    addAnn(doc,"",2,4,"theType",gate.Utils.featureMap("theFeature","tok2"));
+    addAnn(doc,"",4,6,"theType",gate.Utils.featureMap("theFeature","tok3"));
+    addAnn(doc,"",6,8,"theType",gate.Utils.featureMap("theFeature","tok4"));
+    addAnn(doc,"",8,10,"theType",gate.Utils.featureMap("theFeature","tok5"));
+    
+    FeatureExtraction.extractFeature(inst, as.get(0), doc.getAnnotations(), instAnn);
+    System.err.println("After "+as.get(0)+" (one-grams) FV="+inst.getData());
+    assertEquals(5,inst.getAlphabet().size());
+    assertTrue(inst.getAlphabet().contains("ng1=tok1"));
+    assertTrue(inst.getAlphabet().contains("ng1=tok2"));
+    assertTrue(inst.getAlphabet().contains("ng1=tok3"));
+    assertTrue(inst.getAlphabet().contains("ng1=tok4"));
+    assertTrue(inst.getAlphabet().contains("ng1=tok5"));
+    assertEquals(5,((FeatureVector)inst.getData()).numLocations());
+    assertEquals(1.0,((FeatureVector)inst.getData()).value("ng1=tok1"),EPS);
+    assertEquals(1.0,((FeatureVector)inst.getData()).value("ng1=tok2"),EPS);
+    assertEquals(1.0,((FeatureVector)inst.getData()).value("ng1=tok3"),EPS);
+    assertEquals(1.0,((FeatureVector)inst.getData()).value("ng1=tok4"),EPS);
+    assertEquals(1.0,((FeatureVector)inst.getData()).value("ng1=tok5"),EPS);
+    
+    // now the bigrams
+    inst = newInstance();
+    FeatureExtraction.extractFeature(inst, as.get(1), doc.getAnnotations(), instAnn);
+    System.err.println("After "+as.get(1)+" (bi-grams) FV="+inst.getData());
+    assertEquals(4,inst.getAlphabet().size());
+    assertTrue(inst.getAlphabet().contains("ngram2=tok1_tok2"));
+    assertTrue(inst.getAlphabet().contains("ngram2=tok2_tok3"));
+    assertTrue(inst.getAlphabet().contains("ngram2=tok3_tok4"));
+    assertTrue(inst.getAlphabet().contains("ngram2=tok4_tok5"));
+    assertEquals(4,((FeatureVector)inst.getData()).numLocations());
+    assertEquals(1.0,((FeatureVector)inst.getData()).value("ngram2=tok1_tok2"),EPS);
+    assertEquals(1.0,((FeatureVector)inst.getData()).value("ngram2=tok2_tok3"),EPS);
+    assertEquals(1.0,((FeatureVector)inst.getData()).value("ngram2=tok3_tok4"),EPS);
+    assertEquals(1.0,((FeatureVector)inst.getData()).value("ngram2=tok4_tok5"),EPS);
+
+    // and the 3-grams
+    inst = newInstance();
+    FeatureExtraction.extractFeature(inst, as.get(2), doc.getAnnotations(), instAnn);
+    System.err.println("After "+as.get(2)+" (bi-grams) FV="+inst.getData());
+    assertEquals(3,inst.getAlphabet().size());
+    assertTrue(inst.getAlphabet().contains("someName=tok1_tok2_tok3"));
+    assertTrue(inst.getAlphabet().contains("someName=tok2_tok3_tok4"));
+    assertTrue(inst.getAlphabet().contains("someName=tok3_tok4_tok5"));
+    assertEquals(3,((FeatureVector)inst.getData()).numLocations());
+    assertEquals(1.0,((FeatureVector)inst.getData()).value("someName=tok1_tok2_tok3"),EPS);
+    assertEquals(1.0,((FeatureVector)inst.getData()).value("someName=tok2_tok3_tok4"),EPS);
+    assertEquals(1.0,((FeatureVector)inst.getData()).value("someName=tok3_tok4_tok5"),EPS);
+  }
+
   
-@Test
+  @Test
   public void extractList1() {
     String spec = "<ROOT>"+
             "<ATTRIBUTELIST><TYPE>theType</TYPE><FEATURE>theFeature</FEATURE><DATATYPE>nominal</DATATYPE><FROM>-1</FROM><TO>1</TO></ATTRIBUTELIST>"+
@@ -385,6 +454,41 @@ public class TestFeatureExtraction {
     assertEquals(1.0,((FeatureVector)inst.getData()).value("L-1:theType:theFeature=tok5"),EPS);
     assertEquals(1.0,((FeatureVector)inst.getData()).value("L0:theType:theFeature=tok6"),EPS);
     assertEquals(1.0,((FeatureVector)inst.getData()).value("L1:theType:theFeature=tok7"),EPS);
+  }
+  
+  @Test
+  public void extractList2() {
+    // same as extractList2, but with explicitly specified name
+    String spec = "<ROOT>"+
+            "<ATTRIBUTELIST><NAME>myAttList</NAME><TYPE>theType</TYPE><FEATURE>theFeature</FEATURE><DATATYPE>nominal</DATATYPE><FROM>-1</FROM><TO>1</TO></ATTRIBUTELIST>"+
+            "</ROOT>";
+    List<Attribute> as = new FeatureSpecification(spec).getFeatureInfo().getAttributes();
+    Instance inst = newInstance();
+    
+    // prepare the document
+    Annotation instAnn = addAnn(doc, "", 10, 10, "instanceType", gate.Utils.featureMap());
+    addAnn(doc,"",0,2,"theType",gate.Utils.featureMap("theFeature","tok1"));
+    addAnn(doc,"",2,4,"theType",gate.Utils.featureMap("theFeature","tok2"));
+    addAnn(doc,"",4,6,"theType",gate.Utils.featureMap("theFeature","tok3"));
+    addAnn(doc,"",6,8,"theType",gate.Utils.featureMap("theFeature","tok4"));
+    addAnn(doc,"",8,10,"theType",gate.Utils.featureMap("theFeature","tok5"));
+    addAnn(doc,"",10,12,"theType",gate.Utils.featureMap("theFeature","tok6"));
+    addAnn(doc,"",12,14,"theType",gate.Utils.featureMap("theFeature","tok7"));
+    addAnn(doc,"",14,16,"theType",gate.Utils.featureMap("theFeature","tok8"));
+    addAnn(doc,"",16,18,"theType",gate.Utils.featureMap("theFeature","tok9"));
+    addAnn(doc,"",18,20,"theType",gate.Utils.featureMap("theFeature","tok10"));
+    
+    FeatureExtraction.extractFeature(inst, as.get(0), doc.getAnnotations(), instAnn);
+    System.err.println("After "+as.get(0)+" (list -1to1) FV="+inst.getData());
+    assertEquals(3,inst.getAlphabet().size());
+    System.err.println("Alphabet is "+inst.getAlphabet());
+    assertTrue(inst.getAlphabet().contains("myAttList-1=tok5"));
+    assertTrue(inst.getAlphabet().contains("myAttList0=tok6"));
+    assertTrue(inst.getAlphabet().contains("myAttList1=tok7"));
+    assertEquals(3,((FeatureVector)inst.getData()).numLocations());
+    assertEquals(1.0,((FeatureVector)inst.getData()).value("myAttList-1=tok5"),EPS);
+    assertEquals(1.0,((FeatureVector)inst.getData()).value("myAttList0=tok6"),EPS);
+    assertEquals(1.0,((FeatureVector)inst.getData()).value("myAttList1=tok7"),EPS);
   }
  
 }

@@ -47,7 +47,8 @@ public class SimpleAttribute extends Attribute implements Serializable, Cloneabl
   
   @Override
   public String toString() {
-    return "SimpleAttribute(type="+annType+
+    return "SimpleAttribute(name="+name+
+            ",type="+annType+
             ",feature="+feature+
             ",datatype="+datatype+
             ",missingvaluetreatment="+missingValueTreatment+

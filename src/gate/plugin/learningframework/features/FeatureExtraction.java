@@ -449,7 +449,13 @@ public class FeatureExtraction {
           }
           String ngram = sb.toString();
           // we have got our ngram now, count it, but only add if we are allowed to!
-          addToFeatureVector(fv, "N"+number+NAMESEP+annType+NAMESEP+featureName+VALSEP+ngram, 1.0);
+          String prefix;
+          if(ng.name.isEmpty()) {
+            prefix = "N"+number+NAMESEP+annType+NAMESEP+featureName;
+          } else {
+            prefix = ng.name;
+          }
+          addToFeatureVector(fv, prefix+VALSEP+ngram, 1.0);
         }
   } // extractFeature(NGram)
   
@@ -489,8 +495,14 @@ public class FeatureExtraction {
           // make compiler happy for now
           //textToReturn = textToReturn + separator + annType + ":" + featureName + ":r" + i + ":" + extractFeature(annType, featureName, datatype, inputASname, ann, doc);
       }
+      // If we specify a name explicitly, we still need to add the element number to it.
+      // If no name is specified, we leave it empty.
       if(ann != null) {        
-        extractFeatureWorker(al.name,"L"+i,inst,ann,doc,annType,featureName,alphabet,dt,mvt,codeas);    
+        String tmpName = "";
+        if(!al.name.isEmpty()) {
+          tmpName =  al.name + i;
+        }
+        extractFeatureWorker(tmpName,"L"+i,inst,ann,doc,annType,featureName,alphabet,dt,mvt,codeas);    
       }
     }
   } // extractFeature (AttributeList)

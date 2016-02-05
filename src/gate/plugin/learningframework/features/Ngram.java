@@ -36,7 +36,8 @@ public class Ngram extends Attribute implements Serializable, Cloneable {
 
   @Override
   public String toString() {
-    return "NgramAttribute(type="+annType+
+    return "NgramAttribute(name="+name+
+            ",type="+annType+
             ",feature="+feature+
             ",number="+number;
   }
