@@ -120,9 +120,9 @@ public class FeatureSpecification {
   } // parseConfigXml
 
   private SimpleAttribute parseSimpleAttribute(Element attributeElement, int i) {
-
-    String feat = getChildTextOrElse(attributeElement, "FEATURE", "");
-    String dtstr = getChildTextOrElse(attributeElement, "DATATYPE", null);
+    String aname = getChildTextOrElse(attributeElement, "NAME", "").trim();
+    String feat = getChildTextOrElse(attributeElement, "FEATURE", "").trim();
+    String dtstr = getChildTextOrElse(attributeElement, "DATATYPE", null);    
     if (!feat.isEmpty() && dtstr == null) {
       throw new GateRuntimeException("DATATYPE not specified for ATTRIBUTE " + i);
     }
@@ -167,6 +167,7 @@ public class FeatureSpecification {
     String transformMethod = "";
     String missingValueValue = ""; // if MVs should get replaced with a constant value, that value as a String
     SimpleAttribute att = new SimpleAttribute(
+            aname,
             atype,
             feat,
             dt,
@@ -180,6 +181,7 @@ public class FeatureSpecification {
   }
 
   private Attribute parseNgramAttribute(Element ngramElement, int i) {
+    String aname = getChildTextOrElse(ngramElement,"NAME","").trim();
     String annType = getChildTextOrElse(ngramElement,"TYPE","").trim();
     if (annType.isEmpty()) {
       throw new GateRuntimeException("TYPE in NGRAM " + i + " must not be missing or empty");
@@ -190,6 +192,7 @@ public class FeatureSpecification {
       throw new GateRuntimeException("TYPE in NGRAM " + i + " must not be missing or empty");
     }
     Ngram ng = new Ngram(
+            aname,
             Integer.parseInt(ngramElement.getChildText("NUMBER")),
             annType,
             feature

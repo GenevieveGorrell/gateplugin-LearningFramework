@@ -6,9 +6,6 @@
 
 package gate.plugin.learningframework.tests;
 
-import cc.mallet.types.Alphabet;
-import cc.mallet.types.AugmentableFeatureVector;
-import cc.mallet.types.Instance;
 import cc.mallet.types.InstanceList;
 import gate.Annotation;
 import gate.Document;
@@ -19,11 +16,9 @@ import gate.plugin.learningframework.corpora.CorpusRepresentationMallet;
 import gate.plugin.learningframework.corpora.CorpusRepresentationMalletSeq;
 import gate.plugin.learningframework.corpora.CorpusWriterMallet;
 import gate.plugin.learningframework.corpora.CorpusWriterMalletSeq;
-import gate.plugin.learningframework.features.Attribute;
 import gate.plugin.learningframework.features.FeatureInfo;
 import gate.plugin.learningframework.features.FeatureSpecification;
 import gate.plugin.learningframework.features.TargetType;
-import java.util.List;
 import static org.junit.Assert.*;
 import org.junit.*;
 import static gate.plugin.learningframework.tests.Utils.*;

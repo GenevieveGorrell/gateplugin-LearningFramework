@@ -32,6 +32,31 @@ import org.apache.log4j.Logger;
  * @author Johann Petrak
  */
 public class FeatureExtraction {
+
+
+  // We have to make sure that no two feature names that come from different attribute specifications
+  // can be identical, and also that the different feature names that can come from the same attribute
+  // specification for NGRAM and ATTRIBUTELIST are different from each other and those from other specs.
+  // Also, the feature name should still be as short as possible, readable and contain as few
+  // special characters as possible. 
+  // Here is what we use for now:
+  // = if the attribute has a <NAME>theName</NAME> entity, then that name is used for ATTRIBUTE and
+  //   for NGRAM, for ATTRIBUTELIST "theName[k]" is used where [k] is from the range FROM..TO.
+  //   The value is added after an equal sign, e.g. "theName=[value]" or "theName-2=[value]"
+  //   If this is used for an ATTRIBUTE where no feature is given "theName=ISPRESENT" is used.
+  // if no name is given, the following names are generated ([type] is the annotation type, 
+  // [feature] is the feature name and [value] is the feature value.
+  // = For ATTRIBUTE if no feature is given: A:[type]::=ISPRESENT
+  // = For a nominal ATTRIBUTE coded as one-of-k: A:[type]:[feature]=[value]
+  // = For a numeric ATTRIBUTE or a nominal attribute coded as number or a boolean attribute: 
+  //   A:[type]:[feature]
+  // = For ATTRIBUTELIST the name starts with L[k] insteand of A the rest is identical to ATTRIBUTE
+  //   If a name is explicitly specified "theName[k]=[value]" is used
+  // = For NGRAM, N[k]:[type]:[feature]=[val1]_[val2]
+  //   If a name is explicitly specified, "theName=[val1]_[val2] is used. 
+  
+  
+  
   
   // NOTE: currently these strings are hard-coded but it may make sense to look if there 
   // are better choices or make these configurable in some advanced section of the featureName config
@@ -105,7 +130,6 @@ public class FeatureExtraction {
           AnnotationSet inputAS, 
           Annotation instanceAnnotation) {
     Document doc = inputAS.getDocument();
-    String value = "null";
     /*Although the user needn't specify the annotation annType if it's the
      * same inputAS the instance, they may do so. It's intuitive that if they
      * do so, they mean to extract the featureName from the instance, not just
@@ -148,10 +172,12 @@ public class FeatureExtraction {
     // vector, so we do not even check, we simply add the featureName.
     // How we add the featureName depends on the datatype, on the codeas setting if it is nominal,
     // and also on how we treat missing values.
-    extractFeatureWorker(inst,sourceAnnotation,doc,annType,featureName,alphabet,dt,mvt,codeas);
+    extractFeatureWorker(att.name,"A",inst,sourceAnnotation,doc,annType,featureName,alphabet,dt,mvt,codeas);
   }
     
   private static void extractFeatureWorker(
+          String name,
+          String internalFeatureIndicator,
           Instance inst,
           Annotation sourceAnnotation,
           Document doc,
@@ -163,6 +189,14 @@ public class FeatureExtraction {
           CodeAs codeas)  {
     
     AugmentableFeatureVector fv = (AugmentableFeatureVector)inst.getData();
+    // create the default feature name prefix: this is either "A"+NAMESEP+type+NAMESEP+featureName
+    // or just the name give in the attribute
+    String internalFeatureNamePrefix;
+    if(name.isEmpty()) {
+      internalFeatureNamePrefix = internalFeatureIndicator+NAMESEP+annType+NAMESEP+featureName;
+    } else {
+      internalFeatureNamePrefix = name;
+    }
     // if the featureName name is empty, then all we want is indicate the presence of the annotation
     // inputAS a boolean. No matter what the datatype is, this is always indicated by setting the
     // featureName to 1.0 (while for all instances, where the annotation is missing, the value will
@@ -170,7 +204,7 @@ public class FeatureExtraction {
     if(featureName==null||featureName.isEmpty()) {
       // construct the featureName name and set to 1.0
       // however, only add the featureName if the featureName alphabet is allowed to grow.
-      String fname = annType + NAMESEP + NAMESEP + "ISPRESENT";
+      String fname = internalFeatureNamePrefix + VALSEP + "ISPRESENT";
       addToFeatureVector(fv, fname, 1.0);
     } else {    
       // First get the value inputAS an Object, if there is no value, we have an Object that is null
@@ -187,7 +221,7 @@ public class FeatureExtraction {
             // it is not a missing value
             String val = valObj.toString();
             // TODO: do we have to escape the featureName name in some way here?
-            addToFeatureVector(fv, annType+NAMESEP+featureName+VALSEP+val, 1.0);
+            addToFeatureVector(fv, internalFeatureNamePrefix+VALSEP+val, 1.0);
           } else {
             // we have a missing value, check the missing value treatment for what to do now
             switch(mvt) {
@@ -198,7 +232,7 @@ public class FeatureExtraction {
               case zero_value: // for one-of-k we treat this identically to keep, nothing to do
                 break;
               case special_value: // we use the predefined special value
-                addToFeatureVector(fv,annType+NAMESEP+featureName+VALSEP+MVVALUE,1.0);
+                addToFeatureVector(fv,internalFeatureNamePrefix+VALSEP+MVVALUE,1.0);
                 break; 
               default:
                 throw new NotImplementedException("MV-Handling");
@@ -217,13 +251,13 @@ public class FeatureExtraction {
             if(alphabet.contains(val)) {
               // add the featureName, using the value we have stored for it, but only if the featureName
               // itself can be added
-              addToFeatureVector(fv, annType+NAMESEP+featureName, alphabet.lookupIndex(val));
+              addToFeatureVector(fv, internalFeatureNamePrefix, alphabet.lookupIndex(val));
             } else {
               // we have not seen this value: if the alphabet is allowed to grow add it and
               // then try to add the featureName, otherwise, do nothing
               if(!alphabet.growthStopped()) {
                 // the lookupIndex method automatically adds the value if it is not there yet
-                addToFeatureVector(fv, annType+NAMESEP+featureName, alphabet.lookupIndex(val));
+                addToFeatureVector(fv, internalFeatureNamePrefix, alphabet.lookupIndex(val));
               }
             }
           } else {
@@ -232,14 +266,14 @@ public class FeatureExtraction {
               case ignore_instance: // this is handled elsewhere, nothing to do
                 break;
               case keep:  // for this kind of codeas, we use the value NaN
-                addToFeatureVector(fv,annType+NAMESEP+featureName, Double.NaN );
+                addToFeatureVector(fv,internalFeatureNamePrefix, Double.NaN );
                 break;
               case zero_value: // use the first value, does not make much sense really, but ...
                 // TODO: document that this combination should be avoided, probably
-                addToFeatureVector(fv,annType+NAMESEP+featureName, 0.0 );
+                addToFeatureVector(fv,internalFeatureNamePrefix, 0.0 );
                 break;
               case special_value: // we use the special value -1.0 which should get handled by Mallet somehow
-                addToFeatureVector(fv,annType+NAMESEP+featureName,-1.0);
+                addToFeatureVector(fv,internalFeatureNamePrefix,-1.0);
                 break; 
               default:
                 throw new NotImplementedException("MV-Handling");
@@ -266,7 +300,7 @@ public class FeatureExtraction {
                       " at offset "+gate.Utils.start(sourceAnnotation)+" in document "+doc.getName());
             }
           }        
-          addToFeatureVector(fv,annType+NAMESEP+featureName,val);
+          addToFeatureVector(fv,internalFeatureNamePrefix,val);
         } else {
           // we got a missing value for a numeric attribute
           // TODO!!
@@ -275,14 +309,14 @@ public class FeatureExtraction {
               case ignore_instance: // this is handled elsewhere, nothing to do
                 break;
               case keep:  // for this kind of codeas, we use the value NaN
-                addToFeatureVector(fv,annType+NAMESEP+featureName, Double.NaN );
+                addToFeatureVector(fv,internalFeatureNamePrefix, Double.NaN );
                 break;
               case zero_value: // use the first value, does not make much sense really, but ...
                 // TODO: document that this combination should be avoided, probably
-                addToFeatureVector(fv,annType+NAMESEP+featureName, 0.0 );
+                addToFeatureVector(fv,internalFeatureNamePrefix, 0.0 );
                 break;
               case special_value: // we use the special value -1.0 which should get handled by Mallet somehow
-                addToFeatureVector(fv,annType+NAMESEP+featureName,-1.0);
+                addToFeatureVector(fv,internalFeatureNamePrefix,-1.0);
                 break; 
               default:
                 throw new NotImplementedException("MV-Handling");
@@ -305,21 +339,21 @@ public class FeatureExtraction {
                       " at offset "+gate.Utils.start(sourceAnnotation)+" in document "+doc.getName());              
             }
           }
-          addToFeatureVector(fv,annType+NAMESEP+featureName,val);
+          addToFeatureVector(fv,internalFeatureNamePrefix,val);
         } else {
             // we have a missing boolean value
             switch(mvt) {
               case ignore_instance: // this is handled elsewhere, nothing to do
                 break;
               case keep:  // for this kind of codeas, we use the value NaN
-                addToFeatureVector(fv,annType+NAMESEP+featureName, Double.NaN );
+                addToFeatureVector(fv,internalFeatureNamePrefix, Double.NaN );
                 break;
               case zero_value: // use the first value, does not make much sense really, but ...
                 // TODO: document that this combination should be avoided, probably
-                addToFeatureVector(fv,annType+NAMESEP+featureName, 0.0 );
+                addToFeatureVector(fv,internalFeatureNamePrefix, 0.0 );
                 break;
               case special_value: // we use the special value -1.0 which should get handled by Mallet somehow
-                addToFeatureVector(fv,annType+NAMESEP+featureName,0.5);
+                addToFeatureVector(fv,internalFeatureNamePrefix,0.5);
                 break; 
               default:
                 throw new NotImplementedException("MV-Handling");
@@ -415,7 +449,7 @@ public class FeatureExtraction {
           }
           String ngram = sb.toString();
           // we have got our ngram now, count it, but only add if we are allowed to!
-          addToFeatureVector(fv, annType+NAMESEP+featureName+NAMESEP+"!N!"+NAMESEP+number+VALSEP+ngram, 1.0);
+          addToFeatureVector(fv, "N"+number+NAMESEP+annType+NAMESEP+featureName+VALSEP+ngram, 1.0);
         }
   } // extractFeature(NGram)
   
@@ -455,10 +489,8 @@ public class FeatureExtraction {
           // make compiler happy for now
           //textToReturn = textToReturn + separator + annType + ":" + featureName + ":r" + i + ":" + extractFeature(annType, featureName, datatype, inputASname, ann, doc);
       }
-      if(ann != null) {
-        // now extract the actual featureName for that entry:
-        String featureNamePrefix = annType + NAMESEP + "!L!" + NAMESEP + i;
-        extractFeatureWorker(inst,ann,doc,featureNamePrefix,featureName,alphabet,dt,mvt,codeas);    
+      if(ann != null) {        
+        extractFeatureWorker(al.name,"L"+i,inst,ann,doc,annType,featureName,alphabet,dt,mvt,codeas);    
       }
     }
   } // extractFeature (AttributeList)
@@ -588,9 +620,6 @@ public class FeatureExtraction {
     inst.setName(value);
   }
 
-  
-  
-  
   
   ///=======================================
   /// HELPER AND UTILITY METHODS

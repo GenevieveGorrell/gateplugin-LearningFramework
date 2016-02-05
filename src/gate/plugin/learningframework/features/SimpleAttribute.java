@@ -19,7 +19,8 @@ public class SimpleAttribute extends Attribute implements Serializable, Cloneabl
 
   private static final long serialVersionUID = -2346560362547132478L;
 
-  public SimpleAttribute(String type, String feature, Datatype datatype, CodeAs codeas, MissingValueTreatment missingValueTreatment, String missingValueValue, String scalingMethod, String transformMethod) {
+  public SimpleAttribute(String aname, String type, String feature, Datatype datatype, CodeAs codeas, MissingValueTreatment missingValueTreatment, String missingValueValue, String scalingMethod, String transformMethod) {
+    this.name = aname;
     this.annType = type;
     this.feature = feature;
     this.datatype = datatype;

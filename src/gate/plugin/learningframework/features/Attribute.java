@@ -20,6 +20,7 @@ public abstract class Attribute implements Serializable, Cloneable {
 
   public String annType;
   public String feature;
+  public String name;
   
   public abstract void stopGrowth();
   public abstract void startGrowth();

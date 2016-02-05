@@ -16,7 +16,8 @@ import java.util.logging.Logger;
  */
 public class Ngram extends Attribute implements Serializable, Cloneable {
 
-  public Ngram(int number, String type, String feature) {
+  public Ngram(String aname, int number, String type, String feature) {
+    this.name = aname;
     this.number = number;
     this.annType = type;
     this.feature = feature;
