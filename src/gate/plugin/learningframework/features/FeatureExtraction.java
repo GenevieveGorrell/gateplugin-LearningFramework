@@ -85,6 +85,9 @@ public class FeatureExtraction {
   private static final String SEQ_BEGINNING = "B";
   private static final String SEQ_OUTSIDE = "O";
   
+  public static final String PROP_HAVE_MV = "haveMV";
+  public static final String PROP_IGNORE_HAS_MV = "ignore-MV";
+  
   private static Logger logger = Logger.getLogger(FeatureExtraction.class.getName());
 
   public static void extractFeature(        
@@ -212,8 +215,13 @@ public class FeatureExtraction {
       // no matter what the datatype is, a null is always a missing value, so we set the 
       // property that indicates the existence of a missing valuein the instance right here
       if(valObj == null) {
-        inst.setProperty("haveMV", true);
+        inst.setProperty(PROP_HAVE_MV, true);
+      } else {
+        inst.setProperty(PROP_HAVE_MV,false);
       }
+      // initialize the PROP_IGNORE_HAS_MV property to be false, if we have a MV which
+      // causes the instance to get ignored we set it to true below
+      inst.setProperty(PROP_IGNORE_HAS_MV,false);
       // if the datatype is nominal, we have to first check what the codeas setting is.
       if(dt==Datatype.nominal) {
         if(codeas==CodeAs.one_of_k) {
@@ -225,7 +233,8 @@ public class FeatureExtraction {
           } else {
             // we have a missing value, check the missing value treatment for what to do now
             switch(mvt) {
-              case ignore_instance: // this is handled elsewhere, nothing to do
+              case ignore_instance: 
+                inst.setProperty(PROP_IGNORE_HAS_MV,true);
                 break;
               case keep:  // this represents the MV by not setting any indicator featureName, so nothing to do
                 break;
@@ -263,7 +272,8 @@ public class FeatureExtraction {
           } else {
             // we have a nominal value that should get coded numeric but it is a missing value
             switch(mvt) {
-              case ignore_instance: // this is handled elsewhere, nothing to do
+              case ignore_instance: 
+                inst.setProperty(PROP_IGNORE_HAS_MV, true);
                 break;
               case keep:  // for this kind of codeas, we use the value NaN
                 addToFeatureVector(fv,internalFeatureNamePrefix, Double.NaN );
@@ -302,11 +312,10 @@ public class FeatureExtraction {
           }        
           addToFeatureVector(fv,internalFeatureNamePrefix,val);
         } else {
-          // we got a missing value for a numeric attribute
-          // TODO!!
             // we have a numeric missing value!
             switch(mvt) {
-              case ignore_instance: // this is handled elsewhere, nothing to do
+              case ignore_instance: 
+                inst.setProperty(PROP_IGNORE_HAS_MV, true);
                 break;
               case keep:  // for this kind of codeas, we use the value NaN
                 addToFeatureVector(fv,internalFeatureNamePrefix, Double.NaN );
@@ -343,7 +352,8 @@ public class FeatureExtraction {
         } else {
             // we have a missing boolean value
             switch(mvt) {
-              case ignore_instance: // this is handled elsewhere, nothing to do
+              case ignore_instance: 
+                inst.setProperty(PROP_IGNORE_HAS_MV, true);
                 break;
               case keep:  // for this kind of codeas, we use the value NaN
                 addToFeatureVector(fv,internalFeatureNamePrefix, Double.NaN );
@@ -620,7 +630,19 @@ public class FeatureExtraction {
       inst.setTarget(labelalph.lookupLabel(target));
   }
   
-
+  public static boolean ignoreInstanceWithMV(Instance inst) {
+    Object val = inst.getProperty(PROP_IGNORE_HAS_MV);
+    if(val == null) return false;
+    return((Boolean)inst.getProperty(PROP_IGNORE_HAS_MV));
+  }
+  
+  public static boolean instanceHasMV(Instance inst) {
+    Object val = inst.getProperty(PROP_HAVE_MV);
+    if(val == null) return false;
+    return((Boolean)inst.getProperty(PROP_HAVE_MV));
+  }
+  
+  
   /**
    * Extract the exact location of the instance for use as an instance name.
    * The name string is made up of the document name plus the start and end offsets of the instance 
@@ -649,6 +671,7 @@ public class FeatureExtraction {
     fv.add(key,val);
   }
         
+  
         
   // NOTE: we use an AugmentableFeatureVector to represent the growing featureName vector inputAS we 
   // build it.

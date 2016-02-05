@@ -127,7 +127,9 @@ public class CorpusRepresentationMallet extends CorpusRepresentation {
       if(nameFeatureName != null) {
         FeatureExtraction.extractName(inst, instanceAnnotation, inputAS.getDocument());
       }
-      instances.add(inst);
+      if(!FeatureExtraction.ignoreInstanceWithMV(inst)) {
+        instances.add(inst);
+      }
     }
   }
 
