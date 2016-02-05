@@ -10,46 +10,18 @@
  */
 package gate.plugin.learningframework;
 
-import gate.learningframework.classification.Operation;
 import java.io.File;
-import java.io.Serializable;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import gate.AnnotationSet;
-import gate.Annotation;
 import gate.Controller;
 import gate.Document;
-import gate.Factory;
-import gate.FeatureMap;
-import gate.ProcessingResource;
-import gate.Resource;
-import gate.creole.ControllerAwarePR;
-import gate.creole.ResourceInstantiationException;
-import gate.creole.AbstractLanguageAnalyser;
-import gate.creole.ExecutionException;
 import gate.creole.metadata.CreoleParameter;
 import gate.creole.metadata.CreoleResource;
-import gate.creole.metadata.Optional;
 import gate.creole.metadata.RunTime;
 import gate.plugin.learningframework.corpora.CorpusWriter;
-import gate.plugin.learningframework.corpora.CorpusWriterArff;
-import gate.plugin.learningframework.corpora.CorpusWriterArffNumericClass;
-import gate.plugin.learningframework.corpora.CorpusWriterMallet;
-import gate.plugin.learningframework.corpora.CorpusWriterMalletSeq;
 import gate.plugin.learningframework.corpora.FeatureSpecification;
-import gate.util.GateRuntimeException;
-import gate.util.InvalidOffsetException;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.ObjectOutputStream;
-import java.io.PrintStream;
-import libsvm.svm_problem;
 
 /**
  * Export a training set in some tool-specific format.
@@ -79,8 +51,6 @@ public class LearningFrameworkExport extends LearningFrameworkPRBase {
     return featureSpecURL;
   }
 
-
- 
   @RunTime
   @CreoleParameter(defaultValue = "NONE", comment = "If and how to scale features. ")
   public void setScaleFeatures(ScalingMethod sf) {
@@ -96,7 +66,6 @@ public class LearningFrameworkExport extends LearningFrameworkPRBase {
 
   private FeatureSpecification conf = null;
 
-
   @Override
   public void execute(Document doc) {
     exportCorpus.add(doc);
@@ -104,51 +73,26 @@ public class LearningFrameworkExport extends LearningFrameworkPRBase {
 
   @Override
   public void afterLastDocument(Controller arg0, Throwable t) {
-    
-     // TODO!!!
+
+    // TODO!!!
     /**
-      case EXPORT_ARFF:
-      case EXPORT_ARFF_THRU_CURRENT_PIPE:
-      case EXPORT_ARFF_NUMERIC_CLASS:
-      case EXPORT_ARFF_NUMERIC_CLASS_THRU_CURRENT_PIPE:
-        exportCorpus.conclude();
-        ((CorpusWriterArff) exportCorpus).writeToFile();
-        break;
-      case EXPORT_LIBSVM:
-        // JP: this should get moved to some better place
-        // JP: I have no idea if conclude works properly here! CHECK!
-        exportCorpus.conclude();
-        svm_problem prob = ((CorpusWriterMallet) exportCorpus).getLibSVMProblem();
-        PrintStream out = null;
-        File savedir = gate.util.Files.fileFromURL(saveDirectory);
-        File expdir = new File(savedir, "exportedLibSVM");
-        expdir.mkdir();
-        try {
-          out = new PrintStream(new File(expdir, "data.libsvm"));
-          for (int i = 0; i < prob.l; i++) {
-            out.print(prob.y[i]);
-            for (int j = 0; j < prob.x[i].length; j++) {
-              out.print(" ");
-              out.print(prob.x[i][j].index);
-              out.print(":");
-              out.print(prob.x[i][j].value);
-            }
-            out.println();
-          }
-          out.close();
-        } catch (FileNotFoundException ex) {
-          System.err.println("Could not write training instances to svm format file");
-          ex.printStackTrace(System.out);
-        }
-        try {
-          ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(expdir
-                  + "/my.pipe"));
-          oos.writeObject(exportCorpus.getInstances().getPipe());
-          oos.close();
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
-    */
+     * case EXPORT_ARFF: case EXPORT_ARFF_THRU_CURRENT_PIPE: case EXPORT_ARFF_NUMERIC_CLASS: case
+     * EXPORT_ARFF_NUMERIC_CLASS_THRU_CURRENT_PIPE: exportCorpus.conclude(); ((CorpusWriterArff)
+     * exportCorpus).writeToFile(); break; case EXPORT_LIBSVM: // JP: this should get moved to some
+     * better place // JP: I have no idea if conclude works properly here! CHECK!
+     * exportCorpus.conclude(); svm_problem prob = ((CorpusWriterMallet)
+     * exportCorpus).getLibSVMProblem(); PrintStream out = null; File savedir =
+     * gate.util.Files.fileFromURL(saveDirectory); File expdir = new File(savedir,
+     * "exportedLibSVM"); expdir.mkdir(); try { out = new PrintStream(new File(expdir,
+     * "data.libsvm")); for (int i = 0; i < prob.l; i++) { out.print(prob.y[i]); for (int j = 0; j <
+     * prob.x[i].length; j++) { out.print(" "); out.print(prob.x[i][j].index); out.print(":");
+     * out.print(prob.x[i][j].value); } out.println(); } out.close(); } catch (FileNotFoundException
+     * ex) { System.err.println("Could not write training instances to svm format file");
+     * ex.printStackTrace(System.out); } try { ObjectOutputStream oos = new ObjectOutputStream(new
+     * FileOutputStream(expdir + "/my.pipe"));
+     * oos.writeObject(exportCorpus.getInstances().getPipe()); oos.close(); } catch (Exception e) {
+     * e.printStackTrace(); }
+     */
   }
 
   @Override
@@ -156,7 +100,7 @@ public class LearningFrameworkExport extends LearningFrameworkPRBase {
     File savedModelDirectoryFile = new File(
             gate.util.Files.fileFromURL(dataDirectory), Globals.savedModelDirectory);
     conf = new FeatureSpecification(featureSpecURL);
-    
+
     // TODO
     /*
       case EXPORT_LIBSVM:
@@ -211,12 +155,11 @@ public class LearningFrameworkExport extends LearningFrameworkPRBase {
                 outputfilearff4, mode, classType, targetFeature, identifierFeature,
                 CorpusWriterArff.getArffPipe(outputfilearff4), scaleFeatures);
         break;
-    */
+     */
   }
-  
+
   public void finishedNoDocument(Controller arg0, Throwable throwable) {
     // no need to do anything
   }
-  
 
 }

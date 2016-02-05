@@ -11,10 +11,8 @@
 package gate.plugin.learningframework;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -29,16 +27,15 @@ import gate.creole.metadata.CreoleResource;
 import gate.creole.metadata.Optional;
 import gate.creole.metadata.RunTime;
 import gate.util.GateRuntimeException;
-import gate.util.InvalidOffsetException;
 
 /**
  * <p>
  * Training, evaluation and application of ML in GATE.</p>
  */
-@CreoleResource(name = "LF_ApplyClassification", 
+@CreoleResource(name = "LF_ApplyClassification",
         helpURL = "",
         comment = "Apply a trained machine learning model for classification")
-public class LF_ApplyClassification extends LearningFrameworkPRBase  {
+public class LF_ApplyClassification extends LearningFrameworkPRBase {
 
   /**
    *
@@ -48,6 +45,7 @@ public class LF_ApplyClassification extends LearningFrameworkPRBase  {
   static final Logger logger = Logger.getLogger(LF_ApplyClassification.class.getCanonicalName());
 
   protected String outputASName;
+
   @RunTime
   @Optional
   @CreoleParameter(defaultValue = "LearningFramework")
@@ -58,7 +56,6 @@ public class LF_ApplyClassification extends LearningFrameworkPRBase  {
   public String getOutputASName() {
     return this.outputASName;
   }
-
 
   /**
    * The confidence threshold for applying an annotation. In the case of NER, the confidence
@@ -83,7 +80,6 @@ public class LF_ApplyClassification extends LearningFrameworkPRBase  {
   protected String outClassFeature;
 
   // TODO: we want to get rid of this and read this name from the info file!!
-  
   @RunTime
   @Optional
   @CreoleParameter(comment = "Name of class feature to add to the original "
@@ -97,81 +93,76 @@ public class LF_ApplyClassification extends LearningFrameworkPRBase  {
     return outClassFeature;
   }
 
-
 ////////////////////////////////////////////////////////////////////////////
-
-
   private final String sequenceSpan = null;
-  
+
   private Engine applicationLearner;
 
   private File savedModelDirectoryFile;
-  
+
   private final Mode mode = Mode.CLASSIFICATION;
 
   //In the case of NER, output instance annotations to temporary
   //AS, to keep them separate.
   private static final String tempOutputASName = "tmp_ouputas_for_ner12345";
 
-
   @Override
-  public void execute(Document doc)  {
+  public void execute(Document doc) {
 
+    if (applicationLearner != null) {
+      List<GateClassification> gcs = null;
 
-        if (applicationLearner != null) {
-          List<GateClassification> gcs = null;
-
-          // TODO: (JP) this should really check the actual type of the learner,
-          // rather than what kind of learning is currently set as a parameter,
-          // because the learner we read from the savedModel directory could
-          // be entirely different. Also, we could then inform about the actual
-          // learning class used.
-          // At the moment, if an unknown model was loaded from a directory,
-          // the whatIsIt will return null, so we handle this separately.
-          if (applicationLearner.whatIsIt() == null) {
-            if (applicationLearner instanceof EngineWeka) {
-              gcs = ((EngineWeka) applicationLearner).classify(this.instanceType, this.inputASName, doc);
-            } else if (applicationLearner instanceof EngineMallet
-                    && ((EngineMallet) applicationLearner).getMode() == Mode.CLASSIFICATION) {
-              gcs = ((EngineMallet) applicationLearner).classify(this.instanceType, this.inputASName, doc);
-            } else if (applicationLearner instanceof EngineMallet
-                    && ((EngineMallet) applicationLearner).getMode() == Mode.NAMED_ENTITY_RECOGNITION) {
-              gcs = ((EngineMalletSeq) applicationLearner).classify(this.instanceType, this.inputASName, doc, this.sequenceSpan);
-            } else {
-              throw new GateRuntimeException("Found a strange instance of an engine");
-            }
-          } else {
-            switch (applicationLearner.whatIsIt()) {
-              case LIBSVM:
-                gcs = ((EngineLibSVM) applicationLearner).classify(this.instanceType, this.inputASName, doc);
-                break;
-              case MALLET_CL_C45:
-              case MALLET_CL_DECISION_TREE:
-              case MALLET_CL_MAX_ENT:
-              case MALLET_CL_NAIVE_BAYES_EM:
-              case MALLET_CL_NAIVE_BAYES:
-              case MALLET_CL_WINNOW:
-                gcs = ((EngineMallet) applicationLearner).classify(this.instanceType, this.inputASName, doc);
-                break;
-              case MALLET_SEQ_CRF:
-                gcs = ((EngineMalletSeq) applicationLearner).classify(this.instanceType, this.inputASName, doc, this.sequenceSpan);
-                break;
-              case WEKA_CL_NUM_ADDITIVE_REGRESSION:
-              case WEKA_CL_NAIVE_BAYES:
-              case WEKA_CL_J48:
-              case WEKA_CL_JRIP:
-              case WEKA_CL_RANDOM_TREE:
-              case WEKA_CL_MULTILAYER_PERCEPTRON:
-              case WEKA_CL_IBK:
-              case WEKA_CL_LOGISTIC_REGRESSION:
-              case WEKA_CL_RANDOM_FOREST:
-                gcs = ((EngineWeka) applicationLearner).classify(this.instanceType, this.inputASName, doc);
-                break;
-            }
-          }
-
-          addClassificationAnnotations(doc, gcs);
+      // TODO: (JP) this should really check the actual type of the learner,
+      // rather than what kind of learning is currently set as a parameter,
+      // because the learner we read from the savedModel directory could
+      // be entirely different. Also, we could then inform about the actual
+      // learning class used.
+      // At the moment, if an unknown model was loaded from a directory,
+      // the whatIsIt will return null, so we handle this separately.
+      if (applicationLearner.whatIsIt() == null) {
+        if (applicationLearner instanceof EngineWeka) {
+          gcs = ((EngineWeka) applicationLearner).classify(this.instanceType, this.inputASName, doc);
+        } else if (applicationLearner instanceof EngineMallet
+                && ((EngineMallet) applicationLearner).getMode() == Mode.CLASSIFICATION) {
+          gcs = ((EngineMallet) applicationLearner).classify(this.instanceType, this.inputASName, doc);
+        } else if (applicationLearner instanceof EngineMallet
+                && ((EngineMallet) applicationLearner).getMode() == Mode.NAMED_ENTITY_RECOGNITION) {
+          gcs = ((EngineMalletSeq) applicationLearner).classify(this.instanceType, this.inputASName, doc, this.sequenceSpan);
+        } else {
+          throw new GateRuntimeException("Found a strange instance of an engine");
         }
+      } else {
+        switch (applicationLearner.whatIsIt()) {
+          case LIBSVM:
+            gcs = ((EngineLibSVM) applicationLearner).classify(this.instanceType, this.inputASName, doc);
+            break;
+          case MALLET_CL_C45:
+          case MALLET_CL_DECISION_TREE:
+          case MALLET_CL_MAX_ENT:
+          case MALLET_CL_NAIVE_BAYES_EM:
+          case MALLET_CL_NAIVE_BAYES:
+          case MALLET_CL_WINNOW:
+            gcs = ((EngineMallet) applicationLearner).classify(this.instanceType, this.inputASName, doc);
+            break;
+          case MALLET_SEQ_CRF:
+            gcs = ((EngineMalletSeq) applicationLearner).classify(this.instanceType, this.inputASName, doc, this.sequenceSpan);
+            break;
+          case WEKA_CL_NUM_ADDITIVE_REGRESSION:
+          case WEKA_CL_NAIVE_BAYES:
+          case WEKA_CL_J48:
+          case WEKA_CL_JRIP:
+          case WEKA_CL_RANDOM_TREE:
+          case WEKA_CL_MULTILAYER_PERCEPTRON:
+          case WEKA_CL_IBK:
+          case WEKA_CL_LOGISTIC_REGRESSION:
+          case WEKA_CL_RANDOM_FOREST:
+            gcs = ((EngineWeka) applicationLearner).classify(this.instanceType, this.inputASName, doc);
+            break;
+        }
+      }
+
+      addClassificationAnnotations(doc, gcs);
+    }
   }
 
   /*
@@ -228,7 +219,6 @@ public class LF_ApplyClassification extends LearningFrameworkPRBase  {
     }
   }
 
-
   @Override
   public void afterLastDocument(Controller arg0, Throwable throwable) {
     // No need to do anything, empty implementation!
@@ -237,7 +227,7 @@ public class LF_ApplyClassification extends LearningFrameworkPRBase  {
   public void finishedNoDocument(Controller arg0, Throwable throwable) {
     // no need to do anything
   }
-  
+
   @Override
   protected void beforeFirstDocument(Controller controller) {
 
@@ -250,24 +240,24 @@ public class LF_ApplyClassification extends LearningFrameworkPRBase  {
     applicationLearner = Engine.restoreLearner(savedModelDirectoryFile);
     //System.out.println("LF-Info: model loaded is now "+applicationLearner);
 
-        if (this.applicationLearner == null) {
-          throw new GateRuntimeException("Do not have a model, something went wrong.");
-        } else {
-          System.out.println("LearningFramework: Applying model "
-                  + applicationLearner.whatIsItString() + " ...");
-          if (applicationLearner.getPipe() == null) {
-            System.out.println("Model classes: UNKNOWN, no pipe");
-          } else {
-            System.out.println("Model classes: "
-                    + applicationLearner.getPipe().getTargetAlphabet().toString().replaceAll("\\n", " "));
-          }
+    if (this.applicationLearner == null) {
+      throw new GateRuntimeException("Do not have a model, something went wrong.");
+    } else {
+      System.out.println("LearningFramework: Applying model "
+              + applicationLearner.whatIsItString() + " ...");
+      if (applicationLearner.getPipe() == null) {
+        System.out.println("Model classes: UNKNOWN, no pipe");
+      } else {
+        System.out.println("Model classes: "
+                + applicationLearner.getPipe().getTargetAlphabet().toString().replaceAll("\\n", " "));
+      }
 
-          if (applicationLearner.getMode() != mode) {
-            logger.warn("LearningFramework: Warning! Applying "
-                    + "model trained in " + applicationLearner.getMode()
-                    + " mode in " + mode + " mode!");
-          }
-        }
+      if (applicationLearner.getMode() != mode) {
+        logger.warn("LearningFramework: Warning! Applying "
+                + "model trained in " + applicationLearner.getMode()
+                + " mode in " + mode + " mode!");
+      }
+    }
   }
 
 }

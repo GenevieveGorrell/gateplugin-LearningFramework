@@ -33,8 +33,9 @@ public class FeatureExtractor {
 
   /**
    * Get the class for this instance.
+   *
    * @param type
-   * @return 
+   * @return
    */
   public static String extractClassForClassification(String type,
           String feature, String inputASname, Annotation instanceAnnotation,
@@ -88,12 +89,14 @@ public class FeatureExtractor {
         }
       }
     } else //On instance
-    if (feature != null) {
-      Object toReturn = (Object) instanceAnnotation.getFeatures().get(feature);
-      if (toReturn instanceof String) {
-        return Double.parseDouble((String) toReturn);
-      } else {
-        return ((Number) toReturn).doubleValue();
+    {
+      if (feature != null) {
+        Object toReturn = (Object) instanceAnnotation.getFeatures().get(feature);
+        if (toReturn instanceof String) {
+          return Double.parseDouble((String) toReturn);
+        } else {
+          return ((Number) toReturn).doubleValue();
+        }
       }
     }
     logger.warn("LearningFramework: Failed to retrieve class.");

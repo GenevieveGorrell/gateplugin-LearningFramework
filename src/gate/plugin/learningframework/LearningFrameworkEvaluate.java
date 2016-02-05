@@ -62,7 +62,6 @@ public class LearningFrameworkEvaluate extends LearningFrameworkPRBase {
 
   private java.net.URL featureSpecURL;
 
-
   /**
    * The name of the output annotation set.
    *
@@ -584,38 +583,39 @@ public class LearningFrameworkEvaluate extends LearningFrameworkPRBase {
       // do not create a new annotation and instead just add features
       // to the instance annotation
       // TODO: this can be refactored to be more concise!
-      if (getMode() == Mode.CLASSIFICATION && getOutClassFeature() != null
-              && !getOutClassFeature().isEmpty()) {
-        Annotation instance = gc.getInstance();
-        FeatureMap fm = instance.getFeatures();
-        // Instead of the predefined output class feature name use the one specified
-        // as a PR parameter
-        //
-        // fm.put(outputClassFeature, gc.getClassAssigned());
-        fm.put(getOutClassFeature(), gc.getClassAssigned());
-        fm.put(outputProbFeature, gc.getConfidenceScore());
-        if (gc.getClassList() != null && gc.getConfidenceList() != null) {
-          fm.put(outputClassFeature + "_list", gc.getClassList());
-          fm.put(outputProbFeature + "_list", gc.getConfidenceList());
-        }
-      } else {
-        FeatureMap fm = Factory.newFeatureMap();
-        fm.putAll(gc.getInstance().getFeatures());
-        fm.put(outputClassFeature, gc.getClassAssigned());
-        fm.put(outputProbFeature, gc.getConfidenceScore());
-        if (gc.getClassList() != null && gc.getConfidenceList() != null) {
-          fm.put(outputClassFeature + "_list", gc.getClassList());
-          fm.put(outputProbFeature + "_list", gc.getConfidenceList());
-        }
-        //fm.put(this.conf.getIdentifier(), identifier);
-        if (gc.getSeqSpanID() != null) {
-          fm.put(outputSequenceSpanIDFeature, gc.getSeqSpanID());
-        }
-        outputAnnSet.add(gc.getInstance().getStartNode(),
-                gc.getInstance().getEndNode(),
-                gc.getInstance().getType(), fm);
-      } // else if CLASSIFICATION and have out class feature
-
+      {
+        if (getMode() == Mode.CLASSIFICATION && getOutClassFeature() != null
+                && !getOutClassFeature().isEmpty()) {
+          Annotation instance = gc.getInstance();
+          FeatureMap fm = instance.getFeatures();
+          // Instead of the predefined output class feature name use the one specified
+          // as a PR parameter
+          //
+          // fm.put(outputClassFeature, gc.getClassAssigned());
+          fm.put(getOutClassFeature(), gc.getClassAssigned());
+          fm.put(outputProbFeature, gc.getConfidenceScore());
+          if (gc.getClassList() != null && gc.getConfidenceList() != null) {
+            fm.put(outputClassFeature + "_list", gc.getClassList());
+            fm.put(outputProbFeature + "_list", gc.getConfidenceList());
+          }
+        } else {
+          FeatureMap fm = Factory.newFeatureMap();
+          fm.putAll(gc.getInstance().getFeatures());
+          fm.put(outputClassFeature, gc.getClassAssigned());
+          fm.put(outputProbFeature, gc.getConfidenceScore());
+          if (gc.getClassList() != null && gc.getConfidenceList() != null) {
+            fm.put(outputClassFeature + "_list", gc.getClassList());
+            fm.put(outputProbFeature + "_list", gc.getConfidenceList());
+          }
+          //fm.put(this.conf.getIdentifier(), identifier);
+          if (gc.getSeqSpanID() != null) {
+            fm.put(outputSequenceSpanIDFeature, gc.getSeqSpanID());
+          }
+          outputAnnSet.add(gc.getInstance().getStartNode(),
+                  gc.getInstance().getEndNode(),
+                  gc.getInstance().getType(), fm);
+        } // else if CLASSIFICATION and have out class feature
+      }
     }
   }
 
@@ -1080,6 +1080,5 @@ public class LearningFrameworkEvaluate extends LearningFrameworkPRBase {
   protected void afterLastDocument(Controller ctrl, Throwable t) {
     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
-  
-  
+
 }

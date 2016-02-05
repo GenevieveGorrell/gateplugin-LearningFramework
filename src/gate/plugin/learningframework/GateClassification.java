@@ -12,7 +12,6 @@
  *
  * Genevieve Gorrell, 9 Jan 2015
  */
-
 package gate.plugin.learningframework;
 
 import java.util.List;
@@ -20,64 +19,75 @@ import java.util.List;
 import gate.Annotation;
 
 public class GateClassification {
-	private Annotation instance;
-	private String classAssigned;
-	private Double confidenceScore;
-	private Integer seqSpanID;
+
+  private Annotation instance;
+  private String classAssigned;
+  private Double confidenceScore;
+  private Integer seqSpanID;
   private List<String> classList;
   private List<Double> confidenceList;
-	
-	public GateClassification(Annotation instance, String classAssigned,
-			Double confidenceScore) {
-		this.instance = instance;
-		this.classAssigned = classAssigned;
-		this.confidenceScore = confidenceScore;
-	}
-
-	public GateClassification(Annotation instance, String classAssigned,
-			Double confidenceScore, List<String> classes, List<Double> confidences) {
-		this.instance = instance;
-		this.classAssigned = classAssigned;
-		this.confidenceScore = confidenceScore;
-    this.classList = classes;
-    this.confidenceList = confidences;
-	}
 
   public GateClassification(Annotation instance, String classAssigned,
-			Double confidenceScore, Integer sequenceSpanID) {
-		this.instance = instance;
-		this.classAssigned = classAssigned;
-		this.confidenceScore = confidenceScore;
-		this.seqSpanID = sequenceSpanID;
-	}
-	
-	public Annotation getInstance() {
-		return instance;
-	}
-	public void setInstance(Annotation instance) {
-		this.instance = instance;
-	}
-	public String getClassAssigned() {
-		return classAssigned;
-	}
-	public void setClassAssigned(String classAssigned) {
-		this.classAssigned = classAssigned;
-	}
-	public Double getConfidenceScore() {
-		return confidenceScore;
-	}
-	public void setConfidenceScore(Double confidenceScore) {
-		this.confidenceScore = confidenceScore;
-	}
+          Double confidenceScore) {
+    this.instance = instance;
+    this.classAssigned = classAssigned;
+    this.confidenceScore = confidenceScore;
+  }
 
-	public Integer getSeqSpanID() {
-		return seqSpanID;
-	}
-  
-  public List<String> getClassList() { return classList; }
-  public List<Double> getConfidenceList() { return confidenceList; }
+  public GateClassification(Annotation instance, String classAssigned,
+          Double confidenceScore, List<String> classes, List<Double> confidences) {
+    this.instance = instance;
+    this.classAssigned = classAssigned;
+    this.confidenceScore = confidenceScore;
+    this.classList = classes;
+    this.confidenceList = confidences;
+  }
 
-	public void setSeqSpanID(Integer sequenceSpanID) {
-		this.seqSpanID = sequenceSpanID;
-	}
+  public GateClassification(Annotation instance, String classAssigned,
+          Double confidenceScore, Integer sequenceSpanID) {
+    this.instance = instance;
+    this.classAssigned = classAssigned;
+    this.confidenceScore = confidenceScore;
+    this.seqSpanID = sequenceSpanID;
+  }
+
+  public Annotation getInstance() {
+    return instance;
+  }
+
+  public void setInstance(Annotation instance) {
+    this.instance = instance;
+  }
+
+  public String getClassAssigned() {
+    return classAssigned;
+  }
+
+  public void setClassAssigned(String classAssigned) {
+    this.classAssigned = classAssigned;
+  }
+
+  public Double getConfidenceScore() {
+    return confidenceScore;
+  }
+
+  public void setConfidenceScore(Double confidenceScore) {
+    this.confidenceScore = confidenceScore;
+  }
+
+  public Integer getSeqSpanID() {
+    return seqSpanID;
+  }
+
+  public List<String> getClassList() {
+    return classList;
+  }
+
+  public List<Double> getConfidenceList() {
+    return confidenceList;
+  }
+
+  public void setSeqSpanID(Integer sequenceSpanID) {
+    this.seqSpanID = sequenceSpanID;
+  }
 }

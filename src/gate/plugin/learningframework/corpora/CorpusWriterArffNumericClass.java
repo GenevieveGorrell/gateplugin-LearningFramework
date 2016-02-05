@@ -12,7 +12,6 @@
  *
  * Genevieve Gorrell, 9 Jan 2015
  */
-
 package gate.plugin.learningframework.corpora;
 
 import gate.Annotation;
@@ -40,169 +39,168 @@ import gate.plugin.learningframework.ScalingMethod;
 
 public class CorpusWriterArffNumericClass extends CorpusWriterArff {
 
-	public CorpusWriterArffNumericClass(FeatureSpecification conf,
-			String inst, String inpas, File outputDirectory, Mode mode,
-			String classType, String classFeature, String identifierFeature,
-			SerialPipes savedPipe, ScalingMethod scaleFeatures) {
-		super(conf, inst, inpas, outputDirectory, mode, classType, classFeature,
-				identifierFeature, null, scaleFeatures);
-		
-		ArrayList<Pipe> pipeList = new ArrayList<Pipe>();
+  public CorpusWriterArffNumericClass(FeatureSpecification conf,
+          String inst, String inpas, File outputDirectory, Mode mode,
+          String classType, String classFeature, String identifierFeature,
+          SerialPipes savedPipe, ScalingMethod scaleFeatures) {
+    super(conf, inst, inpas, outputDirectory, mode, classType, classFeature,
+            identifierFeature, null, scaleFeatures);
 
-		if(savedPipe==null){ //We need to create one
-			//Prepare the data as required
-			pipeList.add(new Input2CharSequence("UTF-8"));
-			pipeList.add(new FeatureValueString2FeatureVector());
-			
-			//pipeList.add(new PrintInputAndTarget());
-			this.setPipe(new SerialPipes(pipeList));
-		} else {
-			pipeList = savedPipe.pipes();
+    ArrayList<Pipe> pipeList = new ArrayList<Pipe>();
 
-			pipe = new SerialPipes(pipeList);
-			pipe.getDataAlphabet().stopGrowth();
-			
-			outputfile = outputfilenamearffpipe;
-		}
+    if (savedPipe == null) { //We need to create one
+      //Prepare the data as required
+      pipeList.add(new Input2CharSequence("UTF-8"));
+      pipeList.add(new FeatureValueString2FeatureVector());
 
-		this.setInstances(new InstanceList(this.getPipe()));
-	}
+      //pipeList.add(new PrintInputAndTarget());
+      this.setPipe(new SerialPipes(pipeList));
+    } else {
+      pipeList = savedPipe.pipes();
 
-	/*
+      pipe = new SerialPipes(pipeList);
+      pipe.getDataAlphabet().stopGrowth();
+
+      outputfile = outputfilenamearffpipe;
+    }
+
+    this.setInstances(new InstanceList(this.getPipe()));
+  }
+
+  /*
 	 * For sparse format ARFF, all attributes are numeric.
 	 * The header isn't sparse. We have to write them all out which is tedious
 	 * but trivial.
-	 */
-	public void writeToFile(){
-		this.initializeOutputStream(outputfile);
-		//First the header
-		this.getOutputStream(outputfile).print("@relation gate\n\n");
+   */
+  public void writeToFile() {
+    this.initializeOutputStream(outputfile);
+    //First the header
+    this.getOutputStream(outputfile).print("@relation gate\n\n");
 
-		for(int i=0;i<this.getPipe().getDataAlphabet().size();i++){
-			String attributeName = (String)this.getPipe().getDataAlphabet().lookupObject(i);
+    for (int i = 0; i < this.getPipe().getDataAlphabet().size(); i++) {
+      String attributeName = (String) this.getPipe().getDataAlphabet().lookupObject(i);
 
-			//Replace characters that arff doesn't like
-			attributeName = attributeName.replace("\"", "[quote]");
-			attributeName = attributeName.replace("\\", "[backslash]");
-			
-			this.getOutputStream(outputfile).print("@attribute \"" 
-					+ attributeName + "\" numeric\n");
-		}
-		
-		//The class attribute is nominal
-		this.getOutputStream(outputfile).print("@attribute class numeric\n\n");
-		
-		//Now the data
-		this.getOutputStream(outputfile).print("@data\n");
-		
-		Iterator<Instance> instit = this.getInstances().iterator();
-		while(instit.hasNext()){
-			Instance inst = instit.next();
-			
-			String output = "{";
-			FeatureVector data = (FeatureVector)inst.getData();
-			if(data.getIndices().length>0){
-				output = "{" + data.getIndices()[0] + " " + data.getValues()[0];
-			}
-			for(int i=1;i<data.getIndices().length;i++){
-				int index = data.getIndices()[i];
-				double value = data.getValues()[i];
-				output = output + ", " + index + " " + value;
-			}
+      //Replace characters that arff doesn't like
+      attributeName = attributeName.replace("\"", "[quote]");
+      attributeName = attributeName.replace("\\", "[backslash]");
 
-			double target = (Double)inst.getTarget();
-			//Use the data alphabet size as the index for class because it is surely free
-			if(data.getIndices().length>0){
-				output = output + ", ";
-			}
-			output = output + this.getPipe().getDataAlphabet().size() + " " + target + "}\n";
-			
-			this.getOutputStream(outputfile).print(output);
-		}
-		
-		this.getOutputStream(outputfile).flush();
+      this.getOutputStream(outputfile).print("@attribute \""
+              + attributeName + "\" numeric\n");
+    }
 
-		//Save the pipe
-		try {
-			File pf = new File(this.getOutputDirectory(), pipefilenamearff);
-			ObjectOutputStream oos = new ObjectOutputStream
-					(new FileOutputStream(pf));
-			oos.writeObject(pipe);
-			oos.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    //The class attribute is nominal
+    this.getOutputStream(outputfile).print("@attribute class numeric\n\n");
 
-	/**
-	 * Overrides add method to assume numeric target.
-	 */
-	public void add(Document doc){
-		//  Get the output annotation set
-		AnnotationSet inputAS = null;
-		if(this.getInputASName() == null || this.getInputASName().equals("")) {
-			inputAS = doc.getAnnotations();
-		} else {
-			inputAS = doc.getAnnotations(this.getInputASName());
-		}
+    //Now the data
+    this.getOutputStream(outputfile).print("@data\n");
 
-		List<Annotation> instances = inputAS.get(this.getInstanceName()).inDocumentOrder();
-		Iterator<Annotation> instanceAnnotationsIterator = instances.iterator();
-		while(instanceAnnotationsIterator.hasNext()){
-			Annotation instanceAnnotation = instanceAnnotationsIterator.next();
-			Instance inst = 
-					CorpusWriterMallet.instanceFromInstanceAnnotationNumericClass(
-					this.getConf(), instanceAnnotation, this.getInputASName(), doc,
-					this.getMode(), this.getClassType(), this.getClassFeature(),
-					this.getIdentifierFeature());
+    Iterator<Instance> instit = this.getInstances().iterator();
+    while (instit.hasNext()) {
+      Instance inst = instit.next();
 
-			//Always add instances to the instance list through the pipe.
-			try{
-				this.getInstances().addThruPipe(inst);
-			} catch(Exception e){
-				System.out.println(inst.getData().toString());
-				e.printStackTrace();
-			}
-		}
-	}
+      String output = "{";
+      FeatureVector data = (FeatureVector) inst.getData();
+      if (data.getIndices().length > 0) {
+        output = "{" + data.getIndices()[0] + " " + data.getValues()[0];
+      }
+      for (int i = 1; i < data.getIndices().length; i++) {
+        int index = data.getIndices()[i];
+        double value = data.getValues()[i];
+        output = output + ", " + index + " " + value;
+      }
 
-	/**Convert the Mallet instances into Weka instances.
-	 * Assumes numeric class.
-	 */
-	public Instances getWekaInstances(){
-		Instances wekaInstances = 
-				CorpusWriterArffNumericClass.malletPipeToWekaDataset(this.getPipe());
-		
-		Iterator<Instance> instit = this.getInstances().iterator();
-		while(instit.hasNext()){
-			Instance inst = instit.next();
-			weka.core.Instance wekaInstance = 
-					malletInstance2WekaInstanceNumericClass(inst, wekaInstances);
-			wekaInstances.add(wekaInstance);
-		}
-		return wekaInstances;
-	}
-	
-	public static weka.core.Instance malletInstance2WekaInstanceNumericClass(
-			cc.mallet.types.Instance malletInstance, weka.core.Instances dataset){		
-		
-		weka.core.Instance wekaInstance = malletInstance2WekaInstanceNoTarget(
-				malletInstance, dataset);
-				
-		//Can we format the target as a double?
-		double target = 0.0;
-		try{
-			target = (Double)malletInstance.getTarget();
-		} catch (ClassCastException e){
-			logger.warn("LearningFramework: Failed to cast target "
-					+ "to double for classifier requiring numeric target.");
-		}
-		wekaInstance.setValue(dataset.classIndex(), target);
-		wekaInstance.setDataset(dataset);
-		return wekaInstance;
-	}
+      double target = (Double) inst.getTarget();
+      //Use the data alphabet size as the index for class because it is surely free
+      if (data.getIndices().length > 0) {
+        output = output + ", ";
+      }
+      output = output + this.getPipe().getDataAlphabet().size() + " " + target + "}\n";
 
-	/*
+      this.getOutputStream(outputfile).print(output);
+    }
+
+    this.getOutputStream(outputfile).flush();
+
+    //Save the pipe
+    try {
+      File pf = new File(this.getOutputDirectory(), pipefilenamearff);
+      ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(pf));
+      oos.writeObject(pipe);
+      oos.close();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  /**
+   * Overrides add method to assume numeric target.
+   */
+  public void add(Document doc) {
+    //  Get the output annotation set
+    AnnotationSet inputAS = null;
+    if (this.getInputASName() == null || this.getInputASName().equals("")) {
+      inputAS = doc.getAnnotations();
+    } else {
+      inputAS = doc.getAnnotations(this.getInputASName());
+    }
+
+    List<Annotation> instances = inputAS.get(this.getInstanceName()).inDocumentOrder();
+    Iterator<Annotation> instanceAnnotationsIterator = instances.iterator();
+    while (instanceAnnotationsIterator.hasNext()) {
+      Annotation instanceAnnotation = instanceAnnotationsIterator.next();
+      Instance inst
+              = CorpusWriterMallet.instanceFromInstanceAnnotationNumericClass(
+                      this.getConf(), instanceAnnotation, this.getInputASName(), doc,
+                      this.getMode(), this.getClassType(), this.getClassFeature(),
+                      this.getIdentifierFeature());
+
+      //Always add instances to the instance list through the pipe.
+      try {
+        this.getInstances().addThruPipe(inst);
+      } catch (Exception e) {
+        System.out.println(inst.getData().toString());
+        e.printStackTrace();
+      }
+    }
+  }
+
+  /**
+   * Convert the Mallet instances into Weka instances. Assumes numeric class.
+   */
+  public Instances getWekaInstances() {
+    Instances wekaInstances
+            = CorpusWriterArffNumericClass.malletPipeToWekaDataset(this.getPipe());
+
+    Iterator<Instance> instit = this.getInstances().iterator();
+    while (instit.hasNext()) {
+      Instance inst = instit.next();
+      weka.core.Instance wekaInstance
+              = malletInstance2WekaInstanceNumericClass(inst, wekaInstances);
+      wekaInstances.add(wekaInstance);
+    }
+    return wekaInstances;
+  }
+
+  public static weka.core.Instance malletInstance2WekaInstanceNumericClass(
+          cc.mallet.types.Instance malletInstance, weka.core.Instances dataset) {
+
+    weka.core.Instance wekaInstance = malletInstance2WekaInstanceNoTarget(
+            malletInstance, dataset);
+
+    //Can we format the target as a double?
+    double target = 0.0;
+    try {
+      target = (Double) malletInstance.getTarget();
+    } catch (ClassCastException e) {
+      logger.warn("LearningFramework: Failed to cast target "
+              + "to double for classifier requiring numeric target.");
+    }
+    wekaInstance.setValue(dataset.classIndex(), target);
+    wekaInstance.setDataset(dataset);
+    return wekaInstance;
+  }
+
+  /*
 	 * Continuing our policy of using Mallet for all feature prep then
 	 * doing a trivial conversion to get the requirements for other
 	 * libraries ..
@@ -214,19 +212,19 @@ public class CorpusWriterArffNumericClass extends CorpusWriterArff {
 	 * alphabet from. We're already storing the pipe so we have it
 	 * available at apply time, but we need to turn it into a Weka
 	 * dataset.
-	 */
-	public static Instances malletPipeToWekaDataset(Pipe staticPipe){
-		FastVector atts = new FastVector();
-		for(int i=0;i<staticPipe.getDataAlphabet().size();i++){
-			String attributeName = (String)staticPipe.getDataAlphabet().lookupObject(i);
-			atts.addElement(new weka.core.Attribute(attributeName));
-		}
-		
-		weka.core.Attribute classatt = new weka.core.Attribute("class");
-		atts.addElement(classatt);
-		
-		Instances wekaInstances = new Instances("GATE", atts, 0);
-		wekaInstances.setClass(classatt);
-		return wekaInstances;
-	}
+   */
+  public static Instances malletPipeToWekaDataset(Pipe staticPipe) {
+    FastVector atts = new FastVector();
+    for (int i = 0; i < staticPipe.getDataAlphabet().size(); i++) {
+      String attributeName = (String) staticPipe.getDataAlphabet().lookupObject(i);
+      atts.addElement(new weka.core.Attribute(attributeName));
+    }
+
+    weka.core.Attribute classatt = new weka.core.Attribute("class");
+    atts.addElement(classatt);
+
+    Instances wekaInstances = new Instances("GATE", atts, 0);
+    wekaInstances.setClass(classatt);
+    return wekaInstances;
+  }
 }

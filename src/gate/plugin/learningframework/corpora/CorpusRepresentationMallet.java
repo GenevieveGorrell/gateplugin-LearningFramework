@@ -48,6 +48,11 @@ public class CorpusRepresentationMallet extends CorpusRepresentation {
   static final Logger logger = Logger.getLogger("CorpusRepresentationMallet");
 
 
+  /**
+   * Constructor for creating a new CorpusRepresentation from a FeatureInfo. 
+   * @param fi
+   * @param sm 
+   */
   public CorpusRepresentationMallet(FeatureInfo fi, ScalingMethod sm) {
     featureInfo = fi;
     scalingMethod = sm;
@@ -59,6 +64,14 @@ public class CorpusRepresentationMallet extends CorpusRepresentation {
     pipe.setFeatureInfo(fi);
     instances = new InstanceList(pipe);
   }
+  
+  // NOTE: at application time we do not explicitly create a CorpusRepresentatioMallet object.
+  // Instead, the pipe gets saved with the model and can get retrieved from the loaded model 
+  // later. The method extractIndependentFeatures is also used at application time to 
+  // extract the Instances, using the Pipe that was stored with the model.
+  // For non-Mallet algorithms we store the pipe separately and load it separately when the model
+  // is loaded for application. The Pipe is then again used with extractIndependentFeatures 
+  // to get the instances.
 
   /**
    * Extract the independent features for a single instance annotation.

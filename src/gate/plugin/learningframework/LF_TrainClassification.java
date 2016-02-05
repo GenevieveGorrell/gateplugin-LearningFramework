@@ -33,7 +33,7 @@ import gate.util.GateRuntimeException;
  *
  */
 @CreoleResource(
-        name = "LF_TrainClassification", 
+        name = "LF_TrainClassification",
         helpURL = "",
         comment = "Train a machine learning model for classification")
 public class LF_TrainClassification extends LF_TrainBase {
@@ -104,13 +104,11 @@ public class LF_TrainClassification extends LF_TrainBase {
   public String getTargetFeature() {
     return this.targetFeature;
   }
-  
-  
-  
+
   private Mode mode = Mode.CLASSIFICATION;
-  
+
   private String sequenceSpan = null;
-  
+
   //These corpora will be added to on each document so they need to be globals
   private CorpusWriter trainingCorpus = null;
 

@@ -33,7 +33,7 @@ import gate.util.GateRuntimeException;
  *
  */
 @CreoleResource(
-        name = "LF_TrainSequenceTagging", 
+        name = "LF_TrainSequenceTagging",
         helpURL = "",
         comment = "Train a machine learning model for sequence tagging")
 public class LF_TrainSequenceTagging extends LF_TrainBase {
@@ -105,9 +105,9 @@ public class LF_TrainSequenceTagging extends LF_TrainBase {
   public String getSequenceSpan() {
     return this.sequenceSpan;
   }
-  
+
   private Mode mode = Mode.NAMED_ENTITY_RECOGNITION;
-  
+
   //These corpora will be added to on each document so they need to be globals
   private CorpusWriter trainingCorpus = null;
 
@@ -201,7 +201,6 @@ public class LF_TrainSequenceTagging extends LF_TrainBase {
       // TODO: not sure how this should work: what is targetFeature if we want to do sequence
       // tagging without an actual sequence learner? 
       // CHECK: for now we always use null as the targetFeature in this PR to make it compile!
-      
       String targetFeature = null;
       switch (this.getTrainingAlgo()) {
         case LIBSVM: //Yes we are making a mallet corpus writer for use with libsvm ..
@@ -215,7 +214,7 @@ public class LF_TrainSequenceTagging extends LF_TrainBase {
                   gate.util.Files.fileFromURL(dataDirectory), Globals.trainFilename);
           trainingCorpus = new CorpusWriterMallet(this.conf, this.instanceType,
                   this.inputASName, trainfilemallet, mode, classType,
-                  targetFeature, identifierFeature, scaleFeatures); 
+                  targetFeature, identifierFeature, scaleFeatures);
           break;
         case MALLET_SEQ_CRF:
           File trainfilemalletseq = new File(

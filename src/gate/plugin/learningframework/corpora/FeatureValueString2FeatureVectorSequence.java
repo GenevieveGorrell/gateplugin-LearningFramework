@@ -12,7 +12,6 @@
  *
  * Genevieve Gorrell, 9 Jan 2015
  */
-
 package gate.plugin.learningframework.corpora;
 
 import java.io.Serializable;
@@ -38,76 +37,75 @@ import cc.mallet.util.CharSequenceLexer;
  * that does the whole job in one go and gets saved neatly with the model, 
  * for future use, so that's why I wrote this class.
  */
-
 public class FeatureValueString2FeatureVectorSequence extends Pipe implements Serializable {
-	CharSequenceLexer lexer;
 
-	public FeatureValueString2FeatureVectorSequence (Pattern regex) {
-		super(new Alphabet(), null);
-		this.lexer = new CharSequenceLexer (regex);
-	}
+  CharSequenceLexer lexer;
 
-        // JP: NOTE! This seems to only handle the data part of the string represenation of 
-        // a sequence of feature vectors.
-	public Instance pipe(Instance carrier) {
-		if (! (carrier.getData() instanceof CharSequence)) {
-			throw new IllegalArgumentException("Data must be of type CharSequence");
-		}
+  public FeatureValueString2FeatureVectorSequence(Pattern regex) {
+    super(new Alphabet(), null);
+    this.lexer = new CharSequenceLexer(regex);
+  }
 
-		lexer.setCharSequence(carrier.getData().toString());
+  // JP: NOTE! This seems to only handle the data part of the string represenation of 
+  // a sequence of feature vectors.
+  public Instance pipe(Instance carrier) {
+    if (!(carrier.getData() instanceof CharSequence)) {
+      throw new IllegalArgumentException("Data must be of type CharSequence");
+    }
 
-		List<String> instances = new ArrayList<String>();
+    lexer.setCharSequence(carrier.getData().toString());
 
-                // JP: this spluts the data part of the instance by the "#" character again,
-                // so we get one instance per instance annotation
-		while(lexer.hasNext()){
-			String t = (String)lexer.next();
-			instances.add(t);
-		}
+    List<String> instances = new ArrayList<String>();
 
-                // We want to create an array of feature vectors: each individual feature vector
-                // represents one instance from the sequnce
-		FeatureVector[] fva = new FeatureVector[instances.size()];
+    // JP: this spluts the data part of the instance by the "#" character again,
+    // so we get one instance per instance annotation
+    while (lexer.hasNext()) {
+      String t = (String) lexer.next();
+      instances.add(t);
+    }
 
-                // This now creates the actual FeatureVector representation from the string 
-                // representation, we want to do this already much earlier instead (at the point 
-                // where we now create the string representation!)
-		for(int i=0;i<instances.size();i++){
-			String instance = instances.get(i);
+    // We want to create an array of feature vectors: each individual feature vector
+    // represents one instance from the sequnce
+    FeatureVector[] fva = new FeatureVector[instances.size()];
 
-			String[] fs = instance.split(" ");
+    // This now creates the actual FeatureVector representation from the string 
+    // representation, we want to do this already much earlier instead (at the point 
+    // where we now create the string representation!)
+    for (int i = 0; i < instances.size(); i++) {
+      String instance = instances.get(i);
 
-			//Make arrays of features and values for this new FeatureVector
-			//FeatureVector supports numeric features
+      String[] fs = instance.split(" ");
 
-			Object[] featureNames = new Object[fs.length];
-			double[] featureValues = new double[fs.length];
+      //Make arrays of features and values for this new FeatureVector
+      //FeatureVector supports numeric features
+      Object[] featureNames = new Object[fs.length];
+      double[] featureValues = new double[fs.length];
 
-			for(int j=0;j<fs.length;j++){
-				String feature = fs[j];
-				if (feature.contains("=")) {
-					String[] subFields = feature.split("=");
-					featureNames[j] = subFields[0];
-					featureValues[j] = Double.parseDouble(subFields[1]);
-				} else {
-					featureNames[j] = feature;
-					featureValues[j] = 1.0;
-				}
-			}
+      for (int j = 0; j < fs.length; j++) {
+        String feature = fs[j];
+        if (feature.contains("=")) {
+          String[] subFields = feature.split("=");
+          featureNames[j] = subFields[0];
+          featureValues[j] = Double.parseDouble(subFields[1]);
+        } else {
+          featureNames[j] = feature;
+          featureValues[j] = 1.0;
+        }
+      }
 
-			//Make a new FeatureVector and include the data alphabet
-			FeatureVector fv = new FeatureVector(
-					getDataAlphabet(), featureNames, featureValues);
-			fva[i] = fv;
-		}
+      //Make a new FeatureVector and include the data alphabet
+      FeatureVector fv = new FeatureVector(
+              getDataAlphabet(), featureNames, featureValues);
+      fva[i] = fv;
+    }
 
-		//Make the new FeatureVectorSequence
-		FeatureVectorSequence data = new FeatureVectorSequence(fva);
+    //Make the new FeatureVectorSequence
+    FeatureVectorSequence data = new FeatureVectorSequence(fva);
 
-		carrier.setData(data);
-		return carrier;
-	}
+    carrier.setData(data);
+    return carrier;
+  }
 
-	private static final long serialVersionUID = 1;
-	private static final int CURRENT_SERIAL_VERSION = 0;
+  private static final long serialVersionUID = 1;
+  private static final int CURRENT_SERIAL_VERSION = 0;
 }

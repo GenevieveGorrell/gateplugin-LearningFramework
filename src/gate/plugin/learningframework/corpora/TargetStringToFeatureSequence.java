@@ -12,7 +12,6 @@
  *
  * Genevieve Gorrell, 9 Jan 2015
  */
-
 package gate.plugin.learningframework.corpora;
 
 import cc.mallet.types.*;
@@ -29,50 +28,50 @@ import java.util.regex.Pattern;
  * this class splits a string into a sequence of features. Mallet offers
  * various functionality in this area, but not this specific one.
  */
-
 public class TargetStringToFeatureSequence extends Pipe implements Serializable {
-	CharSequenceLexer lexer;
 
-	public TargetStringToFeatureSequence (Pattern regex) {
-		super(null, new Alphabet());
-		this.lexer = new CharSequenceLexer (regex);
-	}
+  CharSequenceLexer lexer;
 
-	public Instance pipe(Instance carrier) {
-		if (! (carrier.getTarget() instanceof String)) {
-			throw new IllegalArgumentException("Target must be of type String");
-		}
+  public TargetStringToFeatureSequence(Pattern regex) {
+    super(null, new Alphabet());
+    this.lexer = new CharSequenceLexer(regex);
+  }
 
-		CharSequence string = (CharSequence) carrier.getTarget();
-		lexer.setCharSequence(string);
-		
-		//Targets means labels
-		List<String> targets = new ArrayList<String>();
-		
-		while(lexer.hasNext()){
-			String t = (String)lexer.next();
-			targets.add(t);
-		}
+  public Instance pipe(Instance carrier) {
+    if (!(carrier.getTarget() instanceof String)) {
+      throw new IllegalArgumentException("Target must be of type String");
+    }
 
-		//Now we have the labels, but to create a FeatureSequence, we need the
-		//indices. Pipes pass the same alphabet through, so we can use this
-		//alphabet to map from label to index or add it if necessary. Alphabet
-		//maps from label to label index.
-		int[] indices = new int[targets.size()];
+    CharSequence string = (CharSequence) carrier.getTarget();
+    lexer.setCharSequence(string);
 
-		for (int i=0; i<targets.size(); i++) {
-			indices[i] = getTargetAlphabet().lookupIndex(targets.get(i), true);
-		}
+    //Targets means labels
+    List<String> targets = new ArrayList<String>();
 
-		//Create the new feature sequence.
-		FeatureSequence target = new FeatureSequence(getTargetAlphabet(), indices);
+    while (lexer.hasNext()) {
+      String t = (String) lexer.next();
+      targets.add(t);
+    }
 
-		carrier.setTarget(target);
-		
-		return carrier;
-	}
+    //Now we have the labels, but to create a FeatureSequence, we need the
+    //indices. Pipes pass the same alphabet through, so we can use this
+    //alphabet to map from label to index or add it if necessary. Alphabet
+    //maps from label to label index.
+    int[] indices = new int[targets.size()];
 
-	private static final long serialVersionUID = 1;
-	private static final int CURRENT_SERIAL_VERSION = 0;
+    for (int i = 0; i < targets.size(); i++) {
+      indices[i] = getTargetAlphabet().lookupIndex(targets.get(i), true);
+    }
+
+    //Create the new feature sequence.
+    FeatureSequence target = new FeatureSequence(getTargetAlphabet(), indices);
+
+    carrier.setTarget(target);
+
+    return carrier;
+  }
+
+  private static final long serialVersionUID = 1;
+  private static final int CURRENT_SERIAL_VERSION = 0;
 
 }

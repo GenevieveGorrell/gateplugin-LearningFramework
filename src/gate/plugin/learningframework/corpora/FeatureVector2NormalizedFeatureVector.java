@@ -36,12 +36,12 @@ public class FeatureVector2NormalizedFeatureVector extends Pipe implements Seria
   public Instance pipe(Instance carrier) {
     if (!(carrier.getData() instanceof FeatureVector)) {
       System.out.println(carrier.getData().getClass());
-      throw new IllegalArgumentException("Data must be of type FeatureVector not "+carrier.getData().getClass()+" we got "+carrier.getData());
+      throw new IllegalArgumentException("Data must be of type FeatureVector not " + carrier.getData().getClass() + " we got " + carrier.getData());
     }
 
     if (this.means.length != this.getDataAlphabet().size()
             || this.variances.length != this.getDataAlphabet().size()) {
-			//Nothing for now. Despite my best efforts to stop growing the
+      //Nothing for now. Despite my best efforts to stop growing the
       //alphabet, application time instances still turn up with
       //unseen features.
     }

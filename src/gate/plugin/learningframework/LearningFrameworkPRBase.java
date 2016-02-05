@@ -80,9 +80,7 @@ public abstract class LearningFrameworkPRBase
     return this.instanceType;
   }
 
-
   protected Mode mode;
-
 
   protected String classType;
 
@@ -95,7 +93,6 @@ public abstract class LearningFrameworkPRBase
   public String getClassType() {
     return this.classType;
   }
-
 
   protected String identifierFeature;
 
@@ -208,6 +205,6 @@ public abstract class LearningFrameworkPRBase
   protected abstract void beforeFirstDocument(Controller ctrl);
 
   protected abstract void afterLastDocument(Controller ctrl, Throwable t);
-  
+
   protected abstract void finishedNoDocument(Controller ctrl, Throwable t);
 }

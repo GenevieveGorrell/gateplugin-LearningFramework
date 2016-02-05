@@ -57,14 +57,14 @@ public class CorpusWriterArff extends CorpusWriter{
 	public CorpusWriterArff(FeatureSpecification conf, String inst, String inpas, 
 			File outputDirectory, Mode mode, String classType, String classFeature,
 			String identifierFeature, SerialPipes savedPipe, ScalingMethod scaleFeatures){
-		super(conf, inst, inpas, outputDirectory, mode, classType, classFeature, identifierFeature, scaleFeatures);
-
-		ArrayList<Pipe> pipeList = new ArrayList<Pipe>();
+		           super(conf, inst, inpas, outputDirectory, mode, classType, classFeature, identifierFeature, scaleFeatures);
+ 
+	          	ArrayList<Pipe> pipeList = new ArrayList<Pipe>();
 		if(savedPipe==null){ //We need to create one
 			/*
 			 * Again we are using Mallet's feature preparation functionality.
-			 * This pipe will turn a bunch of strings into something we can
-			 * work with.
+		  	 * This pipe will turn a bunch of strings into something we can
+                 	 * work with.
 			 * 
 			 * Weka has similar functionality but we run into problems with n-gram
 			 * features, which are arbitrary in number. Ultimately, ARFF wants to 
