@@ -13,7 +13,7 @@ import gate.creole.ResourceInstantiationException;
 import gate.plugin.learningframework.Mode;
 import gate.plugin.learningframework.ScalingMethod;
 import gate.plugin.learningframework.data.CorpusRepresentationMallet;
-import gate.plugin.learningframework.corpora.CorpusRepresentationMalletSeq;
+import gate.plugin.learningframework.data.CorpusRepresentationMalletSeq;
 import gate.plugin.learningframework.corpora.CorpusWriterMallet;
 import gate.plugin.learningframework.corpora.CorpusWriterMalletSeq;
 import gate.plugin.learningframework.features.FeatureInfo;

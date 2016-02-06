@@ -229,6 +229,11 @@ public class FeatureExtraction {
             // it is not a missing value
             String val = valObj.toString();
             // TODO: do we have to escape the featureName name in some way here?
+            // TODO: if we want to store a count rather than 1.0, we would need to make use
+            // of a pre-calculated feature vector here which should contain the count for 
+            // this feature over all instances in the document (or whatever the counting strategy is)
+            // For this we would have to modify this and the calling method to also take 
+            // an optional feature vector and use it if it is non-null
             addToFeatureVector(fv, internalFeatureNamePrefix+VALSEP+val, 1.0);
           } else {
             // we have a missing value, check the missing value treatment for what to do now
@@ -465,6 +470,18 @@ public class FeatureExtraction {
           } else {
             prefix = ng.name;
           }
+          // NOTE: if the key is already in the feature vector, then 
+          // this will increment the current count by one!
+          // This means that the number of times the ngram is contained within the 
+          // instance annotation is counted!
+          // TODO: in order to use the number of times the ngram occurs in the sequence or 
+          // in the document instead, we would need to e.g. this:
+          // for each Ng attribute, we would first need to collect a feature vector over all
+          // instances in the document (or sequence), then when each individual instance is processed, look
+          // up the value we got there and use it to set (rather than add) it to the per-instance
+          // feature vector here.
+          // So this method would get the "global feature vector"  as an additional parameter
+          // which would be used that way if it is non-null
           addToFeatureVector(fv, prefix+VALSEP+ngram, 1.0);
         }
   } // extractFeature(NGram)

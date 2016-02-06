@@ -27,12 +27,8 @@ import gate.creole.metadata.CreoleResource;
 import gate.creole.metadata.Optional;
 import gate.creole.metadata.RunTime;
 import gate.plugin.learningframework.corpora.CorpusWriter;
-import gate.plugin.learningframework.corpora.CorpusWriterArff;
-import gate.plugin.learningframework.corpora.CorpusWriterArffNumericClass;
-import gate.plugin.learningframework.corpora.CorpusWriterMallet;
-import gate.plugin.learningframework.corpora.CorpusWriterMalletSeq;
 import gate.plugin.learningframework.corpora.FeatureSpecification;
-import gate.util.GateRuntimeException;
+import gate.plugin.learningframework.engines.AlgorithmClassification;
 
 /**
  *
@@ -70,17 +66,17 @@ public class LF_TrainClassification extends LF_TrainBase {
    * The implementation to be used, such as Mallet.
    *
    */
-  private Algorithm trainingAlgo;
+  private AlgorithmClassification trainingAlgo;
 
   @RunTime
   @Optional
   @CreoleParameter(comment = "The algorithm to be used for training. Ignored at "
           + "application time.")
-  public void setTrainingAlgo(Algorithm algo) {
+  public void setTrainingAlgo(AlgorithmClassification algo) {
     this.trainingAlgo = algo;
   }
 
-  public Algorithm getTrainingAlgo() {
+  public AlgorithmClassification getTrainingAlgo() {
     return this.trainingAlgo;
   }
 
@@ -123,7 +119,7 @@ public class LF_TrainClassification extends LF_TrainBase {
 
   private File savedModelDirectoryFile;
 
-  private Engine createLearner(Algorithm algo, File savedModelFile) {
+  private Engine createLearner(AlgorithmClassification algo, File savedModelFile) {
     if (algo != null) {
       String spec = algo.toString();
       switch (algo) {
@@ -136,10 +132,10 @@ public class LF_TrainClassification extends LF_TrainBase {
           return new EngineMallet(savedModelFile, mode, learnerParams, spec, false);
         case MALLET_SEQ_CRF:
           return new EngineMalletSeq(savedModelFile, mode, spec, false);
-        case LIBSVM:
+        case LIBSVM_CL_XXX:
           return new EngineLibSVM(
                   savedModelFile, mode, learnerParams, spec, false);
-        case WEKA_CL_NUM_ADDITIVE_REGRESSION:
+        //case WEKA_CL_NUM_ADDITIVE_REGRESSION:
         case WEKA_CL_NAIVE_BAYES:
         case WEKA_CL_J48:
         case WEKA_CL_JRIP:
@@ -157,11 +153,12 @@ public class LF_TrainClassification extends LF_TrainBase {
 
   @Override
   public void execute(Document doc) {
-    trainingCorpus.add(doc);
+    //trainingCorpus.add(doc);
   }
 
   @Override
   public void afterLastDocument(Controller arg0, Throwable t) {
+    /*
     if (t != null) {
       // Something went wrong during execution, so we better do not train a model... 
       logger.error("Error during the processing of documents, no training is done");
@@ -186,6 +183,7 @@ public class LF_TrainClassification extends LF_TrainBase {
       trainingLearner.train(conf, trainingCorpus);
       logger.info("LearningFramework: Training complete!");
     }
+   */
   }
 
   @Override
@@ -195,17 +193,21 @@ public class LF_TrainClassification extends LF_TrainBase {
 
   @Override
   protected void beforeFirstDocument(Controller controller) {
-    conf = new FeatureSpecification(featureSpecURL);
-    savedModelDirectoryFile = new File(
-            gate.util.Files.fileFromURL(dataDirectory), Globals.savedModelDirectory);
+    System.err.println("DEBUG: Before Document.");
+    System.err.println("  Training algorithm engine class is "+getTrainingAlgo().getEngineClass());
+    System.err.println("  Training algorithm algor class is "+getTrainingAlgo().getTrainerClass());
+    
+    //conf = new FeatureSpecification(featureSpecURL);
+    //savedModelDirectoryFile = new File(
+    //        gate.util.Files.fileFromURL(dataDirectory), Globals.savedModelDirectory);
 
     if (trainingAlgo == null) {
-      throw new GateRuntimeException("LearningFramework: no training algorithm specified");
+      //throw new GateRuntimeException("LearningFramework: no training algorithm specified");
     } else {
-      trainingLearner = this.createLearner(trainingAlgo, savedModelDirectoryFile);
+      //trainingLearner = this.createLearner(trainingAlgo, savedModelDirectoryFile);
 
       switch (this.getTrainingAlgo()) {
-        case LIBSVM: //Yes we are making a mallet corpus writer for use with libsvm ..
+        case LIBSVM_CL_XXX: //Yes we are making a mallet corpus writer for use with libsvm ..
         case MALLET_CL_C45:
         case MALLET_CL_DECISION_TREE:
         case MALLET_CL_MAX_ENT:
@@ -214,24 +216,24 @@ public class LF_TrainClassification extends LF_TrainBase {
         case MALLET_CL_WINNOW:
           File trainfilemallet = new File(
                   gate.util.Files.fileFromURL(dataDirectory), Globals.trainFilename);
-          trainingCorpus = new CorpusWriterMallet(this.conf, this.instanceType,
-                  this.inputASName, trainfilemallet, mode, classType,
-                  targetFeature, identifierFeature, scaleFeatures);
+         // trainingCorpus = new CorpusWriterMallet(this.conf, this.instanceType,
+         //         this.inputASName, trainfilemallet, mode, classType,
+         //         targetFeature, identifierFeature, scaleFeatures);
           break;
         case MALLET_SEQ_CRF:
           File trainfilemalletseq = new File(
                   gate.util.Files.fileFromURL(dataDirectory), Globals.trainFilename);
-          trainingCorpus = new CorpusWriterMalletSeq(this.conf, this.instanceType,
-                  this.inputASName, trainfilemalletseq, this.sequenceSpan,
-                  mode, classType, targetFeature, identifierFeature, scaleFeatures);
+          //trainingCorpus = new CorpusWriterMalletSeq(this.conf, this.instanceType,
+          //        this.inputASName, trainfilemalletseq, this.sequenceSpan,
+          //        mode, classType, targetFeature, identifierFeature, scaleFeatures);
           break;
-        case WEKA_CL_NUM_ADDITIVE_REGRESSION:
-          File trainfileweka = new File(
-                  gate.util.Files.fileFromURL(dataDirectory), Globals.trainFilename);
-          trainingCorpus = new CorpusWriterArffNumericClass(this.conf, this.instanceType,
-                  this.inputASName, trainfileweka,
-                  mode, classType, targetFeature, identifierFeature, null, scaleFeatures);
-          break;
+        //case WEKA_CL_NUM_ADDITIVE_REGRESSION:
+        //  File trainfileweka = new File(
+        //          gate.util.Files.fileFromURL(dataDirectory), Globals.trainFilename);
+          //trainingCorpus = new CorpusWriterArffNumericClass(this.conf, this.instanceType,
+          //        this.inputASName, trainfileweka,
+          //        mode, classType, targetFeature, identifierFeature, null, scaleFeatures);
+        //  break;
         case WEKA_CL_NAIVE_BAYES:
         case WEKA_CL_J48:
         case WEKA_CL_JRIP:
@@ -240,12 +242,12 @@ public class LF_TrainClassification extends LF_TrainBase {
         case WEKA_CL_IBK:
         case WEKA_CL_LOGISTIC_REGRESSION:
         case WEKA_CL_RANDOM_FOREST:
-          trainfileweka = new File(
-                  gate.util.Files.fileFromURL(dataDirectory), Globals.trainFilename);
-          trainingCorpus = new CorpusWriterArff(this.conf, this.instanceType,
-                  this.inputASName, trainfileweka,
-                  mode, classType, targetFeature, identifierFeature,
-                  null, scaleFeatures);
+          //trainfileweka = new File(
+           //       gate.util.Files.fileFromURL(dataDirectory), Globals.trainFilename);
+          //trainingCorpus = new CorpusWriterArff(this.conf, this.instanceType,
+          //        this.inputASName, trainfileweka,
+          //        mode, classType, targetFeature, identifierFeature,
+           //       null, scaleFeatures);
           break;
       }
 

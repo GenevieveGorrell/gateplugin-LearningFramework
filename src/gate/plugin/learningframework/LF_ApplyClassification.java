@@ -108,10 +108,6 @@ public class LF_ApplyClassification extends LearningFrameworkPRBase {
 
   private final Mode mode = Mode.CLASSIFICATION;
 
-  //In the case of NER, output instance annotations to temporary
-  //AS, to keep them separate.
-  private static final String tempOutputASName = "tmp_ouputas_for_ner12345";
-
   @Override
   public void execute(Document doc) {
 

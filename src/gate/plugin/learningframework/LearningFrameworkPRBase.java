@@ -82,18 +82,6 @@ public abstract class LearningFrameworkPRBase
 
   protected Mode mode;
 
-  protected String classType;
-
-  @RunTime
-  @CreoleParameter(comment = "Annotation type containing/indicating the class.")
-  public void setClassType(String classType) {
-    this.classType = classType;
-  }
-
-  public String getClassType() {
-    return this.classType;
-  }
-
   protected String identifierFeature;
 
   @RunTime

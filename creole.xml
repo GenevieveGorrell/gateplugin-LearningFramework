@@ -7,7 +7,7 @@
 
 >
   <JAR scan="true">LearningFramework.jar</JAR>
- 
+  <JAR>lib/commons-cli-1.4-modified.jar</JAR> 
   <JAR>lib/bsh.jar</JAR>
   <JAR>lib/colt-1.2.0.jar</JAR>
   <JAR>lib/fastutil-6.5.1.5.jar</JAR>
@@ -23,6 +23,7 @@
   <JAR>lib/openjgraph.jar</JAR>
   <JAR>lib/semantic-vectors-2.4.jar</JAR>
   <JAR>lib/simmetrics.jar</JAR>
+  <JAR>lib/snakeyaml-1.16.jar</JAR>
   <JAR>lib/sspace-2.0.4.jar</JAR>
   <JAR>lib/trove4j-3.0.3.jar</JAR>
   <JAR>lib/trove-2.0.2.jar</JAR>

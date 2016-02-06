@@ -110,6 +110,20 @@ public class LF_TrainSequenceTagging extends LF_TrainBase {
   public String getSequenceSpan() {
     return this.sequenceSpan;
   }
+  
+  protected String classType;
+
+  @RunTime
+  @CreoleParameter(comment = "Annotation type containing/indicating the class.")
+  public void setClassType(String classType) {
+    this.classType = classType;
+  }
+
+  public String getClassType() {
+    return this.classType;
+  }
+
+  
 
   private Mode mode = Mode.NAMED_ENTITY_RECOGNITION;
 
