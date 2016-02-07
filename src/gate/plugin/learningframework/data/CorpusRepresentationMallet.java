@@ -19,12 +19,15 @@ import gate.AnnotationSet;
 import java.util.List;
 import cc.mallet.pipe.Noop;
 import cc.mallet.pipe.Pipe;
+import cc.mallet.pipe.SerialPipes;
 import cc.mallet.types.Alphabet;
 import cc.mallet.types.AugmentableFeatureVector;
+import cc.mallet.types.FeatureVector;
 import cc.mallet.types.Instance;
 import cc.mallet.types.InstanceList;
 import cc.mallet.types.LabelAlphabet;
 import gate.plugin.learningframework.ScalingMethod;
+import gate.plugin.learningframework.mallet.FeatureVector2NormalizedFeatureVector;
 import gate.plugin.learningframework.features.Attribute;
 import gate.plugin.learningframework.features.FeatureExtraction;
 import gate.plugin.learningframework.features.FeatureInfo;
@@ -47,6 +50,10 @@ public class CorpusRepresentationMallet extends CorpusRepresentation {
 
   static final Logger logger = Logger.getLogger("CorpusRepresentationMallet");
 
+  protected InstanceList instances;
+
+  public InstanceList getInstances() { return instances; }
+  
 
   /**
    * Constructor for creating a new CorpusRepresentation from a FeatureInfo. 
@@ -144,6 +151,60 @@ public class CorpusRepresentationMallet extends CorpusRepresentation {
         instances.add(inst);
       }
     }
+  }
+
+  /**
+   * Add scale features and add a pipe for that scaling to the end of the current SerialPipes.
+   * If the ScalingMethod is NONE, this does nothing.
+   * @param scaleFeatures 
+   */
+  public void addScaling(ScalingMethod scaleFeatures) {
+    if(scaleFeatures == ScalingMethod.NONE) return;
+    System.out.println("DEBUG normalize: getDataAlphabet=" + instances.getDataAlphabet());
+    System.out.println("DEBUG normalize: size=" + instances.getDataAlphabet().size());
+    double[] sums = new double[instances.getDataAlphabet().size()];
+    double[] sumsofsquares = new double[instances.getDataAlphabet().size()];
+    //double[] numvals = new double[instances.getDataAlphabet().size()];
+    double[] means = new double[instances.getDataAlphabet().size()];
+    double[] variances = new double[instances.getDataAlphabet().size()];
+
+    for (int i = 0; i < instances.size(); i++) {
+      FeatureVector data = (FeatureVector) instances.get(i).getData();
+      int[] indices = data.getIndices();
+      double[] values = data.getValues();
+      for (int j = 0; j < indices.length; j++) {
+        int index = indices[j];
+        double value = values[j];
+        sums[index] += value;
+        sumsofsquares[index] += (value * value);
+        //numvals[index]++;
+      }
+    }
+
+    //Now use the accumulators to prepare means and variances
+    //for each feature in the alphabet, to be used for scaling.
+    for (int i = 0; i < sums.length; i++) {
+      means[i] = sums[i] / instances.getDataAlphabet().size();
+      variances[i] = sumsofsquares[i] / instances.getDataAlphabet().size();
+    }
+
+    //We make a new pipe and apply it to all the instances
+    FeatureVector2NormalizedFeatureVector normalizer
+            = new FeatureVector2NormalizedFeatureVector(means, variances, instances.getAlphabet());
+    
+    // Run all the instances through this pipe
+    for(Instance inst : instances) {
+      inst = normalizer.pipe(inst);
+    }
+
+    //Add the pipe to the pipes so application time data will go through it
+    ArrayList<Pipe> pipeList = pipe.pipes();
+    pipeList.add(normalizer);
+    System.out.println("DEBUG normalize: added normalizer pipe " + normalizer);
+    // pipe = new SerialPipes(pipeList);
+    LFPipe pipe = (LFPipe)instances.getPipe();
+    pipe.addPipe(normalizer);
+    System.out.println("DEBUG pipes after normalization: " + pipe);
   }
 
 }

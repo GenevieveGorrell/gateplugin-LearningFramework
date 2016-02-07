@@ -54,6 +54,11 @@ public class CorpusRepresentationMalletSeq extends CorpusRepresentation {
     instances = new InstanceList(pipe);
   }
 
+  protected InstanceList instances;
+
+  public InstanceList getInstances() { return instances; }
+  
+  
   /**
    * Add instances. The exact way of how the target is created to the instances depends on which
    * parameters are given and which are null. The parameter sequenceAS must always be non-null for

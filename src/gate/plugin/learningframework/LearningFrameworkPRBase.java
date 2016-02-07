@@ -96,18 +96,18 @@ public abstract class LearningFrameworkPRBase
     return this.identifierFeature;
   }
 
-  protected String learnerParams;
+  protected String algorithmParameters;
 
   @RunTime
   @Optional
   @CreoleParameter(comment = "Some of the learners take parameters. Parameters "
           + "can be entered here. For example, the LibSVM supports parameters.")
-  public void setLearnerParams(String learnerParams) {
-    this.learnerParams = learnerParams;
+  public void setAlgorithmParameters(String learnerParams) {
+    this.algorithmParameters = learnerParams;
   }
 
-  public String getLearnerParams() {
-    return this.learnerParams;
+  public String getAlgorithmParameters() {
+    return this.algorithmParameters;
   }
 
   //================================================================

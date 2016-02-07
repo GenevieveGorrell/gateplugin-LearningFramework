@@ -6,27 +6,27 @@
 package gate.plugin.learningframework.engines;
 
 import gate.learningframework.classification.EngineWeka;
+import weka.classifiers.lazy.IBk;
 
 /**
  *
  * @author johann
  */
 public enum AlgorithmClassification implements Algorithm {
-  LIBSVM_CL_XXX(EngineLibSVM.class,null),
+  LIBSVM_CL_NOTYET(EngineLibSVM.class,null), // TODO!!!
   MALLET_CL_C45(EngineMallet.class,cc.mallet.classify.C45Trainer.class),
-  MALLET_CL_DECISION_TREE(EngineMallet.class,null),
-  MALLET_CL_MAX_ENT,
-  MALLET_CL_NAIVE_BAYES_EM,
-  MALLET_CL_NAIVE_BAYES,
-  MALLET_CL_WINNOW,
-  MALLET_SEQ_CRF(EngineMalletSeq.class,null),
+  MALLET_CL_DECISION_TREE(EngineMallet.class,cc.mallet.classify.DecisionTreeTrainer.class),
+  MALLET_CL_MAX_ENT(EngineMallet.class,cc.mallet.classify.MaxEntTrainer.class),
+  MALLET_CL_NAIVE_BAYES_EM(EngineMallet.class,cc.mallet.classify.NaiveBayesEMTrainer.class),
+  MALLET_CL_NAIVE_BAYES(EngineMallet.class,cc.mallet.classify.NaiveBayes.class),
+  MALLET_CL_WINNOW(EngineMallet.class,cc.mallet.classify.WinnowTrainer.class),
+  MALLET_SEQ_CRF(EngineMalletSeq.class,null), // creating this training is too complex, no class specified
   MALLET_CL_SPECIFY_CLASS(EngineMallet.class,null),
   WEKA_CL_NAIVE_BAYES(EngineWeka.class,weka.classifiers.bayes.NaiveBayes.class),
-  WEKA_CL_JRIP,
-  WEKA_CL_J48,
-  WEKA_CL_MULTILAYER_PERCEPTRON,
-  WEKA_CL_RANDOM_TREE,
-  WEKA_CL_IBK,
+  WEKA_CL_J48(EngineWeka.class,weka.classifiers.trees.J48.class),
+  WEKA_CL_MULTILAYER_PERCEPTRON(EngineWeka.class,weka.classifiers.functions.MultilayerPerceptron.class),
+  WEKA_CL_RANDOM_TREE(EngineWeka.class,weka.classifiers.trees.RandomTree.class),
+  WEKA_CL_IBK(EngineWeka.class,weka.classifiers.lazy.IBk.class),
   WEKA_CL_LOGISTIC_REGRESSION(EngineWeka.class,weka.classifiers.functions.Logistic.class),
   WEKA_CL_RANDOM_FOREST(EngineWeka.class,weka.classifiers.trees.RandomForest.class),
   WEKA_CL_SPECIFY_CLASS(EngineWeka.class,null);
@@ -39,7 +39,9 @@ public enum AlgorithmClassification implements Algorithm {
   }
   private Class engineClass;
   private Class trainerClass;
+  @Override
   public Class getEngineClass() { return engineClass; }
+  @Override
   public Class getTrainerClass() { return trainerClass; }
 
   @Override

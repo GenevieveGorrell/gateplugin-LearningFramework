@@ -12,9 +12,14 @@ import gate.learningframework.classification.EngineWeka;
  * @author johann
  */
 public enum AlgorithmRegression implements Algorithm {
-  LIBSVM_RG_XXX(EngineLibSVM.class,null),
+  LIBSVM_RG_NOTYET(EngineLibSVM.class,null),
   MALLET_RG_SPECIFY_CLASS(EngineMallet.class,null),
-  WEKA_RG_ADDITIVE_REGRESSION(EngineWeka.class,null),
+  WEKA_RG_ADDITIVE_REGRESSION(EngineWeka.class,weka.classifiers.meta.AdditiveRegression.class),
+  WEKA_RG_LINEAR_REGRESSION(EngineWeka.class,weka.classifiers.functions.LinearRegression.class),
+  WEKA_RG_REPTree(EngineWeka.class,weka.classifiers.trees.REPTree.class),
+  WEKA_RG_SMOReg(EngineWeka.class,weka.classifiers.functions.SMOreg.class),
+  WEKA_RG_MULTILAYER_PERCEPTRON(EngineWeka.class,weka.classifiers.functions.MultilayerPerceptron.class),
+  WEKA_RG_GAUSSIAN_PROCESSES(EngineWeka.class,weka.classifiers.functions.GaussianProcesses.class),
   WEKA_RG_SPECIFY_CLASS(EngineWeka.class,null);
   private AlgorithmRegression() {
     
@@ -25,12 +30,12 @@ public enum AlgorithmRegression implements Algorithm {
   }
   private Class engineClass;
   private Class trainerClass;
+  @Override
   public Class getEngineClass() { return engineClass; }
-  public Class getAlgorithmClass() { return trainerClass; }
 
   @Override
   public Class getTrainerClass() {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    return trainerClass;
   }
 
   @Override

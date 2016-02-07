@@ -12,8 +12,8 @@ import gate.learningframework.classification.EngineWeka;
  * @author johann
  */
 public enum AlgorithmSequenceTagging implements Algorithm {
-  MALLET_SEQ_CRF(EngineMalletSeq.class,null),
-  MALLET_SEQ_SPECIFY_CLASS(EngineMallet.class,null);
+  MALLET_SEQ_CRF_XXX(EngineMalletSeq.class,null); // too complex to specify the trainer class here
+  // MALLET_SEQ_SPECIFY_CLASS(EngineMallet.class,null); // it is not really possible to specify a class for this
   private AlgorithmSequenceTagging() {
     
   }
@@ -24,11 +24,10 @@ public enum AlgorithmSequenceTagging implements Algorithm {
   private Class engineClass;
   private Class trainerClass;
   public Class getEngineClass() { return engineClass; }
-  public Class getAlgorithmClass() { return trainerClass; }
 
   @Override
   public Class getTrainerClass() {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    return trainerClass;
   }
 
   @Override

@@ -10,12 +10,7 @@
  */
 package gate.plugin.learningframework;
 
-import gate.learningframework.classification.EngineLibSVM;
-import gate.learningframework.classification.EngineMalletSeq;
-import gate.learningframework.classification.EngineWeka;
-import gate.learningframework.classification.Engine;
-import gate.learningframework.classification.EngineMallet;
-import java.io.File;
+import gate.AnnotationSet;
 import java.net.URL;
 
 import org.apache.log4j.Logger;
@@ -26,9 +21,12 @@ import gate.creole.metadata.CreoleParameter;
 import gate.creole.metadata.CreoleResource;
 import gate.creole.metadata.Optional;
 import gate.creole.metadata.RunTime;
-import gate.plugin.learningframework.corpora.CorpusWriter;
-import gate.plugin.learningframework.corpora.FeatureSpecification;
+import gate.plugin.learningframework.data.CorpusRepresentationMallet;
 import gate.plugin.learningframework.engines.AlgorithmClassification;
+import gate.plugin.learningframework.engines.Engine;
+import gate.plugin.learningframework.features.FeatureSpecification;
+import gate.plugin.learningframework.features.TargetType;
+import org.apache.commons.lang.NotImplementedException;
 
 /**
  *
@@ -62,22 +60,18 @@ public class LF_TrainClassification extends LF_TrainBase {
     return featureSpecURL;
   }
 
-  /**
-   * The implementation to be used, such as Mallet.
-   *
-   */
-  private AlgorithmClassification trainingAlgo;
+  private AlgorithmClassification trainingAlgorithm;
 
   @RunTime
   @Optional
   @CreoleParameter(comment = "The algorithm to be used for training. Ignored at "
           + "application time.")
-  public void setTrainingAlgo(AlgorithmClassification algo) {
-    this.trainingAlgo = algo;
+  public void setTrainingAlgorithm(AlgorithmClassification algo) {
+    this.trainingAlgorithm = algo;
   }
 
-  public AlgorithmClassification getTrainingAlgo() {
-    return this.trainingAlgo;
+  public AlgorithmClassification getTrainingAlgorithm() {
+    return this.trainingAlgorithm;
   }
 
   protected ScalingMethod scaleFeatures = ScalingMethod.NONE;
@@ -106,85 +100,49 @@ public class LF_TrainClassification extends LF_TrainBase {
     return this.targetFeature;
   }
 
-  private Mode mode = Mode.CLASSIFICATION;
+  private CorpusRepresentationMallet corpusRepresentation = null;
+  private FeatureSpecification featureSpec = null;
 
-  private String sequenceSpan = null;
+  private Engine engine = null;
 
-  //These corpora will be added to on each document so they need to be globals
-  private CorpusWriter trainingCorpus = null;
-
-  private FeatureSpecification conf = null;
-
-  private Engine trainingLearner = null;
-
-  private File savedModelDirectoryFile;
-
-  private Engine createLearner(AlgorithmClassification algo, File savedModelFile) {
-    if (algo != null) {
-      String spec = algo.toString();
-      switch (algo) {
-        case MALLET_CL_C45:
-        case MALLET_CL_DECISION_TREE:
-        case MALLET_CL_MAX_ENT:
-        case MALLET_CL_NAIVE_BAYES_EM:
-        case MALLET_CL_NAIVE_BAYES:
-        case MALLET_CL_WINNOW:
-          return new EngineMallet(savedModelFile, mode, learnerParams, spec, false);
-        case MALLET_SEQ_CRF:
-          return new EngineMalletSeq(savedModelFile, mode, spec, false);
-        case LIBSVM_CL_XXX:
-          return new EngineLibSVM(
-                  savedModelFile, mode, learnerParams, spec, false);
-        //case WEKA_CL_NUM_ADDITIVE_REGRESSION:
-        case WEKA_CL_NAIVE_BAYES:
-        case WEKA_CL_J48:
-        case WEKA_CL_JRIP:
-        case WEKA_CL_RANDOM_TREE:
-        case WEKA_CL_IBK:
-        case WEKA_CL_LOGISTIC_REGRESSION:
-        case WEKA_CL_MULTILAYER_PERCEPTRON:
-        case WEKA_CL_RANDOM_FOREST:
-          return new EngineWeka(
-                  savedModelFile, mode, learnerParams, spec, false);
-      }
-    }
-    return null;
-  }
 
   @Override
   public void execute(Document doc) {
-    //trainingCorpus.add(doc);
+    // extract the required annotation sets,
+    AnnotationSet inputAS = doc.getAnnotations(getInputASName());
+    AnnotationSet instanceAS = inputAS.get(getInstanceType());
+    // the classAS 
+    // the sequenceAS must be specified for a sequence tagging algorithm and most not be specified
+    // for a non-sequence tagging algorithm!
+    AnnotationSet sequenceAS = null;
+    if(getTrainingAlgorithm() == AlgorithmClassification.MALLET_SEQ_CRF) {
+      throw new NotImplementedException("Need to implement MALLET_SEQ_CRF to be used as a classifier");
+    } else {
+      // nothing to do, the sequenceAS is already null
+    }
+    // the classAS is always null for the classification task!
+    // the nameFeatureName is always null for now!
+    String nameFeatureName = null;
+    corpusRepresentation.add(instanceAS, sequenceAS, inputAS, null, getTargetFeature(), TargetType.NOMINAL, nameFeatureName);
   }
 
   @Override
   public void afterLastDocument(Controller arg0, Throwable t) {
-    /*
-    if (t != null) {
-      // Something went wrong during execution, so we better do not train a model... 
-      logger.error("Error during the processing of documents, no training is done");
-    } else if (trainingLearner != null) {
-      //Ready to go
-      // JP: Using the logger does not always make the info show, so using System.out here 
-      // just to be safe.
-      System.out.println("LearningFramework: Training "
-              + trainingLearner.whatIsItString() + " ...");
-      System.out.println("Training set classes: "
-              + trainingCorpus.getPipe().getTargetAlphabet().toString().replaceAll("\\n", " "));
-      System.out.println("Training set size: " + trainingCorpus.getInstances().size());
-      System.out.println("LearningFramework: Instances: " + trainingCorpus.getInstances().size());
-      if (trainingCorpus.getInstances().getDataAlphabet().size() > 20) {
-        System.out.println("LearningFramework: Attributes " + trainingCorpus.getInstances().getDataAlphabet().size());
+      System.out.println("LearningFramework: Starting training engine "+engine);
+      System.out.println("Training set classes: "+
+           corpusRepresentation.getInstances().getPipe().getTargetAlphabet().toString().replaceAll("\\n", " "));
+      System.out.println("Training set size: " + corpusRepresentation.getInstances().size());
+      if (corpusRepresentation.getInstances().getDataAlphabet().size() > 20) {
+        System.out.println("LearningFramework: Attributes " + corpusRepresentation.getInstances().getDataAlphabet().size());
       } else {
-        System.out.println("LearningFramework: Attributes " + trainingCorpus.getInstances().getDataAlphabet().toString().replaceAll("\\n", " "));
+        System.out.println("LearningFramework: Attributes " + corpusRepresentation.getInstances().getDataAlphabet().toString().replaceAll("\\n", " "));
       }
-      //System.out.println("DEBUG: instances are "+trainingCorpus.getInstances());
-      System.out.println("DEBUG: trainingCorpus class is " + trainingCorpus.getClass());
-      trainingCorpus.conclude();
-      trainingLearner.train(conf, trainingCorpus);
+      //System.out.println("DEBUG: instances are "+corpusRepresentation.getInstances());
+      
+      corpusRepresentation.addScaling(getScaleFeatures());
+      engine.trainModel(corpusRepresentation.getInstances(), getAlgorithmParameters());
       logger.info("LearningFramework: Training complete!");
     }
-   */
-  }
 
   @Override
   protected void finishedNoDocument(Controller c, Throwable t) {
@@ -194,65 +152,22 @@ public class LF_TrainClassification extends LF_TrainBase {
   @Override
   protected void beforeFirstDocument(Controller controller) {
     System.err.println("DEBUG: Before Document.");
-    System.err.println("  Training algorithm engine class is "+getTrainingAlgo().getEngineClass());
-    System.err.println("  Training algorithm algor class is "+getTrainingAlgo().getTrainerClass());
+    System.err.println("  Training algorithm engine class is "+getTrainingAlgorithm().getEngineClass());
+    System.err.println("  Training algorithm algor class is "+getTrainingAlgorithm().getTrainerClass());
     
-    //conf = new FeatureSpecification(featureSpecURL);
-    //savedModelDirectoryFile = new File(
-    //        gate.util.Files.fileFromURL(dataDirectory), Globals.savedModelDirectory);
+    // Create the engine from the Algorithm parameter
+    engine = Engine.createEngine(trainingAlgorithm, getAlgorithmParameters());
+    System.err.println("DEBUG: created the engine: "+engine);
+    
+    // Read and parse the feature specification
+    featureSpec = new FeatureSpecification(featureSpecURL);
+    System.err.println("DEBUG Read the feature specification: "+featureSpec);
 
-    if (trainingAlgo == null) {
-      //throw new GateRuntimeException("LearningFramework: no training algorithm specified");
-    } else {
-      //trainingLearner = this.createLearner(trainingAlgo, savedModelDirectoryFile);
-
-      switch (this.getTrainingAlgo()) {
-        case LIBSVM_CL_XXX: //Yes we are making a mallet corpus writer for use with libsvm ..
-        case MALLET_CL_C45:
-        case MALLET_CL_DECISION_TREE:
-        case MALLET_CL_MAX_ENT:
-        case MALLET_CL_NAIVE_BAYES_EM:
-        case MALLET_CL_NAIVE_BAYES:
-        case MALLET_CL_WINNOW:
-          File trainfilemallet = new File(
-                  gate.util.Files.fileFromURL(dataDirectory), Globals.trainFilename);
-         // trainingCorpus = new CorpusWriterMallet(this.conf, this.instanceType,
-         //         this.inputASName, trainfilemallet, mode, classType,
-         //         targetFeature, identifierFeature, scaleFeatures);
-          break;
-        case MALLET_SEQ_CRF:
-          File trainfilemalletseq = new File(
-                  gate.util.Files.fileFromURL(dataDirectory), Globals.trainFilename);
-          //trainingCorpus = new CorpusWriterMalletSeq(this.conf, this.instanceType,
-          //        this.inputASName, trainfilemalletseq, this.sequenceSpan,
-          //        mode, classType, targetFeature, identifierFeature, scaleFeatures);
-          break;
-        //case WEKA_CL_NUM_ADDITIVE_REGRESSION:
-        //  File trainfileweka = new File(
-        //          gate.util.Files.fileFromURL(dataDirectory), Globals.trainFilename);
-          //trainingCorpus = new CorpusWriterArffNumericClass(this.conf, this.instanceType,
-          //        this.inputASName, trainfileweka,
-          //        mode, classType, targetFeature, identifierFeature, null, scaleFeatures);
-        //  break;
-        case WEKA_CL_NAIVE_BAYES:
-        case WEKA_CL_J48:
-        case WEKA_CL_JRIP:
-        case WEKA_CL_RANDOM_TREE:
-        case WEKA_CL_MULTILAYER_PERCEPTRON:
-        case WEKA_CL_IBK:
-        case WEKA_CL_LOGISTIC_REGRESSION:
-        case WEKA_CL_RANDOM_FOREST:
-          //trainfileweka = new File(
-           //       gate.util.Files.fileFromURL(dataDirectory), Globals.trainFilename);
-          //trainingCorpus = new CorpusWriterArff(this.conf, this.instanceType,
-          //        this.inputASName, trainfileweka,
-          //        mode, classType, targetFeature, identifierFeature,
-           //       null, scaleFeatures);
-          break;
-      }
-
-      logger.info("LearningFramework: Preparing training data ...");
-    }
+    // create the corpus representation for creating the training instances
+    corpusRepresentation = new CorpusRepresentationMallet(featureSpec.getFeatureInfo(), scaleFeatures);
+    System.err.println("DEBUG: created the corpusRepresentationMallet: "+corpusRepresentation);
+    
+    System.err.println("DEBUG: setup of the training PR complete");
   }
 
 }

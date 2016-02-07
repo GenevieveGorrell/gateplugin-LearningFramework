@@ -146,12 +146,12 @@ public class LF_TrainSequenceTagging extends LF_TrainBase {
         case MALLET_CL_NAIVE_BAYES_EM:
         case MALLET_CL_NAIVE_BAYES:
         case MALLET_CL_WINNOW:
-          return new EngineMallet(savedModelFile, mode, learnerParams, spec, false);
+          return new EngineMallet(savedModelFile, mode, algorithmParameters, spec, false);
         case MALLET_SEQ_CRF:
           return new EngineMalletSeq(savedModelFile, mode, spec, false);
         case LIBSVM:
           return new EngineLibSVM(
-                  savedModelFile, mode, learnerParams, spec, false);
+                  savedModelFile, mode, algorithmParameters, spec, false);
         case WEKA_CL_NUM_ADDITIVE_REGRESSION:
         case WEKA_CL_NAIVE_BAYES:
         case WEKA_CL_J48:
@@ -162,7 +162,7 @@ public class LF_TrainSequenceTagging extends LF_TrainBase {
         case WEKA_CL_MULTILAYER_PERCEPTRON:
         case WEKA_CL_RANDOM_FOREST:
           return new EngineWeka(
-                  savedModelFile, mode, learnerParams, spec, false);
+                  savedModelFile, mode, algorithmParameters, spec, false);
       }
     }
     return null;

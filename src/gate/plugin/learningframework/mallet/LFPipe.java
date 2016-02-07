@@ -10,6 +10,7 @@ import cc.mallet.pipe.Pipe;
 import cc.mallet.pipe.SerialPipes;
 import gate.plugin.learningframework.features.FeatureInfo;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -34,4 +35,13 @@ public class LFPipe extends SerialPipes implements Serializable {
   protected FeatureInfo featureInfo;
   public void setFeatureInfo(FeatureInfo info) { featureInfo = info; }
   public FeatureInfo getFeatureInfo() { return featureInfo; }
+  
+  /**
+   * Add another pipe at the end of this SerialPipes.
+   * @param pipe 
+   */
+  public void addPipe(Pipe pipe) {
+    super.pipes().add(pipe);
+  }
+
 }

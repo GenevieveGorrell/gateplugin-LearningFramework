@@ -14,6 +14,7 @@
  */
 package gate.plugin.learningframework.corpora;
 
+import gate.plugin.learningframework.mallet.FeatureVector2NormalizedFeatureVector;
 import cc.mallet.pipe.Pipe;
 import cc.mallet.pipe.SerialPipes;
 import java.io.File;

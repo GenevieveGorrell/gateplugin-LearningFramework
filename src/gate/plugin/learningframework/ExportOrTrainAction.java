@@ -10,8 +10,9 @@
  */
 package gate.plugin.learningframework;
 
-public enum ExportFormat {
-  ARFF,
-  MALLET,
-  LIBSVM;
+public enum ExportOrTrainAction {
+  TRAIN,
+  EXPORT_ARFF,
+  EXPORT_MALLET,
+  EXPORT_LIBSVM;
 }

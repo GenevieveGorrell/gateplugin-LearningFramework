@@ -337,11 +337,11 @@ public class LearningFrameworkEvaluate extends LearningFrameworkPRBase {
   @Optional
   @CreoleParameter(comment = "Some of the learners take parameters. Parameters "
           + "can be entered here. For example, the LibSVM supports parameters.")
-  public void setLearnerParams(String learnerParams) {
+  public void setAlgorithmParameters(String learnerParams) {
     this.learnerParams = learnerParams;
   }
 
-  public String getLearnerParams() {
+  public String getAlgorithmParameters() {
     return this.learnerParams;
   }
 

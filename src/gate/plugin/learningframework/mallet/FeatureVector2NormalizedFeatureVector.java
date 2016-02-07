@@ -9,7 +9,7 @@
  * http://gate.ac.uk/gate/licence.html).
  *
  */
-package gate.plugin.learningframework.corpora;
+package gate.plugin.learningframework.mallet;
 
 import cc.mallet.pipe.Pipe;
 import cc.mallet.types.Alphabet;
@@ -59,9 +59,14 @@ public class FeatureVector2NormalizedFeatureVector extends Pipe implements Seria
         fv.setValue(index, newvalue);
       }
     }
+    // TODO: JP: this was here before but I think it is not needed, the code above should 
+    // already destructively modify the feature vector inside the instance?
+    /*
+    boolean isLocked = carrier.isLocked();
     carrier.unLock();
     carrier.setData(fv);
-    carrier.lock();
+    if(isLocked) carrier.lock();
+    */
 
     return carrier;
   }
