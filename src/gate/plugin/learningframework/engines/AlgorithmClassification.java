@@ -35,10 +35,15 @@ public enum AlgorithmClassification implements Algorithm {
   }
   private AlgorithmClassification(Class engineClass, Class algorithmClass) {
     this.engineClass = engineClass;
-    this.algorithmClass = algorithmClass;
+    this.trainerClass = algorithmClass;
   }
   private Class engineClass;
-  private Class algorithmClass;
+  private Class trainerClass;
   public Class getEngineClass() { return engineClass; }
-  public Class getTrainerClass() { return algorithmClass; }
+  public Class getTrainerClass() { return trainerClass; }
+
+  @Override
+  public void setTrainerClass(Class trainerClass) {
+    this.trainerClass = trainerClass;
+  }
 }

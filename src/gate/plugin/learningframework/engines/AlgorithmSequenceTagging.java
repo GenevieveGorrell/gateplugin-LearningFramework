@@ -11,34 +11,28 @@ import gate.learningframework.classification.EngineWeka;
  *
  * @author johann
  */
-public enum AlgorithmSequenceTagging {
-  LIBSVM_CL_XXX(EngineLibSVM.class,null),
-  MALLET_CL_C45(EngineMallet.class,cc.mallet.classify.C45Trainer.class),
-  MALLET_CL_DECISION_TREE(EngineMallet.class,null),
-  MALLET_CL_MAX_ENT,
-  MALLET_CL_NAIVE_BAYES_EM,
-  MALLET_CL_NAIVE_BAYES,
-  MALLET_CL_WINNOW,
+public enum AlgorithmSequenceTagging implements Algorithm {
   MALLET_SEQ_CRF(EngineMalletSeq.class,null),
-  MALLET_CL_SPECIFY_CLASS(EngineMallet.class,null),
-  WEKA_CL_NAIVE_BAYES(EngineWeka.class,weka.classifiers.bayes.NaiveBayes.class),
-  WEKA_CL_JRIP,
-  WEKA_CL_J48,
-  WEKA_CL_MULTILAYER_PERCEPTRON,
-  WEKA_CL_RANDOM_TREE,
-  WEKA_CL_IBK,
-  WEKA_CL_LOGISTIC_REGRESSION(EngineWeka.class,weka.classifiers.functions.Logistic.class),
-  WEKA_CL_RANDOM_FOREST(EngineWeka.class,weka.classifiers.trees.RandomForest.class),
-  WEKA_CL_SPECIFY_CLASS(EngineWeka.class,null);
+  MALLET_SEQ_SPECIFY_CLASS(EngineMallet.class,null);
   private AlgorithmSequenceTagging() {
     
   }
   private AlgorithmSequenceTagging(Class engineClass, Class algorithmClass) {
     this.engineClass = engineClass;
-    this.algorithmClass = algorithmClass;
+    this.trainerClass = algorithmClass;
   }
   private Class engineClass;
-  private Class algorithmClass;
+  private Class trainerClass;
   public Class getEngineClass() { return engineClass; }
-  public Class getAlgorithmClass() { return algorithmClass; }
+  public Class getAlgorithmClass() { return trainerClass; }
+
+  @Override
+  public Class getTrainerClass() {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
+  @Override
+  public void setTrainerClass(Class trainerClass) {
+    this.trainerClass = trainerClass;
+  }
 }

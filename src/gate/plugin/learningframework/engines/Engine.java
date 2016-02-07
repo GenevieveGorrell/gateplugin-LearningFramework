@@ -12,6 +12,7 @@ import gate.learningframework.classification.GateClassification;
 import gate.util.GateRuntimeException;
 import java.io.File;
 import java.util.List;
+import org.apache.log4j.Logger;
 
 /**
  * Base class for all engines.
@@ -20,6 +21,12 @@ import java.util.List;
  * @author Johann Petrak
  */
 public abstract class Engine {
+  
+  public static final String FILENAME_MODEL = "lf.model";
+  public static final String FILENAME_PIPE = "lf.pipe";
+  
+  Logger logger = Logger.getLogger(Engine.class);
+  
   /**
    * A factory method to return the engine which is stored in the given directory.
    * All the filenames are fixed so only the directory name is needed.
@@ -31,21 +38,44 @@ public abstract class Engine {
    * @return 
    */
   public static Engine loadEngine(File directory, String parms) {
-    // 1) read the infor file
+    // 1) read the info file
+    Info info = Info.load(directory);
     // extract the Engine class from the file and create an instance of the engine
-    Engine eng = new EngineWeka();
+    Engine eng;
+    try {
+      eng = (Engine)Class.forName(info.engineClass).newInstance();
+    } catch (Exception ex) {
+      throw new GateRuntimeException("Error creating engine class when loading: "+info.engineClass,ex);
+    }
+    // store the info we have just obtained in the new engine instance
+    eng.info = info;
     // now use the specific engine's loadModel method to complete the loading: each engine
     // knows best how to load its own kinds of models.
-    // eng.loadModel(directory,info,parms);
+    eng.loadModel(directory, parms);
     return eng;
   }
+  
+  /**
+   * Save an engine to a directory.
+   * This saves the information about the engine and the training algorithm together with
+   * a trained model.
+   * It does not make sense to save an engine before all that information is present, a
+   * GateRuntimeException is thrown if the engine is not in a state where it can be reasonably 
+   * saved.
+   * @param directory 
+   */
+  public void saveEngine(File directory) {
+    // First save the info. 
+    info.save(directory);
+    // Then delegate to the engine to save the model
+    saveModel(directory);
+  }
+  
   
   /** 
    * A factory method to create a new instance of an engine with the given backend algorithm.
    * This works in two steps: first the instance of the engine is created, then that instance's
    * method for initializing the algorithm is called (initializeAlgorithm) with the given parameters.
-   * @param engineClass
-   * @param algorithmClass
    * @return 
    */
   public static Engine createEngine(Algorithm algorithm, String parms) {
@@ -60,24 +90,16 @@ public abstract class Engine {
   }
   
   
-  /**
-   * This prepares the output directory for storing a trained model. This should only be 
-   * done once the new model has been successfully be trained, so any old model is kept in
-   * case of a problem.
-   * @param directory 
-   */
-  public static void prepareOutputDirectory(File directory) {
-    // TODO: delete the known files for saving a model. In most cases this is a model file,
-    // an info file and a pipe file.
-  }
-  
   
   /**
    * Load a stored model into the engine.
    * @param directory
    * @param info 
    */
-  public abstract void loadModel(File directory, Info info, String parms);
+  public abstract void loadModel(File directory, String parms);
+  
+  public abstract void saveModel(File directory);
+  
   
   /**
    * Train a model from the instances.
@@ -124,12 +146,17 @@ public abstract class Engine {
    * completed successfully.
    */
   protected Object model;
+  public Object getModel() { return model; }
   
   /**
    * The trainer is the instance of something that can be used to create a trained model.
    * This should be set right after the EngineXXX instance is created.
    */
   protected Object trainer;
+  public Object getTrainer() { return trainer; }
   
+  protected Info info;
+  
+  public Info getInfo() { return info; }
   
 }

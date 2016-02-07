@@ -20,9 +20,9 @@ import static org.junit.Assert.*;
 public class TestParms {
   @Test
   public void testParms1() {
-    Map<String,String> myParms = Parms.getParameters("-toIgnore -maxDepth 3 -prune ", "m:maxDepth:1", "p:prune:0");
-    assertEquals(2,myParms.size());
-    assertEquals("3",myParms.get("maxDepth"));
-    //assertEquals("true",myParms.get("prune"));
+    Parms ps = new Parms("-toIgnore -maxDepth 3 -prune ", "m:maxDepth:i", "p:prune:b");
+    assertEquals(2,ps.size());
+    assertEquals(3,ps.getValue("maxDepth"));
+    assertEquals(true,ps.getValue("prune"));
   }
 }

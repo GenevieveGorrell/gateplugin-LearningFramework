@@ -6,13 +6,12 @@
 
 package gate.plugin.learningframework.engines;
 
+import gate.util.GateRuntimeException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.ParseException;
@@ -39,22 +38,28 @@ import org.apache.log4j.Logger;
  */
 public class Parms {
   private static Logger logger = Logger.getLogger(Parms.class.getName());
+  Map<String,Object> parmValues = new HashMap<String,Object>();
   /**
-   * Parse the given string and return a map that contains the value for the names given.
+   * Create a Parms object that contains the parsed values from the parmString.
    * The names are strings which consist of three parts, separated by colons: a short name,
-   * a long name, and either 0, if the parameter is boolean or 1 if a value is expected.
+   * a long name, and either b, if the parameter is boolean and does not have a value, 
+   * s if the parameter has a string  value,
+   * d if the parameter has a double value or i if the parameter has an integer value.
+   * B is used for a parameter with an excplicit boolean value.
+   * If the value cannot be parsed to the given type, it is equivalent to the parameter missing.
    * @param names
    * @param parmString
    * @return 
    */
-  public static Map<String,String> getParameters(String parmString, String... names) {
-    Map<String,String> ret = new HashMap<String,String>();
+  public Parms(String parmString, String... names) {
     List<String> longNames = new ArrayList<String>();
+    List<String> types = new ArrayList<String>();
     Options options = new Options();
     for(String name : names) {
       String[] info = name.split(":");
       longNames.add(info[1]);
-      options.addOption(info[0], info[1], info[2].equals("0") ? false : true, "");
+      types.add(info[2]);
+      options.addOption(info[0], info[1], info[2].equals("b") ? false : true, "");
     }
     DefaultParser parser = new DefaultParser();
     parser.setIgnoreUnknownOptions(true);
@@ -67,20 +72,44 @@ public class Parms {
       logger.error("Could not parse parameters: "+parmString,ex);
     }
     if(cli != null) {
-      for(String longName : longNames) {
-        ret.put(longName, cli.getOptionValue(longName));
+      for(int i = 0; i<longNames.size(); i++) {
+        String longName = longNames.get(i);
+        String type = types.get(i);
+        Object value;
+        boolean haveIt = cli.hasOption(longName);
+        String optVal = cli.getOptionValue(longName);
+        //System.err.println("OPTION value for "+longName+" is "+optVal+" class is "+((optVal==null)? "null" : optVal.getClass())+" have it: "+haveIt);
+        if(type.equals("b")) {
+          value = haveIt;
+        } else if(type.equals("s")) {
+          value = optVal;
+        } else if(type.equals("d")) {
+          value = Double.parseDouble(optVal);
+        } else if(type.equals("i")) {
+          value = Integer.parseInt(optVal);
+        } else if(type.equals("B")) {
+          value = Boolean.parseBoolean(optVal);
+        } else {
+          throw new GateRuntimeException("Not a valid type indicator for Parrms: "+type);
+        }
+        parmValues.put(longName, value);
       }
     }
-    return ret;
   }
   
-  /*
-  private static class MyParser extends DefaultParser {
-    @Override
-    protected void handleUnknownToken(String token) throws ParseException {
-      cmd.addArg(token);
+  public Object getValue(String name) {
+    return parmValues.get(name);
+  }
+  
+  public Object getValueOrElse(String name, Object elseValue) {
+    Object tmp = parmValues.get(name);
+    if(tmp==null) {
+      return elseValue;
+    } else {
+      return tmp;
     }
   }
-  */
+  
+  public int size() { return parmValues.size(); }
   
 }

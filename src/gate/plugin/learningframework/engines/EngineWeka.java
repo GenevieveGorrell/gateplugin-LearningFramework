@@ -30,7 +30,7 @@ public class EngineWeka extends Engine {
   }
 
   @Override
-  public void loadModel(File directory, Info info, String parms) {
+  public void loadModel(File directory, String parms) {
     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 
@@ -46,6 +46,11 @@ public class EngineWeka extends Engine {
 
   @Override
   public void initializeAlgorithm(Algorithm algorithm, String parms) {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
+  @Override
+  public void saveModel(File directory) {
     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 

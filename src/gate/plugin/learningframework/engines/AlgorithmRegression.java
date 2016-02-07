@@ -11,7 +11,7 @@ import gate.learningframework.classification.EngineWeka;
  *
  * @author johann
  */
-public enum AlgorithmRegression {
+public enum AlgorithmRegression implements Algorithm {
   LIBSVM_RG_XXX(EngineLibSVM.class,null),
   MALLET_RG_SPECIFY_CLASS(EngineMallet.class,null),
   WEKA_RG_ADDITIVE_REGRESSION(EngineWeka.class,null),
@@ -21,10 +21,20 @@ public enum AlgorithmRegression {
   }
   private AlgorithmRegression(Class engineClass, Class algorithmClass) {
     this.engineClass = engineClass;
-    this.algorithmClass = algorithmClass;
+    this.trainerClass = algorithmClass;
   }
   private Class engineClass;
-  private Class algorithmClass;
+  private Class trainerClass;
   public Class getEngineClass() { return engineClass; }
-  public Class getAlgorithmClass() { return algorithmClass; }
+  public Class getAlgorithmClass() { return trainerClass; }
+
+  @Override
+  public Class getTrainerClass() {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
+  @Override
+  public void setTrainerClass(Class trainerClass) {
+    this.trainerClass = trainerClass;
+  }
 }

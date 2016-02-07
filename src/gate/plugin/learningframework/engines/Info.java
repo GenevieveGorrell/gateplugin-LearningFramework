@@ -25,7 +25,7 @@ import org.yaml.snakeyaml.nodes.Tag;
  * @author Johann Petrak
  */
 public class Info {
-  public static final String fileName = "info.yaml";
+  public static final String FILENAME_INFO = "info.yaml";
   public String engineClass;  // this also can tell us if classifier or sequence tagging algorihtm
   public String algorithmClass;
   public String task;  // classification, regression or sequence tagging?  
@@ -69,7 +69,7 @@ public class Info {
   
   public void save(File directory) {
     String dump = new Yaml().dumpAs(this,Tag.MAP,DumperOptions.FlowStyle.BLOCK);
-    File infoFile = new File(directory,fileName);
+    File infoFile = new File(directory,FILENAME_INFO);
     OutputStreamWriter out = null;
     try {
       out = new OutputStreamWriter(new FileOutputStream(infoFile),"UTF-8");
@@ -87,7 +87,7 @@ public class Info {
   public static Info load(File directory) {
     Yaml yaml = new Yaml();
     Object obj;
-    File infoFile = new File(directory,fileName);
+    File infoFile = new File(directory,FILENAME_INFO);
     try {
       obj = yaml.loadAs(new InputStreamReader(new FileInputStream(infoFile),"UTF-8"),Info.class);
     } catch (Exception ex) {
