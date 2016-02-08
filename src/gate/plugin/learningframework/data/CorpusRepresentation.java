@@ -8,8 +8,10 @@ package gate.plugin.learningframework.data;
 
 import cc.mallet.types.InstanceList;
 import gate.plugin.learningframework.ScalingMethod;
+import gate.plugin.learningframework.engines.Parms;
 import gate.plugin.learningframework.features.FeatureInfo;
 import gate.plugin.learningframework.mallet.LFPipe;
+import java.io.File;
 
 /**
  * The base class of all classes that handle the representation of instances.
@@ -22,4 +24,24 @@ public abstract class CorpusRepresentation {
   protected FeatureInfo featureInfo;
   protected ScalingMethod scalingMethod;
   protected LFPipe pipe;
+  
+  /**
+   * Returns whatever object the concrete representation uses to represent the instances.
+   * In addition, each specific CorpusRepresentation subclass has a representation specific
+   * method that returns the correct type of data, e.g. getRepresentationLibSVM or getRepresentationWeka.
+   * @return 
+   */
+  public abstract Object getRepresentation();
+  
+  /**
+   * Write the instances to one or more files.
+   * If parms is null, the "default natural format" for that representation is used, otherwise
+   * some other format that this representation supports is created, depending on the concrete
+   * parameters given.
+   * @param directory 
+   */
+  public abstract void export(File directory, String parms);
+
+  // TODO: it may be good in some situations, if we could import data from external sources
+  // directly, but not sure about the details. This is not implemented at the moment at all.
 }

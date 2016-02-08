@@ -12,7 +12,7 @@ import gate.Document;
 import gate.creole.ResourceInstantiationException;
 import gate.plugin.learningframework.Mode;
 import gate.plugin.learningframework.ScalingMethod;
-import gate.plugin.learningframework.data.CorpusRepresentationMallet;
+import gate.plugin.learningframework.data.CorpusRepresentationMalletClass;
 import gate.plugin.learningframework.data.CorpusRepresentationMalletSeq;
 import gate.plugin.learningframework.corpora.CorpusWriterMallet;
 import gate.plugin.learningframework.corpora.CorpusWriterMalletSeq;
@@ -79,7 +79,7 @@ public class TestNewVersusOld {
     
     // 2) Create the instances the new way.
     FeatureInfo fi = new FeatureSpecification(spec).getFeatureInfo();
-    CorpusRepresentationMallet crm = new CorpusRepresentationMallet(fi, ScalingMethod.NONE);
+    CorpusRepresentationMalletClass crm = new CorpusRepresentationMalletClass(fi, ScalingMethod.NONE);
     crm.add(
             doc.getAnnotations().get("type1"), 
             null, 
@@ -88,7 +88,7 @@ public class TestNewVersusOld {
             "feat", 
             TargetType.NOMINAL, 
             null);
-    InstanceList instances_new = crm.getInstances();
+    InstanceList instances_new = crm.getRepresentationMallet();
     assertNotNull(instances_new);
     assertEquals(2,instances_new.size());
     System.err.println("INSTANCE NEW 1 data="+instances_new.get(0).getData());
@@ -151,7 +151,7 @@ public class TestNewVersusOld {
             null, 
             TargetType.NOMINAL, 
             null);
-    InstanceList instances_new2 = crms.getInstances();
+    InstanceList instances_new2 = crms.getRepresentationMallet();
     assertNotNull(instances_new2);
     assertEquals(1,instances_new2.size());
     System.err.println("INSTANCE2 NEW 1 data="+instances_new2.get(0).getData());

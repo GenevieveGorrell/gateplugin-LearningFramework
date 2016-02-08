@@ -14,7 +14,6 @@
  */
 package gate.plugin.learningframework.data;
 
-import gate.plugin.learningframework.data.CorpusRepresentation;
 import gate.Annotation;
 import gate.AnnotationSet;
 import java.util.ArrayList;
@@ -30,15 +29,17 @@ import cc.mallet.types.InstanceList;
 import cc.mallet.types.Label;
 import cc.mallet.types.LabelAlphabet;
 import gate.plugin.learningframework.ScalingMethod;
-import static gate.plugin.learningframework.data.CorpusRepresentationMallet.extractIndependentFeatures;
+import static gate.plugin.learningframework.data.CorpusRepresentationMalletClass.extractIndependentFeatures;
+import gate.plugin.learningframework.engines.Parms;
 import gate.plugin.learningframework.features.FeatureExtraction;
 import gate.plugin.learningframework.features.FeatureInfo;
 import gate.plugin.learningframework.features.TargetType;
 import gate.plugin.learningframework.mallet.LFPipe;
 import gate.util.GateRuntimeException;
+import java.io.File;
 import org.apache.log4j.Logger;
 
-public class CorpusRepresentationMalletSeq extends CorpusRepresentation {
+public class CorpusRepresentationMalletSeq extends CorpusRepresentationMallet {
 
   static final Logger logger = Logger.getLogger("CorpusRepresentationMalletSeq");
 
@@ -53,11 +54,6 @@ public class CorpusRepresentationMalletSeq extends CorpusRepresentation {
     pipe.setFeatureInfo(fi);
     instances = new InstanceList(pipe);
   }
-
-  protected InstanceList instances;
-
-  public InstanceList getInstances() { return instances; }
-  
   
   /**
    * Add instances. The exact way of how the target is created to the instances depends on which
@@ -126,5 +122,10 @@ public class CorpusRepresentationMalletSeq extends CorpusRepresentation {
       }
     }
   
+  }
+
+  @Override
+  public void export(File directory, String parms) {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 }

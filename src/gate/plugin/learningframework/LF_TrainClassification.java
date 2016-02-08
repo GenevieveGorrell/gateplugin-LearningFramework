@@ -21,7 +21,7 @@ import gate.creole.metadata.CreoleParameter;
 import gate.creole.metadata.CreoleResource;
 import gate.creole.metadata.Optional;
 import gate.creole.metadata.RunTime;
-import gate.plugin.learningframework.data.CorpusRepresentationMallet;
+import gate.plugin.learningframework.data.CorpusRepresentationMalletClass;
 import gate.plugin.learningframework.engines.AlgorithmClassification;
 import gate.plugin.learningframework.engines.Engine;
 import gate.plugin.learningframework.features.FeatureSpecification;
@@ -100,7 +100,7 @@ public class LF_TrainClassification extends LF_TrainBase {
     return this.targetFeature;
   }
 
-  private CorpusRepresentationMallet corpusRepresentation = null;
+  private CorpusRepresentationMalletClass corpusRepresentation = null;
   private FeatureSpecification featureSpec = null;
 
   private Engine engine = null;
@@ -130,17 +130,17 @@ public class LF_TrainClassification extends LF_TrainBase {
   public void afterLastDocument(Controller arg0, Throwable t) {
       System.out.println("LearningFramework: Starting training engine "+engine);
       System.out.println("Training set classes: "+
-           corpusRepresentation.getInstances().getPipe().getTargetAlphabet().toString().replaceAll("\\n", " "));
-      System.out.println("Training set size: " + corpusRepresentation.getInstances().size());
-      if (corpusRepresentation.getInstances().getDataAlphabet().size() > 20) {
-        System.out.println("LearningFramework: Attributes " + corpusRepresentation.getInstances().getDataAlphabet().size());
+           corpusRepresentation.getRepresentationMallet().getPipe().getTargetAlphabet().toString().replaceAll("\\n", " "));
+      System.out.println("Training set size: " + corpusRepresentation.getRepresentationMallet().size());
+      if (corpusRepresentation.getRepresentationMallet().getDataAlphabet().size() > 20) {
+        System.out.println("LearningFramework: Attributes " + corpusRepresentation.getRepresentationMallet().getDataAlphabet().size());
       } else {
-        System.out.println("LearningFramework: Attributes " + corpusRepresentation.getInstances().getDataAlphabet().toString().replaceAll("\\n", " "));
+        System.out.println("LearningFramework: Attributes " + corpusRepresentation.getRepresentationMallet().getDataAlphabet().toString().replaceAll("\\n", " "));
       }
-      //System.out.println("DEBUG: instances are "+corpusRepresentation.getInstances());
+      //System.out.println("DEBUG: instances are "+corpusRepresentation.getRepresentationMallet());
       
       corpusRepresentation.addScaling(getScaleFeatures());
-      engine.trainModel(corpusRepresentation.getInstances(), getAlgorithmParameters());
+      engine.trainModel(corpusRepresentation.getRepresentationMallet(), getAlgorithmParameters());
       logger.info("LearningFramework: Training complete!");
     }
 
@@ -164,7 +164,7 @@ public class LF_TrainClassification extends LF_TrainBase {
     System.err.println("DEBUG Read the feature specification: "+featureSpec);
 
     // create the corpus representation for creating the training instances
-    corpusRepresentation = new CorpusRepresentationMallet(featureSpec.getFeatureInfo(), scaleFeatures);
+    corpusRepresentation = new CorpusRepresentationMalletClass(featureSpec.getFeatureInfo(), scaleFeatures);
     System.err.println("DEBUG: created the corpusRepresentationMallet: "+corpusRepresentation);
     
     System.err.println("DEBUG: setup of the training PR complete");

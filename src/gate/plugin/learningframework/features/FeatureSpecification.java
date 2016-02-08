@@ -14,9 +14,6 @@
  */
 package gate.plugin.learningframework.features;
 
-import gate.Annotation;
-import gate.Document;
-import gate.Utils;
 import gate.util.GateRuntimeException;
 import java.io.File;
 import java.io.StringReader;

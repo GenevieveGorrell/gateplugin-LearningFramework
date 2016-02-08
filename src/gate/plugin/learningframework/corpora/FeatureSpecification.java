@@ -14,10 +14,8 @@
  */
 package gate.plugin.learningframework.corpora;
 
-import gate.creole.ResourceInstantiationException;
 import gate.util.GateRuntimeException;
 
-import java.io.Serializable;
 import java.io.StringReader;
 import java.net.URL;
 import java.util.ArrayList;

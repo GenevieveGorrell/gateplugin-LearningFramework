@@ -10,6 +10,12 @@ import cc.mallet.types.Instance;
 import cc.mallet.types.InstanceList;
 import cc.mallet.types.Label;
 import cc.mallet.types.SparseVector;
+import gate.plugin.learningframework.corpora.CorpusWriterMallet;
+import gate.plugin.learningframework.engines.Parms;
+import gate.util.GateRuntimeException;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import libsvm.svm_node;
 import libsvm.svm_problem;
 
@@ -18,7 +24,58 @@ import libsvm.svm_problem;
  * @author Johann Petrak
  */
 public class CorpusRepresentationLibSVM extends CorpusRepresentation {
-  public static svm_problem getFromMallet(InstanceList instances) {
+  
+  svm_problem data;
+  public CorpusRepresentationLibSVM(CorpusRepresentationMalletClass other) {
+    data = getFromMallet(other);
+  }
+  
+  public svm_problem getRepresentationLibSVM() { return data; }
+  
+  @Override
+  public Object getRepresentation() { return data; }
+  
+  @Override
+  /**
+   * Export to file data.libsvm.
+   * parms must always be null.
+   */
+  public void export(File saveDirectory, String parms) {
+    if(data == null) {
+      throw new GateRuntimeException("No data");
+    }
+    if(parms != null) {
+      throw new GateRuntimeException("No parameters supported, must be null");
+    }
+        svm_problem prob = data;
+        PrintStream out = null;
+        File outFile = new File(saveDirectory, "data.libsvm");
+        try {
+          out = new PrintStream(outFile);
+          for (int i = 0; i < prob.l; i++) {
+            out.print(prob.y[i]);
+            for (int j = 0; j < prob.x[i].length; j++) {
+              out.print(" ");
+              out.print(prob.x[i][j].index);
+              out.print(":");
+              out.print(prob.x[i][j].value);
+            }
+            out.println();
+          }
+          out.close();
+        } catch (FileNotFoundException ex) {
+          System.err.println("Could not write training instances to svm format file");
+          ex.printStackTrace(System.out);
+        }
+    
+  }
+  /**
+   * Create libsvm representation from Mallet.
+   * @param instances
+   * @return 
+   */
+  public static svm_problem getFromMallet(CorpusRepresentationMallet crm) {
+    InstanceList instances = crm.getRepresentationMallet();
     svm_problem prob = new svm_problem();
     int numTrainingInstances = instances.size();
     prob.l = numTrainingInstances;

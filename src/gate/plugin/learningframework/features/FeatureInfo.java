@@ -5,7 +5,6 @@
  */
 package gate.plugin.learningframework.features;
 
-import cc.mallet.types.Alphabet;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +32,7 @@ public class FeatureInfo implements Serializable {
   }
 
   /**
-   * Create an instance that is a deep copy of another one.
+   * Create an FeatureInfo instance that is a deep copy of another one.
    */
   public FeatureInfo(FeatureInfo other) {
     this.growthStopped = other.growthStopped;

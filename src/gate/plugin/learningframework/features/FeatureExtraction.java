@@ -40,23 +40,22 @@ public class FeatureExtraction {
   // Also, the feature name should still be as short as possible, readable and contain as few
   // special characters as possible. 
   // Here is what we use for now:
-  // = if the attribute has a <NAME>theName</NAME> entity, then that name is used for ATTRIBUTE and
-  //   for NGRAM, for ATTRIBUTELIST "theName[k]" is used where [k] is from the range FROM..TO.
-  //   The value is added after an equal sign, e.g. "theName=[value]" or "theName-2=[value]"
-  //   If this is used for an ATTRIBUTE where no feature is given "theName=ISPRESENT" is used.
-  // if no name is given, the following names are generated ([type] is the annotation type, 
-  // [feature] is the feature name and [value] is the feature value.
-  // = For ATTRIBUTE if no feature is given: A:[type]::=ISPRESENT
-  // = For a nominal ATTRIBUTE coded as one-of-k: A:[type]:[feature]=[value]
-  // = For a numeric ATTRIBUTE or a nominal attribute coded as number or a boolean attribute: 
-  //   A:[type]:[feature]
-  // = For ATTRIBUTELIST the name starts with L[k] insteand of A the rest is identical to ATTRIBUTE
-  //   If a name is explicitly specified "theName[k]=[value]" is used
-  // = For NGRAM, N[k]:[type]:[feature]=[val1]_[val2]
-  //   If a name is explicitly specified, "theName=[val1]_[val2] is used. 
-  
-  
-  
+  // If a NAME is specified in the attribute definition, then that name is used as the 
+  // first part of the feature name prefix, optionally followed by #[i] where [i] is then
+  // number of the attribute list element, e.g. "#-1". This means that an attribute name should
+  // not contain numbers. 
+  // If a NAME is not specified, then the feature name prefix is constructed in the following way
+  // instead:
+  // it starts with a "feature indicator" which is "A" for attribute, N[k] for
+  // an ngram, A[i] for the ith entry in an attributelist and M[i]N[k] for an attribute list
+  // for ngrams with n>1 (future!)
+  // The feature indicator is followed by the NAMESEP character, then followed by the annotation
+  // type, followed by NAMESEP and followed by the feature name. For a boolean feature
+  // which indicates the presence of an annotation, the featuer name is empty.
+  // This is either the whole feature name or it is followed by VALSEP and followed by the 
+  // actual nominal value, if the feature is for a nominal value coded as one-of-k.
+  // The value for an ngram is all the individual grams, concatenated witth NGRAMSEP.
+
   
   // NOTE: currently these strings are hard-coded but it may make sense to look if there 
   // are better choices or make these configurable in some advanced section of the featureName config
@@ -207,7 +206,7 @@ public class FeatureExtraction {
     if(featureName==null||featureName.isEmpty()) {
       // construct the featureName name and set to 1.0
       // however, only add the featureName if the featureName alphabet is allowed to grow.
-      String fname = internalFeatureNamePrefix + VALSEP + "ISPRESENT";
+      String fname = internalFeatureNamePrefix;
       addToFeatureVector(fv, fname, 1.0);
     } else {    
       // First get the value inputAS an Object, if there is no value, we have an Object that is null
@@ -527,7 +526,7 @@ public class FeatureExtraction {
       if(ann != null) {        
         String tmpName = "";
         if(!al.name.isEmpty()) {
-          tmpName =  al.name + i;
+          tmpName =  al.name + "#" + i;
         }
         extractFeatureWorker(tmpName,"L"+i,inst,ann,doc,annType,featureName,alphabet,dt,mvt,codeas);    
       }
@@ -671,6 +670,69 @@ public class FeatureExtraction {
     inst.setName(value);
   }
 
+  /**
+   * Try and find the attribute that may correspond to the featureName.
+   * @param attributes
+   * @param featureName
+   * @return 
+   */
+  public static Attribute lookupAttributeForFeatureName(List<Attribute> attributes, String featureName) {
+    Attribute ret = null;
+    // first off, we distinguish between one-of-k coding and others: if we have one-of-k coding,
+    // then there must be a VALSEP. 
+    int valsepIdx = featureName.indexOf(VALSEP);
+    String featureNamePrefix;
+    if(valsepIdx >= 0) {
+      // ok we have a one-of-k coded nominal, get the prefix
+      featureNamePrefix = featureName.substring(0,valsepIdx);
+    } else {
+      // the whole thing is the prefix
+      featureNamePrefix = featureName;
+    }
+    // now we have two possibilities again: either this is from a NAME element or it is from
+    // the type and feature name. In the first case, there should be no NAMESEP in the string. 
+    if(featureNamePrefix.indexOf(NAMESEP) < 0) {
+      // no namesep, so this must be from a name.
+      // This could now contain a # and (possibly negative number) at the end, we need to first remove that
+      featureNamePrefix = featureNamePrefix.replaceAll("#-?[0-9]+$","");
+      // now the featureNamePrefix should be identical to the name of an attribute
+      // look it up
+      for(Attribute attr : attributes) {
+        if(attr.name.equals(featureNamePrefix)) {
+          ret = attr;
+          break;
+        }
+      }
+    } else {
+      // we hava a featureNamePrefix that contains a NAMESEP, try to split it up so we get
+      // the type and feature name
+      // There should always be exactly two NAMESEPs so if we split on that, we should get
+      // three Strings
+      String[] parts = featureNamePrefix.split(NAMESEP, -1);
+      if(parts.length != 3) {
+        // not sure what to do now, for now we just ignore this and do not return an attribute
+      } else {
+        // the second part is the type, the third part is the feature name, which could be empty
+        String t = parts[1];
+        String f = parts[2];
+        for(Attribute att : attributes) {
+          if(att.annType.equals(t)) {
+            // now try to match the feature too 
+            if(f.isEmpty() && (att.feature == null || att.feature.isEmpty())) {
+              ret = att;
+              break;
+            } else if(f.equals(att.feature)) {
+              ret = att;
+              break;
+            }
+          }
+        }
+      }
+    }
+    return ret;
+  }
+
+  
   
   ///=======================================
   /// HELPER AND UTILITY METHODS

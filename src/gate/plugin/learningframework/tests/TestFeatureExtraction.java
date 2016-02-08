@@ -142,7 +142,7 @@ public class TestFeatureExtraction {
     assertEquals(7,inst.getAlphabet().size());
     assertTrue(inst.getAlphabet().contains("A:theType:boolfeature2"));
     assertEquals(7,((FeatureVector)inst.getData()).numLocations());
-    assertEquals(1.0,((FeatureVector)inst.getData()).value("A:theType:=ISPRESENT"),EPS);
+    assertEquals(1.0,((FeatureVector)inst.getData()).value("A:theType:"),EPS);
     
     // 2) check the kind of missing value we get by default
     
@@ -482,13 +482,13 @@ public class TestFeatureExtraction {
     System.err.println("After "+as.get(0)+" (list -1to1) FV="+inst.getData());
     assertEquals(3,inst.getAlphabet().size());
     System.err.println("Alphabet is "+inst.getAlphabet());
-    assertTrue(inst.getAlphabet().contains("myAttList-1=tok5"));
-    assertTrue(inst.getAlphabet().contains("myAttList0=tok6"));
-    assertTrue(inst.getAlphabet().contains("myAttList1=tok7"));
+    assertTrue(inst.getAlphabet().contains("myAttList#-1=tok5"));
+    assertTrue(inst.getAlphabet().contains("myAttList#0=tok6"));
+    assertTrue(inst.getAlphabet().contains("myAttList#1=tok7"));
     assertEquals(3,((FeatureVector)inst.getData()).numLocations());
-    assertEquals(1.0,((FeatureVector)inst.getData()).value("myAttList-1=tok5"),EPS);
-    assertEquals(1.0,((FeatureVector)inst.getData()).value("myAttList0=tok6"),EPS);
-    assertEquals(1.0,((FeatureVector)inst.getData()).value("myAttList1=tok7"),EPS);
+    assertEquals(1.0,((FeatureVector)inst.getData()).value("myAttList#-1=tok5"),EPS);
+    assertEquals(1.0,((FeatureVector)inst.getData()).value("myAttList#0=tok6"),EPS);
+    assertEquals(1.0,((FeatureVector)inst.getData()).value("myAttList#1=tok7"),EPS);
   }
  
 }
