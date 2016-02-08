@@ -26,7 +26,6 @@ import cc.mallet.types.Instance;
 import cc.mallet.types.InstanceList;
 import cc.mallet.types.LabelAlphabet;
 import gate.plugin.learningframework.ScalingMethod;
-import gate.plugin.learningframework.engines.Parms;
 import gate.plugin.learningframework.mallet.FeatureVector2NormalizedFeatureVector;
 import gate.plugin.learningframework.features.Attribute;
 import gate.plugin.learningframework.features.FeatureExtraction;
@@ -69,19 +68,36 @@ public class CorpusRepresentationMalletClass extends CorpusRepresentationMallet 
     instances = new InstanceList(pipe);
   }
   
+  public void clear() {
+    LFPipe pipe = (LFPipe)instances.getPipe();
+    instances = new InstanceList(pipe);
+  }
+  
   // NOTE: at application time we do not explicitly create a CorpusRepresentatioMallet object.
   // Instead, the pipe gets saved with the model and can get retrieved from the loaded model 
-  // later. The method extractIndependentFeatures is also used at application time to 
+  // later. The method extractIndependentFeaturesHelper is also used at application time to 
   // extract the Instances, using the Pipe that was stored with the model.
   // For non-Mallet algorithms we store the pipe separately and load it separately when the model
-  // is loaded for application. The Pipe is then again used with extractIndependentFeatures 
+  // is loaded for application. The Pipe is then again used with extractIndependentFeaturesHelper 
   // to get the instances.
 
+
+  public Instance extractIndependentFeatures(
+          Annotation instanceAnnotation,
+          AnnotationSet inputAS)
+  {
+    LFPipe pipe = (LFPipe)instances.getPipe();
+    FeatureInfo featureInfo = pipe.getFeatureInfo();
+    return extractIndependentFeaturesHelper(instanceAnnotation, inputAS,
+            featureInfo, pipe);
+  }
+  
   /**
    * Extract the independent features for a single instance annotation.
    * Extract the independent features for a single annotation according to the information
    * in the featureInfo object. The information in the featureInfo instance gets updated 
    * by this. 
+   * NOTE: this method is static so that it can be used in the CorpusRepresentationMalletSeq class too.
    * @param instanceAnnotation
    * @param inputAS
    * @param targetFeatureName
@@ -90,10 +106,9 @@ public class CorpusRepresentationMalletClass extends CorpusRepresentationMallet 
    * @param nameFeature
    * @return 
    */
-  public static Instance extractIndependentFeatures(
+  static Instance extractIndependentFeaturesHelper(
           Annotation instanceAnnotation,
           AnnotationSet inputAS,
-          String targetFeatureName,
           FeatureInfo featureInfo,
           Pipe pipe) {
     
@@ -129,7 +144,7 @@ public class CorpusRepresentationMalletClass extends CorpusRepresentationMallet 
     }
     List<Annotation> instanceAnnotations = instancesAS.inDocumentOrder();
     for (Annotation instanceAnnotation : instanceAnnotations) {
-      Instance inst = extractIndependentFeatures(instanceAnnotation, inputAS, targetFeatureName, featureInfo, pipe);
+      Instance inst = extractIndependentFeaturesHelper(instanceAnnotation, inputAS, featureInfo, pipe);
       if (classAS != null) {
         // extract the target as required for sequence tagging
         FeatureExtraction.extractClassForSeqTagging(inst, pipe.getTargetAlphabet(), classAS, instanceAnnotation);

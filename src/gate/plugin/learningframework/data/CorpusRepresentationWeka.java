@@ -17,13 +17,10 @@ import gate.plugin.learningframework.mallet.LFPipe;
 import gate.util.GateRuntimeException;
 import java.io.File;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.lang.NotImplementedException;
 import weka.core.Attribute;
 import weka.core.Instances;
@@ -40,6 +37,12 @@ public class CorpusRepresentationWeka extends CorpusRepresentation {
 
   public CorpusRepresentationWeka(CorpusRepresentationMallet other) {
     data = getFromMallet(other);
+  }
+  
+  public void clear() {
+    // NOTE: not sure if this actually keeps the attribute infos and only clears the 
+    // actual instances like the contract for this method promises...
+    data.clear();
   }
 
   @Override

@@ -10,8 +10,6 @@ import cc.mallet.types.Instance;
 import cc.mallet.types.InstanceList;
 import cc.mallet.types.Label;
 import cc.mallet.types.SparseVector;
-import gate.plugin.learningframework.corpora.CorpusWriterMallet;
-import gate.plugin.learningframework.engines.Parms;
 import gate.util.GateRuntimeException;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -25,7 +23,8 @@ import libsvm.svm_problem;
  */
 public class CorpusRepresentationLibSVM extends CorpusRepresentation {
   
-  svm_problem data;
+  protected svm_problem data;
+  
   public CorpusRepresentationLibSVM(CorpusRepresentationMalletClass other) {
     data = getFromMallet(other);
   }
@@ -101,6 +100,14 @@ public class CorpusRepresentationLibSVM extends CorpusRepresentation {
       }
     }
     return prob;
+  }
+
+  @Override
+  public void clear() {
+    // NOTE: ok, for LibSVM there is not much other info that could be kept, we just 
+    // set this to null for now. 
+    // There is not much reason why this should ever get used anyway.
+    data = null;
   }
 
 }

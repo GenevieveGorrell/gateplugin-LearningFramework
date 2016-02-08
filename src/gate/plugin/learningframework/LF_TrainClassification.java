@@ -140,7 +140,7 @@ public class LF_TrainClassification extends LF_TrainBase {
       //System.out.println("DEBUG: instances are "+corpusRepresentation.getRepresentationMallet());
       
       corpusRepresentation.addScaling(getScaleFeatures());
-      engine.trainModel(corpusRepresentation.getRepresentationMallet(), getAlgorithmParameters());
+      engine.trainModel(corpusRepresentation, getAlgorithmParameters());
       logger.info("LearningFramework: Training complete!");
     }
 

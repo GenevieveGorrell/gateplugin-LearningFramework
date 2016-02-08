@@ -6,9 +6,7 @@
 
 package gate.plugin.learningframework.data;
 
-import cc.mallet.types.InstanceList;
 import gate.plugin.learningframework.ScalingMethod;
-import gate.plugin.learningframework.engines.Parms;
 import gate.plugin.learningframework.features.FeatureInfo;
 import gate.plugin.learningframework.mallet.LFPipe;
 import java.io.File;
@@ -41,6 +39,13 @@ public abstract class CorpusRepresentation {
    * @param directory 
    */
   public abstract void export(File directory, String parms);
+  
+  /**
+   * Remove all instances but leave other information intact.
+   * This removes all the instances but retains information about the features/attributes 
+   * and how instances should get transformed or scaled.
+   */
+  public abstract void clear();
 
   // TODO: it may be good in some situations, if we could import data from external sources
   // directly, but not sure about the details. This is not implemented at the moment at all.

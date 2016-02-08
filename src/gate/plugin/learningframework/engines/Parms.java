@@ -31,9 +31,16 @@ import org.apache.log4j.Logger;
  * parameter "prune" to "true" (all Strings which will subsequently get converted to Integer and 
  * Boolean, respectively)
  * 
- * IMPORTANT NOTE: at the moment we use a slightly modified version of commons.cli which 
+ * IMPORTANT NOTE 1: at the moment we use a slightly modified version of commons.cli which 
  * allows us to ignore unknown options by calling ignoreUnknownOptions(true) (this method has been
  * added)
+ * Related Jira issue: https://issues.apache.org/jira/browse/CLI-257
+ * 
+ * IMPORTANT NOTE 2: at closer inspection it appears that commons.cli is broken or odd, for example
+ * there is a mess with short options versus long options (-asd is the same as -a -s -d) and there
+ * seems to be a mess with option values immediately following the option name, e.g. -opt1value1 
+ * will give the value value1 if option "opt1" is defined. We should probably re-implement this 
+ * using a different option processing library sometimes!
  * @author Johann Petrak
  */
 public class Parms {

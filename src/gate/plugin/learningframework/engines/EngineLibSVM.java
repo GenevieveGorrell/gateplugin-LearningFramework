@@ -9,6 +9,7 @@ package gate.plugin.learningframework.engines;
 import cc.mallet.types.InstanceList;
 import gate.AnnotationSet;
 import gate.learningframework.classification.GateClassification;
+import gate.plugin.learningframework.data.CorpusRepresentationMallet;
 import java.io.File;
 import java.util.List;
 
@@ -35,12 +36,13 @@ public class EngineLibSVM extends Engine {
   }
 
   @Override
-  public void trainModel(InstanceList instances, String parms) {
+  public void trainModel(CorpusRepresentationMallet data, String parms) {
     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 
   @Override
-  public List<GateClassification> classify(AnnotationSet instanceAS, AnnotationSet inputAS, AnnotationSet sequenceAS, String parms) {
+  public List<GateClassification> classify(CorpusRepresentationMallet crm,
+          AnnotationSet instanceAS, AnnotationSet inputAS, AnnotationSet sequenceAS, String parms) {
     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 

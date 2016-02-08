@@ -6,11 +6,19 @@
 package gate.plugin.learningframework.engines;
 
 import cc.mallet.classify.C45Trainer;
+import cc.mallet.classify.Classification;
 import cc.mallet.classify.Classifier;
 import cc.mallet.classify.ClassifierTrainer;
+import cc.mallet.types.Instance;
 import cc.mallet.types.InstanceList;
+import cc.mallet.types.LabelVector;
+import cc.mallet.types.Labeling;
+import gate.Annotation;
 import gate.AnnotationSet;
 import gate.learningframework.classification.GateClassification;
+import gate.plugin.learningframework.data.CorpusRepresentationMallet;
+import gate.plugin.learningframework.data.CorpusRepresentationMalletClass;
+import gate.plugin.learningframework.mallet.LFPipe;
 import gate.util.GateRuntimeException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,9 +26,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
 import org.apache.log4j.Logger;
 
 /**
@@ -56,13 +63,44 @@ public class EngineMallet extends Engine {
   }
 
   @Override
-  public void trainModel(InstanceList instances, String parms) {
-    ((ClassifierTrainer) trainer).train(instances);
+  public void trainModel(CorpusRepresentationMallet data, String parms) {
+    if(data instanceof CorpusRepresentationMalletClass) {
+      ((ClassifierTrainer) trainer).train(data.getRepresentationMallet());
+    } else {
+      throw new GateRuntimeException("Cannot train classification model from "+data.getClass());
+    }
   }
 
   @Override
-  public List<GateClassification> classify(AnnotationSet instanceAS, AnnotationSet inputAS, AnnotationSet sequenceAS, String parms) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  public List<GateClassification> classify(
+          CorpusRepresentationMallet crm, 
+          AnnotationSet instanceAS, AnnotationSet inputAS, AnnotationSet sequenceAS, String parms) {
+    // NOTE: the crm should be of type CorpusRepresentationMalletClass for this to work!
+    if(!(crm instanceof CorpusRepresentationMalletClass)) {
+      throw new GateRuntimeException("Cannot perform classification with data from "+crm.getClass());
+    }
+    CorpusRepresentationMalletClass data = (CorpusRepresentationMalletClass)crm;
+    List<GateClassification> gcs = new ArrayList<GateClassification>();
+    LFPipe pipe = (LFPipe)data.getRepresentationMallet().getPipe();
+    Classifier classifier = (Classifier)model;
+    // iterate over the instance annotations and create mallet instances 
+    for(Annotation instAnn : instanceAS.inDocumentOrder()) {
+      Instance inst = data.extractIndependentFeatures(instAnn, inputAS);
+      inst = pipe.instanceFrom(inst);
+      Classification classification = classifier.classify(inst);
+      Labeling labeling = classification.getLabeling();
+      LabelVector labelvec = labeling.toLabelVector();
+      List<String> classes = new ArrayList<String>(labelvec.numLocations());
+      List<Double> confidences = new ArrayList<Double>(labelvec.numLocations());
+      for(int i=0; i<labelvec.numLocations(); i++) {
+        classes.add(labelvec.getLabelAtRank(i).toString());
+        confidences.add(labelvec.getValueAtRank(i));
+      }
+      GateClassification gc = new GateClassification(instAnn, labeling.getBestLabel().toString(), 
+              labeling.getBestValue(), classes, confidences);
+      gcs.add(gc);
+    }
+    return gcs;
   }
 
   @Override

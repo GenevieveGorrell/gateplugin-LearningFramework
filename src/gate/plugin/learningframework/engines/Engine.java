@@ -9,6 +9,7 @@ package gate.plugin.learningframework.engines;
 import cc.mallet.types.InstanceList;
 import gate.AnnotationSet;
 import gate.learningframework.classification.GateClassification;
+import gate.plugin.learningframework.data.CorpusRepresentationMallet;
 import gate.util.GateRuntimeException;
 import java.io.File;
 import java.util.List;
@@ -76,6 +77,9 @@ public abstract class Engine {
    * A factory method to create a new instance of an engine with the given backend algorithm.
    * This works in two steps: first the instance of the engine is created, then that instance's
    * method for initializing the algorithm is called (initializeAlgorithm) with the given parameters.
+   * However, some training algorithms cannot be instantiated until all the training data is
+   * there (e.g. Mallet CRF) - for these, the initializeAlgorithm method does nothing and the
+   * actual algorithm initialization happens when the train method is called. 
    * @return 
    */
   public static Engine createEngine(Algorithm algorithm, String parms) {
@@ -107,15 +111,17 @@ public abstract class Engine {
    * The Engine instance should know best how to use or convert that representation to its own
    * format, using one of the CorpusRepresentationXXX classes.
    */
-  public abstract void trainModel(InstanceList instances, String parms);
+  public abstract void trainModel(CorpusRepresentationMallet data, String parms);
   
   /**
    * Classify all instance annotations.
    * If the algorithm is a sequence tagger, the sequence annotations must be given, otherwise
-   * they must not be given.
+   * they must not be given. 
    * @return 
    */
-  public abstract List<GateClassification> classify(AnnotationSet instanceAS, AnnotationSet inputAS,
+  public abstract List<GateClassification> classify(
+          CorpusRepresentationMallet cr,
+          AnnotationSet instanceAS, AnnotationSet inputAS,
           AnnotationSet sequenceAS, String parms);
   
   /**

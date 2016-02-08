@@ -29,7 +29,6 @@ import cc.mallet.types.InstanceList;
 import cc.mallet.types.Label;
 import cc.mallet.types.LabelAlphabet;
 import gate.plugin.learningframework.ScalingMethod;
-import static gate.plugin.learningframework.data.CorpusRepresentationMalletClass.extractIndependentFeatures;
 import gate.plugin.learningframework.engines.Parms;
 import gate.plugin.learningframework.features.FeatureExtraction;
 import gate.plugin.learningframework.features.FeatureInfo;
@@ -38,6 +37,7 @@ import gate.plugin.learningframework.mallet.LFPipe;
 import gate.util.GateRuntimeException;
 import java.io.File;
 import org.apache.log4j.Logger;
+import static gate.plugin.learningframework.data.CorpusRepresentationMalletClass.extractIndependentFeaturesHelper;
 
 public class CorpusRepresentationMalletSeq extends CorpusRepresentationMallet {
 
@@ -52,6 +52,11 @@ public class CorpusRepresentationMalletSeq extends CorpusRepresentationMallet {
     pipes.add(innerPipe);
     pipe = new LFPipe(pipes);
     pipe.setFeatureInfo(fi);
+    instances = new InstanceList(pipe);
+  }
+  
+  public void clear() {
+    LFPipe pipe = (LFPipe)instances.getPipe();
     instances = new InstanceList(pipe);
   }
   
@@ -83,7 +88,7 @@ public class CorpusRepresentationMalletSeq extends CorpusRepresentationMallet {
       List<Instance> instanceList = new ArrayList<Instance>(sequenceAS.size());
       List<Annotation> instanceAnnotations = gate.Utils.getContainedAnnotations(instancesAS, sequenceAnnotation).inDocumentOrder();
       for (Annotation instanceAnnotation : instanceAnnotations) {
-        Instance inst = extractIndependentFeatures(instanceAnnotation, inputAS, targetFeatureName, featureInfo, pipe);
+        Instance inst = extractIndependentFeaturesHelper(instanceAnnotation, inputAS, featureInfo, pipe);
         if (classAS != null) {
           // extract the target as required for sequence tagging
           FeatureExtraction.extractClassForSeqTagging(inst, pipe.getTargetAlphabet(), classAS, instanceAnnotation);
