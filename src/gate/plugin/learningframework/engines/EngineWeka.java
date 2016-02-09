@@ -6,17 +6,25 @@
 
 package gate.plugin.learningframework.engines;
 
+import cc.mallet.types.Instance;
 import cc.mallet.types.InstanceList;
+import gate.Annotation;
 import gate.AnnotationSet;
 import gate.learningframework.classification.GateClassification;
 import gate.plugin.learningframework.data.CorpusRepresentationMallet;
+import gate.plugin.learningframework.data.CorpusRepresentationMalletClass;
 import gate.plugin.learningframework.data.CorpusRepresentationWeka;
+import gate.plugin.learningframework.mallet.LFPipe;
 import gate.util.GateRuntimeException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import weka.classifiers.Classifier;
+import weka.core.Instances;
 
 /**
  *
@@ -74,12 +82,123 @@ public class EngineWeka extends Engine {
       throw new GateRuntimeException("Error during training of Weka algorithm "+alg.getClass(),ex);
     }
   }
+  
+  CorpusRepresentationWeka crWeka;
+  
+  @Override
+  public void setCorpusRepresentation(CorpusRepresentationMallet crm, boolean includeTarget) {
+    crMallet = crm;
+    // TODO: create an instance of the weka corpus representation based on the mallet one.
+    // this helps to create the information about the Weka attributes only once.
+    crWeka = new CorpusRepresentationWeka(crm);
+  }
 
   @Override
   public List<GateClassification> classify(
           CorpusRepresentationMallet crm,
           AnnotationSet instanceAS, AnnotationSet inputAS, AnnotationSet sequenceAS, String parms) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    if(!(crm instanceof CorpusRepresentationMalletClass)) {
+      throw new GateRuntimeException("Cannot perform classification with data from "+crm.getClass());
+    }
+    
+    if(crWeka == null) {
+      // throw new GateRuntimeException("Cannot perform Weka classification, setCorpusRepresentation has not been called");
+      // cache the newly created weka representation which means the representation wil contain
+      // the right weka dataset to be used for converting from mallet to weka
+      crWeka = new CorpusRepresentationWeka(crm,false);
+    }
+    
+    Instances instances = crWeka.getRepresentationWeka();
+    CorpusRepresentationMalletClass data = (CorpusRepresentationMalletClass)crm;
+    List<GateClassification> gcs = new ArrayList<GateClassification>();
+    LFPipe pipe = (LFPipe)data.getRepresentationMallet().getPipe();
+    Classifier wekaClassifier = (Classifier)model;
+    // iterate over the instance annotations and create mallet instances 
+    for(Annotation instAnn : instanceAS.inDocumentOrder()) {
+      Instance inst = data.extractIndependentFeatures(instAnn, inputAS);
+      inst = pipe.instanceFrom(inst);
+      // Convert to weka Instance
+      weka.core.Instance wekaInstance = CorpusRepresentationWeka.wekaInstanceFromMalletInstance(instances, inst, false);
+      // classify with the weka classifier or predict the numeric value: if the mallet pipe does have
+      // a target alphabet we assume classification, otherwise we assume regression
+      GateClassification gc = null;
+      if(pipe.getTargetAlphabet() == null) {
+        // regression
+        double result=Double.NaN;
+        try {
+          result = wekaClassifier.classifyInstance(wekaInstance);
+        } catch (Exception ex) {
+          // Hmm, for now we just log the error and continue, not sure if we should stop here!
+          ex.printStackTrace(System.err);
+          Logger.getLogger(EngineWeka.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        gc = new GateClassification(instAnn, (result==Double.NaN ? null : String.valueOf(result)), 1.0);
+      } else {
+        // classification
+
+
+
+        // Weka AbstractClassifier already handles the situation correctly when 
+        // distributionForInstance is not implemented by the classifier: in that case
+        // is calls classifyInstance and returns an array of size numClasses where
+        // the entry of the target class is set to 1.0 except when the classification is a missing
+        // value, then all class probabilities will be 0.0
+        // If distributionForInstance is implemented for the algorithm, we should get
+        // the probabilities or all zeros for missing class from the algorithm.
+        double[] predictionDistribution = new double[0];
+        try {
+          //System.err.println("classifying instance "+wekaInstance.toString());
+          predictionDistribution = wekaClassifier.distributionForInstance(wekaInstance);
+        } catch (Exception ex) {
+          ex.printStackTrace(System.err);
+        }
+        // This is classification, we should always get a distribution list > 1
+        if (predictionDistribution.length < 2) {
+          throw new RuntimeException("Classifier returned less than 2 probabilities: " + predictionDistribution.length
+                  + "for instance" + wekaInstance);
+        }
+        double bestprob = 0.0;
+        int bestlabel = 0;
+
+        /*
+        System.err.print("DEBUG: got classes from pipe: ");
+    		Object[] cls = pipe.getTargetAlphabet().toArray();
+        boolean first = true;
+        for(Object cl : cls) {
+          if(first) { first = false; } else { System.err.print(", "); }
+          System.err.print(">"+cl+"<");
+        }
+        System.err.println();
+         */
+        List<String> classList = new ArrayList<String>();
+        List<Double> confidenceList = new ArrayList<Double>();
+        for (int i = 0; i < predictionDistribution.length; i++) {
+          int thislabel = i;
+          double thisprob = predictionDistribution[i];
+          String labelstr = (String) pipe.getTargetAlphabet().lookupObject(thislabel);
+          classList.add(labelstr);
+          confidenceList.add(thisprob);
+          if (thisprob > bestprob) {
+            bestlabel = thislabel;
+            bestprob = thisprob;
+          }
+        } // end for i < predictionDistribution.length
+
+        String cl
+                = (String) pipe.getTargetAlphabet().lookupObject(bestlabel);
+
+        gc = new GateClassification(
+                instAnn, cl, bestprob, classList, confidenceList);
+
+
+
+
+
+        
+      }
+      gcs.add(gc);
+    }
+    return gcs;
   }
 
   @Override

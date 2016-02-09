@@ -6,10 +6,17 @@
 
 package gate.plugin.learningframework.engines;
 
+import cc.mallet.fst.CRF;
+import cc.mallet.fst.CRFOptimizableByLabelLikelihood;
+import cc.mallet.fst.CRFTrainerByValueGradients;
+import cc.mallet.optimize.Optimizable;
 import cc.mallet.types.InstanceList;
 import gate.AnnotationSet;
 import gate.learningframework.classification.GateClassification;
 import gate.plugin.learningframework.data.CorpusRepresentationMallet;
+import gate.plugin.learningframework.data.CorpusRepresentationMalletClass;
+import gate.plugin.learningframework.data.CorpusRepresentationMalletSeq;
+import gate.util.GateRuntimeException;
 import java.io.File;
 import java.util.List;
 
@@ -17,22 +24,53 @@ import java.util.List;
  *
  * @author Johann Petrak
  */
-public class EngineMalletSeq extends Engine {
+public class EngineMalletSeq extends EngineMallet {
 
 
   @Override
   public void initializeAlgorithm(Algorithm algorithm, String parms) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    // DOES NOTHINIG?
   }
 
-  @Override
-  public void loadModel(File directory, String parms) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-  }
 
   @Override
   public void trainModel(CorpusRepresentationMallet data, String parms) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    if(!(data instanceof CorpusRepresentationMalletSeq)) {    
+      throw new GateRuntimeException("Cannot train a sequence algorithm with data from MalletClass");
+    }
+    
+    // TODO: maybe we should allow more flexibility here based on the parms specified!?!?!
+    InstanceList trainingData = data.getRepresentationMallet();
+    //Sanity check--how does the data look?
+    //logger.info("LearningFramework: Instances: " + trainingData.size());
+    //logger.info("LearningFramework: Data labels: " + trainingData.getDataAlphabet().size());
+    //logger.info("LearningFramework: Target labels: " + trainingData.getTargetAlphabet().size());
+    //Including the pipe at this stage means we have it available to
+    //put data through at apply time.
+    CRF crf = new CRF(trainingData.getPipe(), null);
+    model = crf;
+
+    // construct the finite state machine
+    crf.addFullyConnectedStatesForLabels();
+    // initialize model's weights
+    crf.setWeightsDimensionAsIn(trainingData, false);
+
+    //  CRFOptimizableBy* objects (terms in the objective function)
+    // objective 1: label likelihood objective
+    CRFOptimizableByLabelLikelihood optLabel
+            = new CRFOptimizableByLabelLikelihood(crf, trainingData);
+
+    // CRF trainer
+    Optimizable.ByGradientValue[] opts
+            = new Optimizable.ByGradientValue[]{optLabel};
+    // by default, use L-BFGS as the optimizer
+    CRFTrainerByValueGradients crfTrainer = new CRFTrainerByValueGradients(crf, opts);
+
+    // all setup done, train until convergence
+    crfTrainer.setMaxResets(0);
+    crfTrainer.train(trainingData, Integer.MAX_VALUE);
+
+    
   }
 
   @Override
@@ -52,9 +90,5 @@ public class EngineMalletSeq extends Engine {
     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 
-  @Override
-  public void saveModel(File directory) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-  }
 
 }

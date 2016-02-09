@@ -165,4 +165,23 @@ public abstract class Engine {
   
   public Info getInfo() { return info; }
   
+  CorpusRepresentationMallet crMallet;
+  /**
+   * Set the Mallet corpus representation to be used with this engine.
+   * This must be set for some engines before classification so that their own corpus
+   * representation can be created and cached. If this has not been called but is required,
+   * the Engine method that depends on it throws an exception.
+   * 
+   * TODO: not sure if this is really necessary, probably not. For now only Weka really 
+   * needs to know about the pipeline so the dataset can be created that is needed to 
+   * convert individual mallet instances to weka instances at classification time.
+   * But we could maybe just as well do this by caching the weka dataset once we have 
+   * created it for the first call of classify.
+   * In fact this is what we are trying at the moment ...
+   * @param crm 
+   */
+  public void setCorpusRepresentation(CorpusRepresentationMallet crm, boolean includeTarget) { 
+    crMallet = crm; 
+  }
+  
 }

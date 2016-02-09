@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang.NotImplementedException;
 import weka.core.Attribute;
+import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ArffSaver;
 import weka.core.converters.CSVSaver;
@@ -35,10 +36,18 @@ public class CorpusRepresentationWeka extends CorpusRepresentation {
 
   weka.core.Instances data;
 
+  /**
+   * Create a Weka representation from a Mallet representation. This includes the targets.
+   * @param other 
+   */
   public CorpusRepresentationWeka(CorpusRepresentationMallet other) {
-    data = getFromMallet(other);
+    data = getFromMallet(other, true);
   }
   
+  public CorpusRepresentationWeka(CorpusRepresentationMallet other, boolean haveTarget) {
+    data = getFromMallet(other, haveTarget);
+  }
+
   public void clear() {
     // NOTE: not sure if this actually keeps the attribute infos and only clears the 
     // actual instances like the contract for this method promises...
@@ -118,16 +127,14 @@ public class CorpusRepresentationWeka extends CorpusRepresentation {
       }
     }
   }
-
+  
   /**
-   * Create a Weka dataset from Mallet instances.
-   *
-   * @param cr
-   * @return
+   * Create a Weka dataset from just the meta-information of the Mallet representation.
+   * This creates an empty Instances object that has all the attributes constructed from 
+   * the information we have in the Mallet representation. The flag haveTarget controls if 
+   * the a class/target attribute is included in the attribute list or not. 
    */
-  public static Instances getFromMallet(CorpusRepresentationMallet cr) {
-    // NOTE/TODO: this should eventually work for both Class and Seq mallet representations,
-    // but for now we only support class
+  public static Instances emptyDatasetFromMallet(CorpusRepresentationMallet cr, boolean haveTarget) {
     if (!(cr instanceof CorpusRepresentationMalletClass)) {
       throw new GateRuntimeException("Conversion to weka not implemented yet: " + cr.getClass());
     }
@@ -201,9 +208,10 @@ public class CorpusRepresentationWeka extends CorpusRepresentation {
         wekaAttributes.add(new Attribute(malletFeatureName, nomVals));
       }
     }
-    // now add the class attribute: if there is a target alphabet, the class must be nominal,
+    // now add the class attribute, if necessary: if there is a target alphabet, the class must be nominal,
     // so create a nominal weka attribute, otherwise, create a numeric one
-    weka.core.Attribute classAttr;
+    weka.core.Attribute classAttr = null;
+    if(haveTarget) {
     if (pipe.getTargetAlphabet() != null) {
       Alphabet talph = pipe.getTargetAlphabet();
       // create the values for the target from the target alphabet
@@ -217,44 +225,70 @@ public class CorpusRepresentationWeka extends CorpusRepresentation {
       classAttr = new Attribute("target");
       wekaAttributes.add(classAttr);
     }
+    }
     // create the weka instances
     Instances insts = new weka.core.Instances("GATELearningFramework", wekaAttributes, malletInstances.size());
-    insts.setClass(classAttr);
-    int wekaTargetIndex = wekaAttributes.indexOf(classAttr);
-
-    //////
-    // Now convert the mallet instances to the weka instances
-    /////
-    for (cc.mallet.types.Instance malletInstance : malletInstances) {
-      // NOTE: once we implement MalletSeq, each instance itself is a sequence of instances,
-      // so we have to loop over those and over the array of targets too!
-
-      // for each instance, we need an array of values and an array of indices,
-      // and the size of those is the number of features in the mallet instance
-      // NOTE: the instance and target
+    if(haveTarget) {
+      insts.setClass(classAttr);
+    }
+    return insts;
+  }
+  
+  public static weka.core.Instance wekaInstanceFromMalletInstance(Instances wekaDataset, 
+          cc.mallet.types.Instance malletInstance, boolean haveTarget) {
       FeatureVector fv = (FeatureVector) malletInstance.getData();
       int size = fv.numLocations();
+      int wekaTargetIndex = -1;
+      if(haveTarget) wekaTargetIndex = wekaDataset.classIndex();
       // TODO: for now we just directly copy over the mallet values to the weka values
       // We may need to handle certain cases with missing values separately!
 
-      // create  the arrays with one more entry which will be the target!
-      int indices[] = new int[size + 1];
+      // create  the arrays with one more entry which will be the target, if we have a target
+      int indices[] = haveTarget ? new int[size + 1] : new int[size];
       double values[] = new double[size + 1];
       for (int i = 0; i < size; i++) {
         indices[i] = fv.indexAtLocation(i);
         values[i] = fv.valueAtLocation(i);
       }
-      // now set the target
-      indices[size] = wekaTargetIndex;
-      values[size] = (double) malletInstance.getTarget();
-
+      // now set the target, if we have one 
+      if(haveTarget) {
+        indices[size] = wekaTargetIndex;
+        Object malletValue = malletInstance.getTarget();
+        if(malletValue == null) {
+          throw new GateRuntimeException("We should have a target but the mallet instance target is null");
+        }
+        values[size] = (double) malletInstance.getTarget();
+      }
       weka.core.SparseInstance wekaInstance = new weka.core.SparseInstance(1.0, values, indices, values.length);
-      wekaInstance.setDataset(insts);
-      insts.add(wekaInstance);
+      // TODO: is this necessary, is this useful?
+      // What does this actually do? Hopefully not actually add or modify anything in the wekaDataset
+      // and just give the instance a chance to know about the attributes?
+      wekaInstance.setDataset(wekaDataset);
+      return wekaInstance;
+  }
 
+  /**
+   * Create a Weka dataset from Mallet instances.
+   * This creates a Weka dataset from the mallet corpus representation.
+   * NOTE: for now the attributes list will always contain either a numeric or nominal class
+   * (if the pipe has a target alphabet, a nominal class is assumed, otherwise a numeric target).
+   * However, if the mallet instance does not have a target, the corresponding weka instance
+   * will not have the target attribute set in the sparse vector (so a 0 value is used). 
+   * TODO: not sure if this has any bad consequences in those situations where we really
+   * want an instance with no target attribute at all, i.e. at classification time.
+   *
+   * @param cr
+   * @return
+   */
+  public static Instances getFromMallet(CorpusRepresentationMallet cr, boolean haveTarget) {
+    Instances wekaInstances =  emptyDatasetFromMallet(cr, haveTarget);
+
+    InstanceList malletInstances = cr.getRepresentationMallet();
+    for (cc.mallet.types.Instance malletInstance : malletInstances) {
+      weka.core.Instance wekaInstance = wekaInstanceFromMalletInstance(wekaInstances, malletInstance, haveTarget);
+      wekaInstances.add(wekaInstance);
     }
-
-    return insts;
+    return wekaInstances;
   }
 
 }

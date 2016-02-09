@@ -14,14 +14,14 @@ import weka.classifiers.lazy.IBk;
  */
 public enum AlgorithmClassification implements Algorithm {
   LIBSVM_CL_NOTYET(EngineLibSVM.class,null), // TODO!!!
-  MALLET_CL_C45(EngineMallet.class,cc.mallet.classify.C45Trainer.class),
-  MALLET_CL_DECISION_TREE(EngineMallet.class,cc.mallet.classify.DecisionTreeTrainer.class),
-  MALLET_CL_MAX_ENT(EngineMallet.class,cc.mallet.classify.MaxEntTrainer.class),
-  MALLET_CL_NAIVE_BAYES_EM(EngineMallet.class,cc.mallet.classify.NaiveBayesEMTrainer.class),
-  MALLET_CL_NAIVE_BAYES(EngineMallet.class,cc.mallet.classify.NaiveBayes.class),
-  MALLET_CL_WINNOW(EngineMallet.class,cc.mallet.classify.WinnowTrainer.class),
+  MALLET_CL_C45(EngineMalletClass.class,cc.mallet.classify.C45Trainer.class),
+  MALLET_CL_DECISION_TREE(EngineMalletClass.class,cc.mallet.classify.DecisionTreeTrainer.class),
+  MALLET_CL_MAX_ENT(EngineMalletClass.class,cc.mallet.classify.MaxEntTrainer.class),
+  MALLET_CL_NAIVE_BAYES_EM(EngineMalletClass.class,cc.mallet.classify.NaiveBayesEMTrainer.class),
+  MALLET_CL_NAIVE_BAYES(EngineMalletClass.class,cc.mallet.classify.NaiveBayes.class),
+  MALLET_CL_WINNOW(EngineMalletClass.class,cc.mallet.classify.WinnowTrainer.class),
   MALLET_SEQ_CRF(EngineMalletSeq.class,null), // creating this training is too complex, no class specified
-  MALLET_CL_SPECIFY_CLASS(EngineMallet.class,null),
+  MALLET_CL_SPECIFY_CLASS(EngineMalletClass.class,null),
   WEKA_CL_NAIVE_BAYES(EngineWeka.class,weka.classifiers.bayes.NaiveBayes.class),
   WEKA_CL_J48(EngineWeka.class,weka.classifiers.trees.J48.class),
   WEKA_CL_MULTILAYER_PERCEPTRON(EngineWeka.class,weka.classifiers.functions.MultilayerPerceptron.class),
