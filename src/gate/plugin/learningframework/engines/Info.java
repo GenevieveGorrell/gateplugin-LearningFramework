@@ -27,7 +27,10 @@ import org.yaml.snakeyaml.nodes.Tag;
 public class Info {
   public static final String FILENAME_INFO = "info.yaml";
   public String engineClass;  // this also can tell us if classifier or sequence tagging algorihtm
-  public String algorithmClass;
+  public String algorithmClass;  // the class of the enum 
+  public String algorithmName;   // the actual value of enum
+  public String trainerClass;
+  public String modelClass;
   public String task;  // classification, regression or sequence tagging?  
   public int nrTrainingInstances;
   public int nrTrainingDocuments;
@@ -35,6 +38,7 @@ public class Info {
   public int nrTargetValues;  // -1 for regression
   public List<String> classLabels; // empty for regression
   public String trainingCorpusName;
+  public String targetFeature;
   
   /**
    * TODO: NOTE: this is incomplete!! Should contain all fields that are also in the hashCode method!
@@ -47,7 +51,7 @@ public class Info {
     if(other == null) return false;
     if (other instanceof Info) {
       if(engineClass!=null && !engineClass.equals(((Info) other).engineClass)) return false;
-      if(algorithmClass!=null && !algorithmClass.equals(((Info) other).algorithmClass)) return false;
+      if(trainerClass!=null && !trainerClass.equals(((Info) other).trainerClass)) return false;
     }
     return true;
   }  
@@ -56,7 +60,7 @@ public class Info {
   public int hashCode() {
     int hash = 7;
     hash = 89 * hash + Objects.hashCode(this.engineClass);
-    hash = 89 * hash + Objects.hashCode(this.algorithmClass);
+    hash = 89 * hash + Objects.hashCode(this.trainerClass);
     hash = 89 * hash + Objects.hashCode(this.task);
     hash = 89 * hash + this.nrTrainingInstances;
     hash = 89 * hash + this.nrTrainingDocuments;
@@ -99,7 +103,7 @@ public class Info {
 
   @Override
   public String toString() {
-    return "Info{" + "engineClass=" + engineClass + ", algorithmClass=" + algorithmClass + ", task=" + task + ", nrTrainingInstances=" + nrTrainingInstances + ", nrTrainingDocuments=" + nrTrainingDocuments + ", nrTrainingDimensions=" + nrTrainingDimensions + ", nrTargetValues=" + nrTargetValues + ", classLabels=" + classLabels + ", trainingCorpusName=" + trainingCorpusName + '}';
+    return "Info{" + "engineClass=" + engineClass + ", algorithmClass=" + trainerClass + ", task=" + task + ", nrTrainingInstances=" + nrTrainingInstances + ", nrTrainingDocuments=" + nrTrainingDocuments + ", nrTrainingDimensions=" + nrTrainingDimensions + ", nrTargetValues=" + nrTargetValues + ", classLabels=" + classLabels + ", trainingCorpusName=" + trainingCorpusName + '}';
   }
   
 }

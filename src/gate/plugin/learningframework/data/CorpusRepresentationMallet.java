@@ -8,20 +8,23 @@ package gate.plugin.learningframework.data;
 
 import cc.mallet.types.Alphabet;
 import cc.mallet.types.InstanceList;
-import static gate.plugin.learningframework.data.CorpusRepresentationMalletClass.logger;
 import gate.plugin.learningframework.features.FeatureInfo;
 import gate.plugin.learningframework.mallet.LFPipe;
 import gate.util.GateRuntimeException;
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import org.apache.log4j.Logger;
 
 /**
  * Common base class for Mallet for classification and  Mallet for sequence tagging.
  * @author Johann Petrak
  */
 public abstract class CorpusRepresentationMallet extends CorpusRepresentation {
+
+  Logger logger = org.apache.log4j.Logger.getLogger(CorpusRepresentationMallet.class);
+
   protected InstanceList instances;
 
   public InstanceList getRepresentationMallet() { return instances; }
@@ -57,4 +60,22 @@ public abstract class CorpusRepresentationMallet extends CorpusRepresentation {
     fi.startGrowth();    
   }
     
+  public void save(File directory) {
+    File outFile = new File(directory,"pipe.pipe");
+    ObjectOutputStream oos = null;
+    try {
+      oos = new ObjectOutputStream(new FileOutputStream(outFile));
+      oos.writeObject(pipe);
+    } catch (Exception ex) {
+      throw new GateRuntimeException("Could not save LFPipe for CorpusRepresentationMallet to "+outFile,ex);
+    } finally {
+      if(oos!=null) try {
+        oos.close();
+      } catch (IOException ex) {
+        logger.error("Could not close stream after saving LFPipe to "+outFile, ex);
+      }        
+    }
+  }
+  
+  
 }

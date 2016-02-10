@@ -33,10 +33,15 @@ public class EngineMalletClass extends EngineMallet {
 
   Logger logger = Logger.getLogger(EngineMalletClass.class);
 
+  public EngineMalletClass() { }
 
   @Override
   public void trainModel(String parms) {
-    ((ClassifierTrainer) trainer).train(corpusRepresentation.getRepresentationMallet());
+    System.err.println("EngineMalletClass.trainModel: trainer="+trainer);
+    System.err.println("EngineMalletClass.trainModel: CR="+corpusRepresentation);
+    
+    model=((ClassifierTrainer) trainer).train(corpusRepresentation.getRepresentationMallet());
+    updateInfo();
   }
 
   @Override

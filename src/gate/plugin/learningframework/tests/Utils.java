@@ -15,6 +15,8 @@ import gate.Document;
 import gate.Factory;
 import gate.FeatureMap;
 import gate.creole.ResourceInstantiationException;
+import java.io.File;
+import java.net.MalformedURLException;
 
 /**
  *
@@ -47,6 +49,13 @@ public class Utils {
   
   public static Instance newInstance() {
     return new Instance(new AugmentableFeatureVector(new Alphabet()),null,null,null);    
+  }
+  
+  public static Document loadDocument(File file) throws MalformedURLException, ResourceInstantiationException {
+    FeatureMap parms = Factory.newFeatureMap();
+    parms.put("sourceUrl", file.toURI().toURL());
+    Document doc = (Document)Factory.createResource("gate.corpora.DocumentImpl", parms);
+    return doc;
   }
 
 }

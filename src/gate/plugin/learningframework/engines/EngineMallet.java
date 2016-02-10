@@ -16,6 +16,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -23,14 +24,14 @@ import java.io.ObjectOutputStream;
  */
 public abstract class EngineMallet extends Engine {
   
-  protected CorpusRepresentationMallet corpusRepresentation;
+  private static Logger logger = Logger.getLogger(EngineMallet.class);
   
   public CorpusRepresentationMallet getCorpusRepresentationMallet() {
     return corpusRepresentation;
   }
 
   @Override
-  public void loadModel(File directory, String parms) {
+  protected void loadModel(File directory, String parms) {
     File modelFile = new File(directory, FILENAME_MODEL);
     if (!modelFile.exists()) {
       throw new GateRuntimeException("Cannot load model file, does not exist: " + modelFile);
@@ -40,6 +41,7 @@ public abstract class EngineMallet extends Engine {
     try {
       ois = new ObjectInputStream(new FileInputStream(modelFile));
       classifier = (Classifier) ois.readObject();
+      model=classifier;
     } catch (Exception ex) {
       throw new GateRuntimeException("Could not load Mallet model", ex);
     } finally {
@@ -54,7 +56,11 @@ public abstract class EngineMallet extends Engine {
   }
 
   @Override
-  public void saveModel(File directory) {
+  protected void saveModel(File directory) {
+    if(model==null) {
+      // TODO: this should eventually throw an exception, we leave it for testing now.
+      System.err.println("WARNING: saving a null model!!!");
+    }
     ObjectOutputStream oos = null;
     try {
       oos = new ObjectOutputStream(new FileOutputStream(new File(directory, FILENAME_MODEL)));

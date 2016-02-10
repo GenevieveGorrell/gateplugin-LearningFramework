@@ -3,12 +3,13 @@ package gate.plugin.learningframework.tests;
 
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 /**
  *
  * @author Johann Petrak
  */
-public class EngineWekaTest {
+public class TestEngineWeka {
 
   @Test
   public void somethingShouldReturnThis() {

@@ -154,8 +154,9 @@ public class FeatureExtraction {
     // For now, we throw an exception if there are several!
     
     Annotation sourceAnnotation = null;
-    if (instanceAnnotation.getType().equals(annType)) {
+    if (annType.isEmpty() || instanceAnnotation.getType().equals(annType)) {
       sourceAnnotation = instanceAnnotation;
+      annType = sourceAnnotation.getType();
     } else {
       AnnotationSet overlappings = gate.Utils.getOverlappingAnnotations(inputAS, instanceAnnotation, annType);
       if(overlappings.size() > 1) {
@@ -504,6 +505,9 @@ public class FeatureExtraction {
     Alphabet alphabet = al.alphabet;
     MissingValueTreatment mvt = al.missingValueTreatment;
     CodeAs codeas = al.codeas;
+    if(annType.isEmpty()) {
+      annType = instanceAnnotation.getType();
+    }
     long centre = instanceAnnotation.getStartNode().getOffset();
     List<Annotation> annlistforward = inputAS.get(annType, centre, doc.getContent().size()).inDocumentOrder();
     List<Annotation> annlistbackward = inputAS.get(annType, 0L, centre).inDocumentOrder();

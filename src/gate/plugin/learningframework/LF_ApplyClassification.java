@@ -11,11 +11,6 @@
 package gate.plugin.learningframework;
 
 import gate.learningframework.classification.GateClassification;
-import gate.learningframework.classification.EngineLibSVM;
-import gate.learningframework.classification.EngineMalletSeq;
-import gate.learningframework.classification.EngineWeka;
-import gate.learningframework.classification.Engine;
-import gate.learningframework.classification.EngineMallet;
 import java.io.File;
 import java.util.Iterator;
 import java.util.List;
@@ -32,6 +27,8 @@ import gate.creole.metadata.CreoleParameter;
 import gate.creole.metadata.CreoleResource;
 import gate.creole.metadata.Optional;
 import gate.creole.metadata.RunTime;
+import gate.plugin.learningframework.engines.AlgorithmKind;
+import gate.plugin.learningframework.engines.Engine;
 import gate.util.GateRuntimeException;
 
 /**
@@ -83,88 +80,69 @@ public class LF_ApplyClassification extends LearningFrameworkPRBase {
     return this.confidenceThreshold;
   }
 
-  protected String outClassFeature;
+  protected String targetFeature;
 
   // TODO: we want to get rid of this and read this name from the info file!!
   @RunTime
   @Optional
   @CreoleParameter(comment = "Name of class feature to add to the original "
-          + "instance annotations, if empty new annotation is created.",
+          + "instance annotations",
           defaultValue = "")
-  public void setOutClassFeature(String name) {
-    outClassFeature = name;
+  public void setTargetFeature(String name) {
+    targetFeature = name;
   }
 
-  public String getOutClassFeature() {
-    return outClassFeature;
+  public String getTargetFeature() {
+    return targetFeature;
   }
+  
+  String sequenceSpan;
+  
+  @RunTime
+  @Optional
+  @CreoleParameter(comment = "For sequence learners, an annotation type "
+          + "defining a meaningful sequence span. Ignored by non-sequence "
+          + "learners. Needs to be in the input AS.")
+  public void setSequenceSpan(String seq) {
+    sequenceSpan = seq;
+  }
+
+  public String getSequenceSpan() {
+    return sequenceSpan;
+  }
+  
+  
 
 ////////////////////////////////////////////////////////////////////////////
-  private final String sequenceSpan = null;
 
-  private Engine applicationLearner;
+  private Engine engine;
 
   private File savedModelDirectoryFile;
 
-  private final Mode mode = Mode.CLASSIFICATION;
 
   @Override
   public void execute(Document doc) {
-
-    if (applicationLearner != null) {
-      List<GateClassification> gcs = null;
-
-      // TODO: (JP) this should really check the actual type of the learner,
-      // rather than what kind of learning is currently set as a parameter,
-      // because the learner we read from the savedModel directory could
-      // be entirely different. Also, we could then inform about the actual
-      // learning class used.
-      // At the moment, if an unknown model was loaded from a directory,
-      // the whatIsIt will return null, so we handle this separately.
-      if (applicationLearner.whatIsIt() == null) {
-        if (applicationLearner instanceof EngineWeka) {
-          gcs = ((EngineWeka) applicationLearner).classify(this.instanceType, this.inputASName, doc);
-        } else if (applicationLearner instanceof EngineMallet
-                && ((EngineMallet) applicationLearner).getMode() == Mode.CLASSIFICATION) {
-          gcs = ((EngineMallet) applicationLearner).classify(this.instanceType, this.inputASName, doc);
-        } else if (applicationLearner instanceof EngineMallet
-                && ((EngineMallet) applicationLearner).getMode() == Mode.NAMED_ENTITY_RECOGNITION) {
-          gcs = ((EngineMalletSeq) applicationLearner).classify(this.instanceType, this.inputASName, doc, this.sequenceSpan);
-        } else {
-          throw new GateRuntimeException("Found a strange instance of an engine");
-        }
-      } else {
-        switch (applicationLearner.whatIsIt()) {
-          case LIBSVM:
-            gcs = ((EngineLibSVM) applicationLearner).classify(this.instanceType, this.inputASName, doc);
-            break;
-          case MALLET_CL_C45:
-          case MALLET_CL_DECISION_TREE:
-          case MALLET_CL_MAX_ENT:
-          case MALLET_CL_NAIVE_BAYES_EM:
-          case MALLET_CL_NAIVE_BAYES:
-          case MALLET_CL_WINNOW:
-            gcs = ((EngineMallet) applicationLearner).classify(this.instanceType, this.inputASName, doc);
-            break;
-          case MALLET_SEQ_CRF:
-            gcs = ((EngineMalletSeq) applicationLearner).classify(this.instanceType, this.inputASName, doc, this.sequenceSpan);
-            break;
-          case WEKA_CL_NUM_ADDITIVE_REGRESSION:
-          case WEKA_CL_NAIVE_BAYES:
-          case WEKA_CL_J48:
-          case WEKA_CL_JRIP:
-          case WEKA_CL_RANDOM_TREE:
-          case WEKA_CL_MULTILAYER_PERCEPTRON:
-          case WEKA_CL_IBK:
-          case WEKA_CL_LOGISTIC_REGRESSION:
-          case WEKA_CL_RANDOM_FOREST:
-            gcs = ((EngineWeka) applicationLearner).classify(this.instanceType, this.inputASName, doc);
-            break;
-        }
-      }
-
-      addClassificationAnnotations(doc, gcs);
+    // extract the required annotation sets,
+    AnnotationSet inputAS = doc.getAnnotations(getInputASName());
+    AnnotationSet instanceAS = inputAS.get(getInstanceType());
+    // the classAS 
+    // the sequenceAS must be specified for a sequence tagging algorithm and most not be specified
+    // for a non-sequence tagging algorithm!
+    AnnotationSet sequenceAS = null;
+    if(engine.getAlgorithmKind() == AlgorithmKind.SEQUENCE_TAGGER) {
+      // NOTE: we already have checked earlier, that in that case, the sequenceSpan parameter is 
+      // given!
+      sequenceAS = doc.getAnnotations(getSequenceSpan());
     }
+    // the classAS is always null for the classification task!
+    // the nameFeatureName is always null for now!
+    String nameFeatureName = null;
+
+    List<GateClassification> gcs = engine.classify(
+          instanceAS, inputAS,
+          sequenceAS, getAlgorithmParameters());
+
+    addClassificationAnnotations(doc, gcs);
   }
 
   /*
@@ -181,26 +159,22 @@ public class LF_ApplyClassification extends LearningFrameworkPRBase {
     while (gcit.hasNext()) {
       GateClassification gc = gcit.next();
 
-      //We have a valid classification. Now write it onto the document.
-      // If this is classification and the add feature value is set,
-      // do not create a new annotation and instead just add features
-      // to the instance annotation
-      // TODO: this can be refactored to be more concise!
-      if (mode == Mode.CLASSIFICATION && getOutClassFeature() != null
-              && !getOutClassFeature().isEmpty()) {
+      //if (mode == Mode.CLASSIFICATION && getOutClassFeature() != null
+      //        && !getOutClassFeature().isEmpty()) {
         Annotation instance = gc.getInstance();
         FeatureMap fm = instance.getFeatures();
         // Instead of the predefined output class feature name use the one specified
         // as a PR parameter
         //
         // fm.put(outputClassFeature, gc.getClassAssigned());
-        fm.put(getOutClassFeature(), gc.getClassAssigned());
+        fm.put(getTargetFeature(), gc.getClassAssigned());
         fm.put(Globals.outputProbFeature, gc.getConfidenceScore());
         if (gc.getClassList() != null && gc.getConfidenceList() != null) {
           fm.put(Globals.outputClassFeature + "_list", gc.getClassList());
           fm.put(Globals.outputProbFeature + "_list", gc.getConfidenceList());
         }
-      } else {
+      //} else {
+      /*
         FeatureMap fm = Factory.newFeatureMap();
         fm.putAll(gc.getInstance().getFeatures());
         fm.put(Globals.outputClassFeature, gc.getClassAssigned());
@@ -217,6 +191,7 @@ public class LF_ApplyClassification extends LearningFrameworkPRBase {
                 gc.getInstance().getEndNode(),
                 gc.getInstance().getType(), fm);
       } // else if CLASSIFICATION and have out class feature
+      */
 
     }
   }
@@ -239,27 +214,19 @@ public class LF_ApplyClassification extends LearningFrameworkPRBase {
     savedModelDirectoryFile = new File(
             gate.util.Files.fileFromURL(dataDirectory), Globals.savedModelDirectory);
 
-    applicationLearner = Engine.restoreLearner(savedModelDirectoryFile);
-    //System.out.println("LF-Info: model loaded is now "+applicationLearner);
+    // Restore the Engine
+    engine = Engine.loadEngine(savedModelDirectoryFile, getAlgorithmParameters());
+    System.out.println("LF-Info: model loaded is now "+engine);
 
-    if (this.applicationLearner == null) {
+    if (engine.getModel() == null) {
       throw new GateRuntimeException("Do not have a model, something went wrong.");
     } else {
       System.out.println("LearningFramework: Applying model "
-              + applicationLearner.whatIsItString() + " ...");
-      if (applicationLearner.getPipe() == null) {
-        System.out.println("Model classes: UNKNOWN, no pipe");
-      } else {
-        System.out.println("Model classes: "
-                + applicationLearner.getPipe().getTargetAlphabet().toString().replaceAll("\\n", " "));
-      }
-
-      if (applicationLearner.getMode() != mode) {
-        logger.warn("LearningFramework: Warning! Applying "
-                + "model trained in " + applicationLearner.getMode()
-                + " mode in " + mode + " mode!");
-      }
+              + engine.getModel().getClass() + " ...");
     }
+    // TODO: IMPORTANT: the restored engine should be able to tell 
+    // what is the target feature name?
+    // is it indeed a classification model?
   }
 
 }

@@ -6,13 +6,17 @@
 
 package gate.plugin.learningframework.engines;
 
+import cc.mallet.types.Alphabet;
 import cc.mallet.types.InstanceList;
+import cc.mallet.types.LabelAlphabet;
 import gate.AnnotationSet;
 import gate.learningframework.classification.GateClassification;
 import gate.plugin.learningframework.data.CorpusRepresentationMallet;
 import gate.plugin.learningframework.mallet.LFPipe;
 import gate.util.GateRuntimeException;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.apache.log4j.Logger;
 
@@ -27,7 +31,7 @@ public abstract class Engine {
   public static final String FILENAME_MODEL = "lf.model";
   public static final String FILENAME_PIPE = "lf.pipe";
   
-  Logger logger = Logger.getLogger(Engine.class);
+  private static Logger logger = Logger.getLogger(Engine.class);
   
   /**
    * The Mallet Corpus Representation associated with this engine. 
@@ -51,7 +55,12 @@ public abstract class Engine {
     Info info = Info.load(directory);
     // extract the Engine class from the file and create an instance of the engine
     Engine eng;
-    try {
+    try { 
+      //String classname = "gate.plugin.learningframework.engines.EngineMalletClass";
+      //System.err.println("Trying literal >"+classname+"<");
+      //eng = (Engine)info.getClass().getClassLoader().loadClass(classname).newInstance();
+      //System.err.println("Trying fomr var: >"+info.engineClass+"<");      
+      //eng = (Engine)info.getClass().getClassLoader().loadClass(info.engineClass.trim()).newInstance();
       eng = (Engine)Class.forName(info.engineClass).newInstance();
     } catch (Exception ex) {
       throw new GateRuntimeException("Error creating engine class when loading: "+info.engineClass,ex);
@@ -64,6 +73,25 @@ public abstract class Engine {
     // representation if necessary.
     eng.loadModel(directory, parms);
     eng.loadMalletCorpusRepresentation(directory);
+    
+    // TODO: re-create an algorithm object of the correct class
+    Algorithm algorithm = null;
+    if(info.algorithmClass.equals(AlgorithmClassification.class.getName())) {
+      algorithm = AlgorithmClassification.valueOf(info.algorithmName);      
+    } else if(info.algorithmClass.equals(AlgorithmSequenceTagging.class.getName())) {
+      algorithm = AlgorithmSequenceTagging.valueOf(info.algorithmName);
+    } else if(info.algorithmClass.equals(AlgorithmRegression.class.getName())) {
+      algorithm = AlgorithmRegression.valueOf(info.algorithmName);      
+    } else {
+      throw new GateRuntimeException("Not a known algorithm enumeration class "+info.algorithmClass);
+    }
+    if(algorithm.getTrainerClass()==null) try {
+      algorithm.setTrainerClass(Class.forName(info.trainerClass));
+    } catch (Exception ex) {
+      throw new GateRuntimeException("Could not find the trainer class "+info.trainerClass);
+    }
+    
+    eng.initializeAlgorithm(algorithm,parms);
     return eng;
   }
   
@@ -82,10 +110,13 @@ public abstract class Engine {
    * @param directory 
    */
   public void saveEngine(File directory) {
-    // First save the info. 
+    // First save the info, but before that, update the info!
+    info.modelClass = model.getClass().getName();
     info.save(directory);
     // Then delegate to the engine to save the model
     saveModel(directory);
+    // finally save the Mallet corpus representation
+    corpusRepresentation.save(directory);
   }
   
   
@@ -109,6 +140,12 @@ public abstract class Engine {
     }
     eng.initializeAlgorithm(algorithm,parms);
     eng.corpusRepresentation = crm;
+    eng.info = new Info();
+    eng.info.trainerClass = algorithm.getTrainerClass().getName();
+    eng.info.engineClass = algorithm.getEngineClass().getName();
+    eng.info.task = eng.getAlgorithmKind().toString();
+    eng.info.algorithmClass = algorithm.getClass().getName();
+    eng.info.algorithmName = algorithm.toString();
     return eng;
   }
   
@@ -123,9 +160,9 @@ public abstract class Engine {
    * @param directory
    * @param info 
    */
-  public abstract void loadModel(File directory, String parms);
+  protected abstract void loadModel(File directory, String parms);
   
-  public abstract void saveModel(File directory);
+  protected abstract void saveModel(File directory);
   
   
   /**
@@ -135,6 +172,24 @@ public abstract class Engine {
    * format, using one of the CorpusRepresentationXXX classes.
    */
   public abstract void trainModel(String parms);
+  
+  protected void updateInfo() {
+    info.nrTrainingInstances = corpusRepresentation.getRepresentationMallet().size();
+    info.nrTrainingDimensions = corpusRepresentation.getRepresentationMallet().getDataAlphabet().size();    
+    LFPipe pipe = (LFPipe)corpusRepresentation.getPipe();
+    Alphabet targetAlph = pipe.getTargetAlphabet();
+    if(targetAlph == null) {
+      info.nrTargetValues = 0;
+    } else {
+      info.nrTargetValues = targetAlph.size();
+      //info.classLabels = 
+      Object[] objs = targetAlph.toArray();
+      ArrayList<String> labels = new ArrayList<String>();
+      for(Object obj : objs) { labels.add(obj.toString()); }
+      info.classLabels = labels;
+    }
+    
+  }
   
   /**
    * Classify all instance annotations.
@@ -176,6 +231,14 @@ public abstract class Engine {
   protected Object model;
   public Object getModel() { return model; }
   
+  public AlgorithmKind getAlgorithmKind() { 
+    // Most algorithms are classification algorithm, those which are not will return 
+    // a different value. This does not tell about what task (classification, sequence tagging etc.)
+    // the algorithm is used for, it says what the ability of the algorithm is, and hence what kind
+    // of independent features or targets it needs to handle.
+    return AlgorithmKind.CLASSIFIER; 
+  }
+  
   /**
    * The trainer is the instance of something that can be used to create a trained model.
    * This should be set right after the EngineXXX instance is created.
@@ -187,5 +250,8 @@ public abstract class Engine {
   
   public Info getInfo() { return info; }
   
+  public String toString() {
+    return "Engine{"+getClass()+" alg="+trainer+", info="+info+", model="+this.getModel()+"}";
+  }
   
 }

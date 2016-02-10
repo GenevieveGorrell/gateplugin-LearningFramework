@@ -44,7 +44,7 @@ public class EngineWeka extends Engine {
   }
 
   @Override
-  public void loadModel(File directory, String parms) {
+  protected void loadModel(File directory, String parms) {
     // when this is called, info should already be set
     // we create the instance of the training algorithm from the infor and the instance of
     // the actual trained classifier from de-serialization of the file
@@ -59,9 +59,9 @@ public class EngineWeka extends Engine {
         throw new GateRuntimeException("Could not load Weka model file "+modelFile,e);
     }    
     try {
-      trainer = Class.forName(info.algorithmClass).newInstance();
+      trainer = Class.forName(info.trainerClass).newInstance();
     } catch (Exception ex) {
-      throw new GateRuntimeException("Could not create Weka trainer instance for "+info.algorithmClass,ex);
+      throw new GateRuntimeException("Could not create Weka trainer instance for "+info.trainerClass,ex);
     }
     // now load the Mallet corpus representation
     loadMalletCorpusRepresentation(directory);
@@ -83,6 +83,7 @@ public class EngineWeka extends Engine {
     } catch (Exception ex) {
       throw new GateRuntimeException("Error during training of Weka algorithm "+alg.getClass(),ex);
     }
+    updateInfo();
   }
   
   CorpusRepresentationWeka crWeka;
@@ -205,7 +206,7 @@ public class EngineWeka extends Engine {
 
   @Override
   public void saveModel(File directory) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    
   }
 
 }

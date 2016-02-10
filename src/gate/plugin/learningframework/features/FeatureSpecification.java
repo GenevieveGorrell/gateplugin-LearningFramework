@@ -136,7 +136,8 @@ public class FeatureSpecification {
     String atype = getChildTextOrElse(attributeElement, "TYPE", "");
     // must not be empty
     if (atype.isEmpty()) {
-      throw new GateRuntimeException("TYPE in ATTRIBUTE " + i + " must not be missing or empty");
+      //throw new GateRuntimeException("TYPE in ATTRIBUTE " + i + " must not be missing or empty");
+      System.err.println("Warning: TYPE in ATTRIBUTE "+i+" is empty, using instance annotation type");
     }
     String codeasstr = getChildTextOrElse(attributeElement, "CODEAS", "").toLowerCase();
     if (!codeasstr.isEmpty() && !codeasstr.equals("one_of_k") && !codeasstr.equals("number")) {

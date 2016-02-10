@@ -19,7 +19,7 @@ public class TestInfo {
   @Test
   public void testInfo1() {
     Info info = new Info();
-    info.algorithmClass = "theAlgorithmClass";
+    info.trainerClass = "theAlgorithmClass";
     info.engineClass = "theEngineClass";
     info.nrTrainingInstances = 2;
     File directory = new File("/tmp/testInfo");

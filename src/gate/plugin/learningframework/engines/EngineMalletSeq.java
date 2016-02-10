@@ -32,6 +32,10 @@ public class EngineMalletSeq extends EngineMallet {
     // DOES NOTHINIG?
   }
 
+  public AlgorithmKind getAlgorithmKind() { 
+    return AlgorithmKind.SEQUENCE_TAGGER; 
+  }
+ 
 
   @Override
   public void trainModel(String parms) {
@@ -66,7 +70,8 @@ public class EngineMalletSeq extends EngineMallet {
     // all setup done, train until convergence
     crfTrainer.setMaxResets(0);
     crfTrainer.train(trainingData, Integer.MAX_VALUE);
-
+    
+    updateInfo();
     
   }
 
