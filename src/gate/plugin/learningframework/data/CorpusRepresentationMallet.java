@@ -8,8 +8,14 @@ package gate.plugin.learningframework.data;
 
 import cc.mallet.types.Alphabet;
 import cc.mallet.types.InstanceList;
+import static gate.plugin.learningframework.data.CorpusRepresentationMalletClass.logger;
 import gate.plugin.learningframework.features.FeatureInfo;
 import gate.plugin.learningframework.mallet.LFPipe;
+import gate.util.GateRuntimeException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 
 /**
  * Common base class for Mallet for classification and  Mallet for sequence tagging.
@@ -21,6 +27,10 @@ public abstract class CorpusRepresentationMallet extends CorpusRepresentation {
   public InstanceList getRepresentationMallet() { return instances; }
   
   public Object getRepresentation() { return instances; }
+  
+  public LFPipe getPipe() {
+    return (LFPipe)instances.getPipe();
+  }
   
   /**
    * Prevent the addition of new features or feature values when instances are added.
@@ -46,5 +56,5 @@ public abstract class CorpusRepresentationMallet extends CorpusRepresentation {
     FeatureInfo fi = pipe.getFeatureInfo();
     fi.startGrowth();    
   }
-  
+    
 }

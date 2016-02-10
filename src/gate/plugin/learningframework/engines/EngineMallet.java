@@ -7,6 +7,7 @@
 package gate.plugin.learningframework.engines;
 
 import cc.mallet.classify.Classifier;
+import gate.plugin.learningframework.data.CorpusRepresentationMallet;
 import static gate.plugin.learningframework.engines.Engine.FILENAME_MODEL;
 import gate.util.GateRuntimeException;
 import java.io.File;
@@ -21,6 +22,12 @@ import java.io.ObjectOutputStream;
  * @author Johann Petrak
  */
 public abstract class EngineMallet extends Engine {
+  
+  protected CorpusRepresentationMallet corpusRepresentation;
+  
+  public CorpusRepresentationMallet getCorpusRepresentationMallet() {
+    return corpusRepresentation;
+  }
 
   @Override
   public void loadModel(File directory, String parms) {

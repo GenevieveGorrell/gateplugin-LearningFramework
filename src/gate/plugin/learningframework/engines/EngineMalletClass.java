@@ -21,11 +21,6 @@ import gate.plugin.learningframework.data.CorpusRepresentationMalletClass;
 import gate.plugin.learningframework.mallet.LFPipe;
 import gate.util.GateRuntimeException;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -40,23 +35,18 @@ public class EngineMalletClass extends EngineMallet {
 
 
   @Override
-  public void trainModel(CorpusRepresentationMallet data, String parms) {
-    if(data instanceof CorpusRepresentationMalletClass) {
-      ((ClassifierTrainer) trainer).train(data.getRepresentationMallet());
-    } else {
-      throw new GateRuntimeException("Cannot train classification model from "+data.getClass());
-    }
+  public void trainModel(String parms) {
+    ((ClassifierTrainer) trainer).train(corpusRepresentation.getRepresentationMallet());
   }
 
   @Override
   public List<GateClassification> classify(
-          CorpusRepresentationMallet crm, 
           AnnotationSet instanceAS, AnnotationSet inputAS, AnnotationSet sequenceAS, String parms) {
     // NOTE: the crm should be of type CorpusRepresentationMalletClass for this to work!
-    if(!(crm instanceof CorpusRepresentationMalletClass)) {
-      throw new GateRuntimeException("Cannot perform classification with data from "+crm.getClass());
+    if(!(corpusRepresentation instanceof CorpusRepresentationMalletClass)) {
+      throw new GateRuntimeException("Cannot perform classification with data from "+corpusRepresentation.getClass());
     }
-    CorpusRepresentationMalletClass data = (CorpusRepresentationMalletClass)crm;
+    CorpusRepresentationMalletClass data = (CorpusRepresentationMalletClass)corpusRepresentation;
     List<GateClassification> gcs = new ArrayList<GateClassification>();
     LFPipe pipe = (LFPipe)data.getRepresentationMallet().getPipe();
     Classifier classifier = (Classifier)model;
@@ -123,6 +113,11 @@ public class EngineMalletClass extends EngineMallet {
   @Override
   public Object evaluateXVal(InstanceList instances, int k, String parms) {
     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
+  @Override
+  protected void loadMalletCorpusRepresentation(File directory) {
+    corpusRepresentation = CorpusRepresentationMalletClass.load(directory);
   }
 
 }

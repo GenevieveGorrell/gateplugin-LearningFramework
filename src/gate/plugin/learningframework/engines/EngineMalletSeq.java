@@ -34,13 +34,10 @@ public class EngineMalletSeq extends EngineMallet {
 
 
   @Override
-  public void trainModel(CorpusRepresentationMallet data, String parms) {
-    if(!(data instanceof CorpusRepresentationMalletSeq)) {    
-      throw new GateRuntimeException("Cannot train a sequence algorithm with data from MalletClass");
-    }
+  public void trainModel(String parms) {
     
     // TODO: maybe we should allow more flexibility here based on the parms specified!?!?!
-    InstanceList trainingData = data.getRepresentationMallet();
+    InstanceList trainingData = corpusRepresentation.getRepresentationMallet();
     //Sanity check--how does the data look?
     //logger.info("LearningFramework: Instances: " + trainingData.size());
     //logger.info("LearningFramework: Data labels: " + trainingData.getDataAlphabet().size());
@@ -75,7 +72,6 @@ public class EngineMalletSeq extends EngineMallet {
 
   @Override
   public List<GateClassification> classify(
-          CorpusRepresentationMallet data,
           AnnotationSet instanceAS, AnnotationSet inputAS, AnnotationSet sequenceAS, String parms) {
     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
@@ -90,5 +86,10 @@ public class EngineMalletSeq extends EngineMallet {
     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 
+  @Override
+  protected void loadMalletCorpusRepresentation(File directory) {
+    corpusRepresentation = CorpusRepresentationMalletSeq.load(directory);
+  }
+  
 
 }

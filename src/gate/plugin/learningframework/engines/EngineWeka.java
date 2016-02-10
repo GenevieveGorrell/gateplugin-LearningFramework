@@ -63,16 +63,18 @@ public class EngineWeka extends Engine {
     } catch (Exception ex) {
       throw new GateRuntimeException("Could not create Weka trainer instance for "+info.algorithmClass,ex);
     }
+    // now load the Mallet corpus representation
+    loadMalletCorpusRepresentation(directory);
   }
 
   @Override
-  public void trainModel(CorpusRepresentationMallet data, String parms) {
+  public void trainModel(String parms) {
     if(trainer == null) {
       throw new GateRuntimeException("Cannot train Weka model, not trainer initialized");
     }
     Classifier alg = (Classifier)trainer;
     // convert the Mallet representation to Weka instances
-    CorpusRepresentationWeka crw = new CorpusRepresentationWeka(data);
+    CorpusRepresentationWeka crw = new CorpusRepresentationWeka(corpusRepresentation);
     
     try {
       alg.buildClassifier(crw.getRepresentationWeka());
@@ -85,31 +87,20 @@ public class EngineWeka extends Engine {
   
   CorpusRepresentationWeka crWeka;
   
+  
   @Override
-  public void setCorpusRepresentation(CorpusRepresentationMallet crm, boolean includeTarget) {
-    crMallet = crm;
-    // TODO: create an instance of the weka corpus representation based on the mallet one.
-    // this helps to create the information about the Weka attributes only once.
-    crWeka = new CorpusRepresentationWeka(crm);
+  protected void loadMalletCorpusRepresentation(File directory) {
+    corpusRepresentation = CorpusRepresentationMalletClass.load(directory);
+    crWeka = new CorpusRepresentationWeka(corpusRepresentation,false);
   }
+  
 
   @Override
   public List<GateClassification> classify(
-          CorpusRepresentationMallet crm,
           AnnotationSet instanceAS, AnnotationSet inputAS, AnnotationSet sequenceAS, String parms) {
-    if(!(crm instanceof CorpusRepresentationMalletClass)) {
-      throw new GateRuntimeException("Cannot perform classification with data from "+crm.getClass());
-    }
-    
-    if(crWeka == null) {
-      // throw new GateRuntimeException("Cannot perform Weka classification, setCorpusRepresentation has not been called");
-      // cache the newly created weka representation which means the representation wil contain
-      // the right weka dataset to be used for converting from mallet to weka
-      crWeka = new CorpusRepresentationWeka(crm,false);
-    }
     
     Instances instances = crWeka.getRepresentationWeka();
-    CorpusRepresentationMalletClass data = (CorpusRepresentationMalletClass)crm;
+    CorpusRepresentationMalletClass data = (CorpusRepresentationMalletClass)corpusRepresentation;
     List<GateClassification> gcs = new ArrayList<GateClassification>();
     LFPipe pipe = (LFPipe)data.getRepresentationMallet().getPipe();
     Classifier wekaClassifier = (Classifier)model;

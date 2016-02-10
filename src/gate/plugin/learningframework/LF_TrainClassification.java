@@ -26,7 +26,8 @@ import gate.plugin.learningframework.engines.AlgorithmClassification;
 import gate.plugin.learningframework.engines.Engine;
 import gate.plugin.learningframework.features.FeatureSpecification;
 import gate.plugin.learningframework.features.TargetType;
-import org.apache.commons.lang.NotImplementedException;
+import gate.util.Files;
+import gate.util.GateRuntimeException;
 
 /**
  *
@@ -105,6 +106,22 @@ public class LF_TrainClassification extends LF_TrainBase {
 
   private Engine engine = null;
 
+  protected String sequenceSpan;
+
+  @RunTime
+  @Optional
+  @CreoleParameter(comment = "For sequence learners, an annotation type "
+          + "defining a meaningful sequence span. Ignored by non-sequence "
+          + "learners. Needs to be in the input AS.")
+  public void setSequenceSpan(String seq) {
+    this.sequenceSpan = seq;
+  }
+
+  public String getSequenceSpan() {
+    return this.sequenceSpan;
+  }
+  
+  
 
   @Override
   public void execute(Document doc) {
@@ -116,9 +133,9 @@ public class LF_TrainClassification extends LF_TrainBase {
     // for a non-sequence tagging algorithm!
     AnnotationSet sequenceAS = null;
     if(getTrainingAlgorithm() == AlgorithmClassification.MALLET_SEQ_CRF) {
-      throw new NotImplementedException("Need to implement MALLET_SEQ_CRF to be used as a classifier");
-    } else {
-      // nothing to do, the sequenceAS is already null
+      // NOTE: we already have checked earlier, that in that case, the sequenceSpan parameter is 
+      // given!
+      sequenceAS = doc.getAnnotations(getSequenceSpan());
     }
     // the classAS is always null for the classification task!
     // the nameFeatureName is always null for now!
@@ -140,8 +157,9 @@ public class LF_TrainClassification extends LF_TrainBase {
       //System.out.println("DEBUG: instances are "+corpusRepresentation.getRepresentationMallet());
       
       corpusRepresentation.addScaling(getScaleFeatures());
-      engine.trainModel(corpusRepresentation, getAlgorithmParameters());
+      engine.trainModel(getAlgorithmParameters());
       logger.info("LearningFramework: Training complete!");
+      engine.saveEngine(Files.fileFromURL(getDataDirectory()));      
     }
 
   @Override
@@ -151,13 +169,20 @@ public class LF_TrainClassification extends LF_TrainBase {
 
   @Override
   protected void beforeFirstDocument(Controller controller) {
+    
+    if(getTrainingAlgorithm() == AlgorithmClassification.MALLET_SEQ_CRF) {
+      if(getSequenceSpan() == null || getSequenceSpan().isEmpty()) {
+        throw new GateRuntimeException("SequenceSpan parameter is required for MALLET_SEQ_CRF");
+      } 
+    } else {
+      if(getSequenceSpan() != null && !getSequenceSpan().isEmpty()) {
+        throw new GateRuntimeException("SequenceSpan parameter must not be specified with non-sequence tagging algorithm");
+      }
+    }
+    
     System.err.println("DEBUG: Before Document.");
     System.err.println("  Training algorithm engine class is "+getTrainingAlgorithm().getEngineClass());
     System.err.println("  Training algorithm algor class is "+getTrainingAlgorithm().getTrainerClass());
-    
-    // Create the engine from the Algorithm parameter
-    engine = Engine.createEngine(trainingAlgorithm, getAlgorithmParameters());
-    System.err.println("DEBUG: created the engine: "+engine);
     
     // Read and parse the feature specification
     featureSpec = new FeatureSpecification(featureSpecURL);
@@ -166,6 +191,11 @@ public class LF_TrainClassification extends LF_TrainBase {
     // create the corpus representation for creating the training instances
     corpusRepresentation = new CorpusRepresentationMalletClass(featureSpec.getFeatureInfo(), scaleFeatures);
     System.err.println("DEBUG: created the corpusRepresentationMallet: "+corpusRepresentation);
+
+    // Create the engine from the Algorithm parameter
+    engine = Engine.createEngine(trainingAlgorithm, getAlgorithmParameters(),corpusRepresentation);
+    System.err.println("DEBUG: created the engine: "+engine);
+    
     
     System.err.println("DEBUG: setup of the training PR complete");
   }

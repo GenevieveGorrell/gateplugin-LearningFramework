@@ -34,7 +34,11 @@ import gate.plugin.learningframework.features.TargetType;
 import gate.plugin.learningframework.mallet.LFPipe;
 import gate.util.GateRuntimeException;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
+import java.util.logging.Level;
 import org.apache.log4j.Logger;
 
 /**
@@ -67,6 +71,46 @@ public class CorpusRepresentationMalletClass extends CorpusRepresentationMallet 
     pipe.setFeatureInfo(fi);
     instances = new InstanceList(pipe);
   }
+  
+  /**
+   * Non-public constructor for use when creating from a serialized pipe.
+   * @param fi 
+   */
+  CorpusRepresentationMalletClass(LFPipe pipe) {
+    this.pipe = pipe;
+    this.featureInfo = pipe.getFeatureInfo();
+    this.scalingMethod = null;
+  }
+
+  /**
+   * Create a new instance based on the pipe stored in directory.
+   * @param directory
+   * @return 
+   */
+  public static CorpusRepresentationMalletClass load(File directory) {
+    // load the pipe
+    File inFile = new File(directory,"pipe.pipe");
+    ObjectInputStream ois = null;
+    LFPipe lfpipe = null;
+    try {
+      ois = new ObjectInputStream (new FileInputStream(inFile));
+      lfpipe = (LFPipe) ois.readObject();
+    } catch (Exception ex) {
+      throw new GateRuntimeException("Could not read pipe from "+inFile,ex);
+    } finally {
+      try {
+        if(ois!=null) ois.close();
+      } catch (IOException ex) {
+        logger.error("Error closing stream after loading pipe "+inFile, ex);
+      }
+    }
+    CorpusRepresentationMalletClass crmc = new CorpusRepresentationMalletClass(lfpipe);
+    return crmc;
+  }
+  
+  
+  
+  
   
   public void clear() {
     LFPipe pipe = (LFPipe)instances.getPipe();

@@ -10,6 +10,7 @@ import cc.mallet.types.InstanceList;
 import gate.AnnotationSet;
 import gate.learningframework.classification.GateClassification;
 import gate.plugin.learningframework.data.CorpusRepresentationMallet;
+import gate.plugin.learningframework.mallet.LFPipe;
 import gate.util.GateRuntimeException;
 import java.io.File;
 import java.util.List;
@@ -29,12 +30,19 @@ public abstract class Engine {
   Logger logger = Logger.getLogger(Engine.class);
   
   /**
+   * The Mallet Corpus Representation associated with this engine. 
+   */
+  CorpusRepresentationMallet corpusRepresentation;
+  
+  /**
    * A factory method to return the engine which is stored in the given directory.
    * All the filenames are fixed so only the directory name is needed.
    * This will first read the info file which contains information about the Engine class,
    * then construct the Engine instance and initialize it.
    * If there are parameters that will influence the initialization of the algorithm,
    * they will be used.
+   * TODO: this must also load the (empty) Mallet corpus representation associated with 
+   * that engine!
    * @param directory
    * @return 
    */
@@ -52,9 +60,17 @@ public abstract class Engine {
     eng.info = info;
     // now use the specific engine's loadModel method to complete the loading: each engine
     // knows best how to load its own kinds of models.
+    // NOTE: loadModel also loads the Mallet corpus representation and initializes any non-Mallet
+    // representation if necessary.
     eng.loadModel(directory, parms);
+    eng.loadMalletCorpusRepresentation(directory);
     return eng;
   }
+  
+  protected abstract void loadMalletCorpusRepresentation(File directory);
+    
+  
+  
   
   /**
    * Save an engine to a directory.
@@ -80,9 +96,11 @@ public abstract class Engine {
    * However, some training algorithms cannot be instantiated until all the training data is
    * there (e.g. Mallet CRF) - for these, the initializeAlgorithm method does nothing and the
    * actual algorithm initialization happens when the train method is called. 
+   * The engine also stores a reference to the Mallet corpus representation (and thus, the Pipe),
+   * which enables the Engine to know about the fields and other meta-information.
    * @return 
    */
-  public static Engine createEngine(Algorithm algorithm, String parms) {
+  public static Engine createEngine(Algorithm algorithm, String parms, CorpusRepresentationMallet crm) {
     Engine eng;
     try {
       eng = (Engine)algorithm.getEngineClass().newInstance();
@@ -90,6 +108,7 @@ public abstract class Engine {
       throw new GateRuntimeException("Could not create the Engine "+algorithm.getEngineClass(),ex);
     }
     eng.initializeAlgorithm(algorithm,parms);
+    eng.corpusRepresentation = crm;
     return eng;
   }
   
@@ -97,6 +116,10 @@ public abstract class Engine {
   
   /**
    * Load a stored model into the engine.
+   * NOTE: this also loads and sets the Mallet corpus representation needed for the engine
+   * and creates any internal corpus representation from the mallet representation. Since 
+   * loading of a model is done for subsequent classification, the internal representaiton
+   * may be one where the class attribute is deliberately left away.
    * @param directory
    * @param info 
    */
@@ -111,7 +134,7 @@ public abstract class Engine {
    * The Engine instance should know best how to use or convert that representation to its own
    * format, using one of the CorpusRepresentationXXX classes.
    */
-  public abstract void trainModel(CorpusRepresentationMallet data, String parms);
+  public abstract void trainModel(String parms);
   
   /**
    * Classify all instance annotations.
@@ -120,7 +143,6 @@ public abstract class Engine {
    * @return 
    */
   public abstract List<GateClassification> classify(
-          CorpusRepresentationMallet cr,
           AnnotationSet instanceAS, AnnotationSet inputAS,
           AnnotationSet sequenceAS, String parms);
   
@@ -165,23 +187,5 @@ public abstract class Engine {
   
   public Info getInfo() { return info; }
   
-  CorpusRepresentationMallet crMallet;
-  /**
-   * Set the Mallet corpus representation to be used with this engine.
-   * This must be set for some engines before classification so that their own corpus
-   * representation can be created and cached. If this has not been called but is required,
-   * the Engine method that depends on it throws an exception.
-   * 
-   * TODO: not sure if this is really necessary, probably not. For now only Weka really 
-   * needs to know about the pipeline so the dataset can be created that is needed to 
-   * convert individual mallet instances to weka instances at classification time.
-   * But we could maybe just as well do this by caching the weka dataset once we have 
-   * created it for the first call of classify.
-   * In fact this is what we are trying at the moment ...
-   * @param crm 
-   */
-  public void setCorpusRepresentation(CorpusRepresentationMallet crm, boolean includeTarget) { 
-    crMallet = crm; 
-  }
   
 }

@@ -10,6 +10,7 @@ import cc.mallet.types.InstanceList;
 import gate.AnnotationSet;
 import gate.learningframework.classification.GateClassification;
 import gate.plugin.learningframework.data.CorpusRepresentationMallet;
+import gate.plugin.learningframework.data.CorpusRepresentationMalletClass;
 import java.io.File;
 import java.util.List;
 
@@ -36,12 +37,12 @@ public class EngineLibSVM extends Engine {
   }
 
   @Override
-  public void trainModel(CorpusRepresentationMallet data, String parms) {
+  public void trainModel(String parms) {
     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 
   @Override
-  public List<GateClassification> classify(CorpusRepresentationMallet crm,
+  public List<GateClassification> classify(
           AnnotationSet instanceAS, AnnotationSet inputAS, AnnotationSet sequenceAS, String parms) {
     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
@@ -54,6 +55,11 @@ public class EngineLibSVM extends Engine {
   @Override
   public void saveModel(File directory) {
     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
+  @Override
+  protected void loadMalletCorpusRepresentation(File directory) {
+    corpusRepresentation = CorpusRepresentationMalletClass.load(directory);
   }
 
 }
