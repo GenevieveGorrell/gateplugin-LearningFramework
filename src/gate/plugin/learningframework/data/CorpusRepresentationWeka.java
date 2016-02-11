@@ -9,6 +9,8 @@ import cc.mallet.pipe.Pipe;
 import cc.mallet.types.Alphabet;
 import cc.mallet.types.FeatureVector;
 import cc.mallet.types.InstanceList;
+import cc.mallet.types.Label;
+import cc.mallet.types.LabelAlphabet;
 import gate.plugin.learningframework.engines.Parms;
 import gate.plugin.learningframework.features.CodeAs;
 import gate.plugin.learningframework.features.Datatype;
@@ -257,7 +259,21 @@ public class CorpusRepresentationWeka extends CorpusRepresentation {
         if(malletValue == null) {
           throw new GateRuntimeException("We should have a target but the mallet instance target is null");
         }
-        values[size] = (double) malletInstance.getTarget();
+        // if we have a target alphabet, convert the label to a class index, otherwise expect
+        // a double value directly
+        if(malletInstance.getTargetAlphabet() == null) {
+          values[size] = (double) malletInstance.getTarget();
+        } else {
+          LabelAlphabet la = (LabelAlphabet)malletInstance.getTargetAlphabet();
+          Label malletLabel = (Label)malletInstance.getTarget();
+          int targetIndex = malletLabel.getIndex();
+          String targetString = malletLabel.toString();
+          int wekaIndex = wekaDataset.classAttribute().indexOfValue(targetString);
+          values[size] = (double)wekaIndex;
+          if(targetIndex != wekaIndex) {
+            System.err.println("DEBUG ASSERTION FAILED: malletIndex for target is not equal to wekaIndex");
+          }
+        }
       }
       weka.core.SparseInstance wekaInstance = new weka.core.SparseInstance(1.0, values, indices, values.length);
       // TODO: is this necessary, is this useful?

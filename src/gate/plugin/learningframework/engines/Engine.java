@@ -9,7 +9,7 @@ package gate.plugin.learningframework.engines;
 import cc.mallet.types.Alphabet;
 import cc.mallet.types.InstanceList;
 import gate.AnnotationSet;
-import gate.learningframework.classification.GateClassification;
+import gate.plugin.learningframework.GateClassification;
 import gate.plugin.learningframework.data.CorpusRepresentationMallet;
 import gate.plugin.learningframework.mallet.LFPipe;
 import gate.util.GateRuntimeException;
@@ -132,6 +132,7 @@ public abstract class Engine {
   public static Engine createEngine(Algorithm algorithm, String parms, CorpusRepresentationMallet crm) {
     Engine eng;
     try {
+      System.err.println("CREATE ENGINE: trying to create for class "+algorithm.getEngineClass());
       eng = (Engine)algorithm.getEngineClass().newInstance();
     } catch (Exception ex) {
       throw new GateRuntimeException("Could not create the Engine "+algorithm.getEngineClass(),ex);

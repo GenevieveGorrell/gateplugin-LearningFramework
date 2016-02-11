@@ -10,7 +10,6 @@
  */
 package gate.plugin.learningframework;
 
-import gate.learningframework.classification.GateClassification;
 import java.io.File;
 import java.util.Iterator;
 import java.util.List;

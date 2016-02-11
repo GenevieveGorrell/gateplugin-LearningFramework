@@ -14,6 +14,7 @@
  */
 package gate.learningframework.classification;
 
+import gate.plugin.learningframework.GateClassification;
 import gate.Annotation;
 import gate.AnnotationSet;
 import gate.Document;

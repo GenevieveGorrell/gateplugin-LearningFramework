@@ -5,8 +5,6 @@
  */
 package gate.plugin.learningframework.engines;
 
-import gate.learningframework.classification.EngineWeka;
-import weka.classifiers.lazy.IBk;
 
 /**
  *

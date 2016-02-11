@@ -12,7 +12,7 @@ import cc.mallet.fst.CRFTrainerByValueGradients;
 import cc.mallet.optimize.Optimizable;
 import cc.mallet.types.InstanceList;
 import gate.AnnotationSet;
-import gate.learningframework.classification.GateClassification;
+import gate.plugin.learningframework.GateClassification;
 import gate.plugin.learningframework.data.CorpusRepresentationMallet;
 import gate.plugin.learningframework.data.CorpusRepresentationMalletClass;
 import gate.plugin.learningframework.data.CorpusRepresentationMalletSeq;

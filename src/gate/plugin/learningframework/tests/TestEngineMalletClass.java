@@ -6,7 +6,7 @@ import gate.Annotation;
 import gate.AnnotationSet;
 import gate.Document;
 import gate.creole.ResourceInstantiationException;
-import gate.learningframework.classification.GateClassification;
+import gate.plugin.learningframework.GateClassification;
 import gate.plugin.learningframework.ScalingMethod;
 import gate.plugin.learningframework.data.CorpusRepresentationMallet;
 import gate.plugin.learningframework.data.CorpusRepresentationMalletClass;
@@ -39,7 +39,7 @@ public class TestEngineMalletClass {
   }
   
   @Test
-  public void testCreateEngine() throws MalformedURLException, ResourceInstantiationException {
+  public void testEngineMalletClass1() throws MalformedURLException, ResourceInstantiationException {
     gate.Utils.loadPlugin(new File("../LearningFramework"));
     File configFile = new File("tests/cl-ionosphere/feats.xml");
     FeatureSpecification spec = new FeatureSpecification(configFile);
@@ -107,14 +107,4 @@ public class TestEngineMalletClass {
     assertEquals(0.9630, acc, 0.01);
   }
   
-  // NOTE: other test annotations
-  // @Test(expected = Exception.class) - fill if Exception not thrown
-  // @Test(timeout = 100) - fail if method takes longer than 100 ms
-  // @Before - execute before each test 
-  // @BeforeClass - execute once
-  // @After - execute after each test
-  // @AfterClass
-  // see http://www.vogella.com/tutorials/JUnit/article.html
-  // http://www.javacodegeeks.com/2014/11/junit-tutorial-unit-testing.html
-  // 
 }

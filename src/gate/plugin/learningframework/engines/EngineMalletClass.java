@@ -15,7 +15,7 @@ import cc.mallet.types.LabelVector;
 import cc.mallet.types.Labeling;
 import gate.Annotation;
 import gate.AnnotationSet;
-import gate.learningframework.classification.GateClassification;
+import gate.plugin.learningframework.GateClassification;
 import gate.plugin.learningframework.data.CorpusRepresentationMallet;
 import gate.plugin.learningframework.data.CorpusRepresentationMalletClass;
 import gate.plugin.learningframework.mallet.LFPipe;

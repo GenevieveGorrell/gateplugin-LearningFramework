@@ -8,12 +8,12 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
   TestFeatureSpecification.class,
   TestFeatureExtraction.class,
-  TestEngineWeka.class,
   TestPipeSerialization.class,
   TestNewVersusOld.class,
   TestInfo.class,
   TestParms.class,
-  TestEngineMalletClass.class
+  TestEngineMalletClass.class,
+  TestEngineWeka.class
 })
 public class SuiteAllTests {
   // so we can run this test from the command line 

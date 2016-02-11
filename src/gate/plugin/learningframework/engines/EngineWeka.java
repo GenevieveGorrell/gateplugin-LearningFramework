@@ -10,15 +10,17 @@ import cc.mallet.types.Instance;
 import cc.mallet.types.InstanceList;
 import gate.Annotation;
 import gate.AnnotationSet;
-import gate.learningframework.classification.GateClassification;
-import gate.plugin.learningframework.data.CorpusRepresentationMallet;
+import gate.plugin.learningframework.GateClassification;
 import gate.plugin.learningframework.data.CorpusRepresentationMalletClass;
 import gate.plugin.learningframework.data.CorpusRepresentationWeka;
 import gate.plugin.learningframework.mallet.LFPipe;
 import gate.util.GateRuntimeException;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -48,7 +50,7 @@ public class EngineWeka extends Engine {
     // when this is called, info should already be set
     // we create the instance of the training algorithm from the infor and the instance of
     // the actual trained classifier from de-serialization of the file
-    File modelFile = new File(directory, "model.model");
+    File modelFile = new File(directory, FILENAME_MODEL);
     try {
         ObjectInputStream ois
                 = new ObjectInputStream(new FileInputStream(modelFile));
@@ -206,7 +208,20 @@ public class EngineWeka extends Engine {
 
   @Override
   public void saveModel(File directory) {
-    
+    File outFile = new File(directory,FILENAME_MODEL);
+    ObjectOutputStream oos = null;
+    try {
+      oos = new ObjectOutputStream(new FileOutputStream(outFile));
+      oos.writeObject(model);
+    } catch (Exception ex) {
+      throw new GateRuntimeException("Could not save Weka model to "+outFile,ex);
+    } finally {
+      if(oos!=null) try {
+        oos.close();
+      } catch (IOException ex) {
+        // ignore
+      }
+    }
   }
 
 }

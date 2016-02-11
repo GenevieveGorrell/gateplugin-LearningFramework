@@ -15,6 +15,7 @@
 
 package gate.learningframework.classification;
 
+import gate.plugin.learningframework.GateClassification;
 import java.io.File;
 import java.io.Serializable;
 import java.net.URL;
