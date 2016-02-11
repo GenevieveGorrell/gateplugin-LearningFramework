@@ -59,7 +59,7 @@ public class EngineLibSVM extends Engine {
 
   @Override
   protected void loadMalletCorpusRepresentation(File directory) {
-    corpusRepresentation = CorpusRepresentationMalletClass.load(directory);
+    corpusRepresentationMallet = CorpusRepresentationMalletClass.load(directory);
   }
 
 }

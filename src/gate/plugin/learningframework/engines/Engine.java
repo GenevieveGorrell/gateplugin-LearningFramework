@@ -8,7 +8,6 @@ package gate.plugin.learningframework.engines;
 
 import cc.mallet.types.Alphabet;
 import cc.mallet.types.InstanceList;
-import cc.mallet.types.LabelAlphabet;
 import gate.AnnotationSet;
 import gate.learningframework.classification.GateClassification;
 import gate.plugin.learningframework.data.CorpusRepresentationMallet;
@@ -16,7 +15,6 @@ import gate.plugin.learningframework.mallet.LFPipe;
 import gate.util.GateRuntimeException;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.apache.log4j.Logger;
 
@@ -36,7 +34,7 @@ public abstract class Engine {
   /**
    * The Mallet Corpus Representation associated with this engine. 
    */
-  CorpusRepresentationMallet corpusRepresentation;
+  CorpusRepresentationMallet corpusRepresentationMallet;
   
   /**
    * A factory method to return the engine which is stored in the given directory.
@@ -116,7 +114,7 @@ public abstract class Engine {
     // Then delegate to the engine to save the model
     saveModel(directory);
     // finally save the Mallet corpus representation
-    corpusRepresentation.save(directory);
+    corpusRepresentationMallet.save(directory);
   }
   
   
@@ -139,7 +137,7 @@ public abstract class Engine {
       throw new GateRuntimeException("Could not create the Engine "+algorithm.getEngineClass(),ex);
     }
     eng.initializeAlgorithm(algorithm,parms);
-    eng.corpusRepresentation = crm;
+    eng.corpusRepresentationMallet = crm;
     eng.info = new Info();
     eng.info.trainerClass = algorithm.getTrainerClass().getName();
     eng.info.engineClass = algorithm.getEngineClass().getName();
@@ -174,9 +172,9 @@ public abstract class Engine {
   public abstract void trainModel(String parms);
   
   protected void updateInfo() {
-    info.nrTrainingInstances = corpusRepresentation.getRepresentationMallet().size();
-    info.nrTrainingDimensions = corpusRepresentation.getRepresentationMallet().getDataAlphabet().size();    
-    LFPipe pipe = (LFPipe)corpusRepresentation.getPipe();
+    info.nrTrainingInstances = corpusRepresentationMallet.getRepresentationMallet().size();
+    info.nrTrainingDimensions = corpusRepresentationMallet.getRepresentationMallet().getDataAlphabet().size();    
+    LFPipe pipe = (LFPipe)corpusRepresentationMallet.getPipe();
     Alphabet targetAlph = pipe.getTargetAlphabet();
     if(targetAlph == null) {
       info.nrTargetValues = 0;
@@ -250,8 +248,13 @@ public abstract class Engine {
   
   public Info getInfo() { return info; }
   
+  public CorpusRepresentationMallet getCorpusRepresentationMallet() {
+    return corpusRepresentationMallet;
+  }
+  
   public String toString() {
-    return "Engine{"+getClass()+" alg="+trainer+", info="+info+", model="+this.getModel()+"}";
+    return "Engine{"+getClass()+" alg="+trainer+", info="+info+
+            ", model="+this.getModel()+", CR="+corpusRepresentationMallet+"}";
   }
   
 }

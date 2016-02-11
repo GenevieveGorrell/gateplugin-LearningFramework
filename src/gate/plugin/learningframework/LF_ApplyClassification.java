@@ -134,67 +134,14 @@ public class LF_ApplyClassification extends LearningFrameworkPRBase {
       // given!
       sequenceAS = doc.getAnnotations(getSequenceSpan());
     }
-    // the classAS is always null for the classification task!
-    // the nameFeatureName is always null for now!
-    String nameFeatureName = null;
 
     List<GateClassification> gcs = engine.classify(
           instanceAS, inputAS,
           sequenceAS, getAlgorithmParameters());
 
-    addClassificationAnnotations(doc, gcs);
+    GateClassification.applyClassification(doc, gcs, getTargetFeature(), null);
   }
 
-  /*
-	 * Having received a list of GateClassifications from the learner, we
-	 * then write them onto the document if they pass the confidence threshold.
-	 * If we are doing NER, we don't apply the confidence threshold.
-   */
-  private void addClassificationAnnotations(Document doc, List<GateClassification> gcs) {
-
-    Iterator<GateClassification> gcit = gcs.iterator();
-
-    AnnotationSet outputAnnSet = doc.getAnnotations(this.outputASName);
-
-    while (gcit.hasNext()) {
-      GateClassification gc = gcit.next();
-
-      //if (mode == Mode.CLASSIFICATION && getOutClassFeature() != null
-      //        && !getOutClassFeature().isEmpty()) {
-        Annotation instance = gc.getInstance();
-        FeatureMap fm = instance.getFeatures();
-        // Instead of the predefined output class feature name use the one specified
-        // as a PR parameter
-        //
-        // fm.put(outputClassFeature, gc.getClassAssigned());
-        fm.put(getTargetFeature(), gc.getClassAssigned());
-        fm.put(Globals.outputProbFeature, gc.getConfidenceScore());
-        if (gc.getClassList() != null && gc.getConfidenceList() != null) {
-          fm.put(Globals.outputClassFeature + "_list", gc.getClassList());
-          fm.put(Globals.outputProbFeature + "_list", gc.getConfidenceList());
-        }
-      //} else {
-      /*
-        FeatureMap fm = Factory.newFeatureMap();
-        fm.putAll(gc.getInstance().getFeatures());
-        fm.put(Globals.outputClassFeature, gc.getClassAssigned());
-        fm.put(Globals.outputProbFeature, gc.getConfidenceScore());
-        if (gc.getClassList() != null && gc.getConfidenceList() != null) {
-          fm.put(Globals.outputClassFeature + "_list", gc.getClassList());
-          fm.put(Globals.outputProbFeature + "_list", gc.getConfidenceList());
-        }
-        //fm.put(this.conf.getIdentifier(), identifier);
-        if (gc.getSeqSpanID() != null) {
-          System.err.println("Refactoring error: why do we have a SeqSpanID when doing classification?");
-        }
-        outputAnnSet.add(gc.getInstance().getStartNode(),
-                gc.getInstance().getEndNode(),
-                gc.getInstance().getType(), fm);
-      } // else if CLASSIFICATION and have out class feature
-      */
-
-    }
-  }
 
   @Override
   public void afterLastDocument(Controller arg0, Throwable throwable) {

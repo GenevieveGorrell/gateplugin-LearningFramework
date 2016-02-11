@@ -74,7 +74,7 @@ public class EngineWeka extends Engine {
     }
     Classifier alg = (Classifier)trainer;
     // convert the Mallet representation to Weka instances
-    CorpusRepresentationWeka crw = new CorpusRepresentationWeka(corpusRepresentation);
+    CorpusRepresentationWeka crw = new CorpusRepresentationWeka(corpusRepresentationMallet);
     
     try {
       alg.buildClassifier(crw.getRepresentationWeka());
@@ -91,8 +91,8 @@ public class EngineWeka extends Engine {
   
   @Override
   protected void loadMalletCorpusRepresentation(File directory) {
-    corpusRepresentation = CorpusRepresentationMalletClass.load(directory);
-    crWeka = new CorpusRepresentationWeka(corpusRepresentation,false);
+    corpusRepresentationMallet = CorpusRepresentationMalletClass.load(directory);
+    crWeka = new CorpusRepresentationWeka(corpusRepresentationMallet,false);
   }
   
 
@@ -101,7 +101,7 @@ public class EngineWeka extends Engine {
           AnnotationSet instanceAS, AnnotationSet inputAS, AnnotationSet sequenceAS, String parms) {
     
     Instances instances = crWeka.getRepresentationWeka();
-    CorpusRepresentationMalletClass data = (CorpusRepresentationMalletClass)corpusRepresentation;
+    CorpusRepresentationMalletClass data = (CorpusRepresentationMalletClass)corpusRepresentationMallet;
     List<GateClassification> gcs = new ArrayList<GateClassification>();
     LFPipe pipe = (LFPipe)data.getRepresentationMallet().getPipe();
     Classifier wekaClassifier = (Classifier)model;

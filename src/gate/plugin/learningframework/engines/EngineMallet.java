@@ -27,7 +27,7 @@ public abstract class EngineMallet extends Engine {
   private static Logger logger = Logger.getLogger(EngineMallet.class);
   
   public CorpusRepresentationMallet getCorpusRepresentationMallet() {
-    return corpusRepresentation;
+    return corpusRepresentationMallet;
   }
 
   @Override

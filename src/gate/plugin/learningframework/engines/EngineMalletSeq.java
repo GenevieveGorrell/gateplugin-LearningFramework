@@ -41,7 +41,7 @@ public class EngineMalletSeq extends EngineMallet {
   public void trainModel(String parms) {
     
     // TODO: maybe we should allow more flexibility here based on the parms specified!?!?!
-    InstanceList trainingData = corpusRepresentation.getRepresentationMallet();
+    InstanceList trainingData = corpusRepresentationMallet.getRepresentationMallet();
     //Sanity check--how does the data look?
     //logger.info("LearningFramework: Instances: " + trainingData.size());
     //logger.info("LearningFramework: Data labels: " + trainingData.getDataAlphabet().size());
@@ -93,7 +93,7 @@ public class EngineMalletSeq extends EngineMallet {
 
   @Override
   protected void loadMalletCorpusRepresentation(File directory) {
-    corpusRepresentation = CorpusRepresentationMalletSeq.load(directory);
+    corpusRepresentationMallet = CorpusRepresentationMalletSeq.load(directory);
   }
   
 

@@ -38,9 +38,9 @@ public class EngineMalletClass extends EngineMallet {
   @Override
   public void trainModel(String parms) {
     System.err.println("EngineMalletClass.trainModel: trainer="+trainer);
-    System.err.println("EngineMalletClass.trainModel: CR="+corpusRepresentation);
+    System.err.println("EngineMalletClass.trainModel: CR="+corpusRepresentationMallet);
     
-    model=((ClassifierTrainer) trainer).train(corpusRepresentation.getRepresentationMallet());
+    model=((ClassifierTrainer) trainer).train(corpusRepresentationMallet.getRepresentationMallet());
     updateInfo();
   }
 
@@ -48,10 +48,10 @@ public class EngineMalletClass extends EngineMallet {
   public List<GateClassification> classify(
           AnnotationSet instanceAS, AnnotationSet inputAS, AnnotationSet sequenceAS, String parms) {
     // NOTE: the crm should be of type CorpusRepresentationMalletClass for this to work!
-    if(!(corpusRepresentation instanceof CorpusRepresentationMalletClass)) {
-      throw new GateRuntimeException("Cannot perform classification with data from "+corpusRepresentation.getClass());
+    if(!(corpusRepresentationMallet instanceof CorpusRepresentationMalletClass)) {
+      throw new GateRuntimeException("Cannot perform classification with data from "+corpusRepresentationMallet.getClass());
     }
-    CorpusRepresentationMalletClass data = (CorpusRepresentationMalletClass)corpusRepresentation;
+    CorpusRepresentationMalletClass data = (CorpusRepresentationMalletClass)corpusRepresentationMallet;
     List<GateClassification> gcs = new ArrayList<GateClassification>();
     LFPipe pipe = (LFPipe)data.getRepresentationMallet().getPipe();
     Classifier classifier = (Classifier)model;
@@ -67,9 +67,10 @@ public class EngineMalletClass extends EngineMallet {
       for(int i=0; i<labelvec.numLocations(); i++) {
         classes.add(labelvec.getLabelAtRank(i).toString());
         confidences.add(labelvec.getValueAtRank(i));
-      }
+      }      
       GateClassification gc = new GateClassification(instAnn, labeling.getBestLabel().toString(), 
               labeling.getBestValue(), classes, confidences);
+      //System.err.println("ADDING GC "+gc);
       gcs.add(gc);
     }
     return gcs;
@@ -122,7 +123,7 @@ public class EngineMalletClass extends EngineMallet {
 
   @Override
   protected void loadMalletCorpusRepresentation(File directory) {
-    corpusRepresentation = CorpusRepresentationMalletClass.load(directory);
+    corpusRepresentationMallet = CorpusRepresentationMalletClass.load(directory);
   }
 
 }
