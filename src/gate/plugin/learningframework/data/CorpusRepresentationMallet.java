@@ -32,6 +32,7 @@ public abstract class CorpusRepresentationMallet extends CorpusRepresentation {
   public Object getRepresentation() { return instances; }
   
   public LFPipe getPipe() {
+    if(instances == null) return null;
     if(instances.getPipe() == null) {
       return null;
     } else {

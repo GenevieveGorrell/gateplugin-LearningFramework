@@ -14,8 +14,8 @@ import org.junit.runners.Suite;
   TestParms.class,
   TestEngineMalletClass.class,
   TestEngineWeka.class,
-  TestEngineLibSVM.class
-  //TestEngineMalletSeq.class
+  TestEngineLibSVM.class,
+  TestEngineMalletSeq.class
 })
 public class SuiteAllTests {
   // so we can run this test from the command line 

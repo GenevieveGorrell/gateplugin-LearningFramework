@@ -83,10 +83,17 @@ public abstract class Engine {
     } else {
       throw new GateRuntimeException("Not a known algorithm enumeration class "+info.algorithmClass);
     }
-    if(algorithm.getTrainerClass()==null) try {
-      algorithm.setTrainerClass(Class.forName(info.trainerClass));
-    } catch (Exception ex) {
-      throw new GateRuntimeException("Could not find the trainer class "+info.trainerClass);
+    if(algorithm.getTrainerClass()==null) {
+      try {
+        // NOTE: in case we do not know a trainer class and we also do not have one stored in 
+        // the info file, do not create it - sometimes this is simply not necessary for 
+        // classification!
+        if(info.trainerClass!=null) {
+          algorithm.setTrainerClass(Class.forName(info.trainerClass));
+        }
+      } catch (Exception ex) {
+        throw new GateRuntimeException("Could not find the trainer class "+info.trainerClass);
+      }
     }
     
     eng.initializeAlgorithm(algorithm,parms);
@@ -140,7 +147,11 @@ public abstract class Engine {
     eng.initializeAlgorithm(algorithm,parms);
     eng.corpusRepresentationMallet = crm;
     eng.info = new Info();
-    eng.info.trainerClass = algorithm.getTrainerClass().getName();
+    // we have to prevent a NPE for those algorithms where the trainer class is not stored
+    // in the Algorithm instance
+    if(algorithm.getTrainerClass()!=null) {
+      eng.info.trainerClass = algorithm.getTrainerClass().getName();
+    }
     eng.info.engineClass = algorithm.getEngineClass().getName();
     eng.info.task = eng.getAlgorithmKind().toString();
     eng.info.algorithmClass = algorithm.getClass().getName();

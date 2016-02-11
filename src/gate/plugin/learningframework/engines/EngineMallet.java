@@ -30,30 +30,6 @@ public abstract class EngineMallet extends Engine {
     return corpusRepresentationMallet;
   }
 
-  @Override
-  protected void loadModel(File directory, String parms) {
-    File modelFile = new File(directory, FILENAME_MODEL);
-    if (!modelFile.exists()) {
-      throw new GateRuntimeException("Cannot load model file, does not exist: " + modelFile);
-    }
-    Classifier classifier;
-    ObjectInputStream ois = null;
-    try {
-      ois = new ObjectInputStream(new FileInputStream(modelFile));
-      classifier = (Classifier) ois.readObject();
-      model=classifier;
-    } catch (Exception ex) {
-      throw new GateRuntimeException("Could not load Mallet model", ex);
-    } finally {
-      if (ois != null) {
-        try {
-          ois.close();
-        } catch (IOException ex) {
-          logger.error("Could not close object input stream after loading model", ex);
-        }
-      }
-    }
-  }
 
   @Override
   protected void saveModel(File directory) {

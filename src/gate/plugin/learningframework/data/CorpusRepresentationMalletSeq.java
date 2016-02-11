@@ -65,6 +65,7 @@ public class CorpusRepresentationMalletSeq extends CorpusRepresentationMallet {
     this.pipe = pipe;
     this.featureInfo = pipe.getFeatureInfo();
     this.scalingMethod = null;
+    this.instances = new InstanceList(pipe);
   }
   
 /**

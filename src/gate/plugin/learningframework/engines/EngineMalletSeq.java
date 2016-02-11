@@ -6,6 +6,7 @@
 
 package gate.plugin.learningframework.engines;
 
+import cc.mallet.classify.Classifier;
 import cc.mallet.fst.CRF;
 import cc.mallet.fst.CRFOptimizableByLabelLikelihood;
 import cc.mallet.fst.CRFTrainerByValueGradients;
@@ -14,8 +15,14 @@ import cc.mallet.types.InstanceList;
 import gate.AnnotationSet;
 import gate.plugin.learningframework.GateClassification;
 import gate.plugin.learningframework.data.CorpusRepresentationMalletSeq;
+import static gate.plugin.learningframework.engines.Engine.FILENAME_MODEL;
+import gate.util.GateRuntimeException;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.List;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -23,7 +30,8 @@ import java.util.List;
  */
 public class EngineMalletSeq extends EngineMallet {
 
-
+  private static Logger logger = Logger.getLogger(EngineMalletSeq.class);
+  
   @Override
   public void initializeAlgorithm(Algorithm algorithm, String parms) {
     // DOES NOTHINIG?
@@ -91,6 +99,31 @@ public class EngineMalletSeq extends EngineMallet {
   @Override
   protected void loadMalletCorpusRepresentation(File directory) {
     corpusRepresentationMallet = CorpusRepresentationMalletSeq.load(directory);
+  }
+  
+  @Override
+  protected void loadModel(File directory, String parms) {
+    File modelFile = new File(directory, FILENAME_MODEL);
+    if (!modelFile.exists()) {
+      throw new GateRuntimeException("Cannot load model file, does not exist: " + modelFile);
+    }
+    CRF classifier;
+    ObjectInputStream ois = null;
+    try {
+      ois = new ObjectInputStream(new FileInputStream(modelFile));
+      classifier = (CRF) ois.readObject();
+      model=classifier;
+    } catch (Exception ex) {
+      throw new GateRuntimeException("Could not load Mallet model", ex);
+    } finally {
+      if (ois != null) {
+        try {
+          ois.close();
+        } catch (IOException ex) {
+          logger.error("Could not close object input stream after loading model", ex);
+        }
+      }
+    }
   }
   
 

@@ -18,9 +18,13 @@ import gate.AnnotationSet;
 import gate.plugin.learningframework.GateClassification;
 import gate.plugin.learningframework.data.CorpusRepresentationMallet;
 import gate.plugin.learningframework.data.CorpusRepresentationMalletClass;
+import static gate.plugin.learningframework.engines.Engine.FILENAME_MODEL;
 import gate.plugin.learningframework.mallet.LFPipe;
 import gate.util.GateRuntimeException;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -31,7 +35,7 @@ import org.apache.log4j.Logger;
  */
 public class EngineMalletClass extends EngineMallet {
 
-  Logger logger = Logger.getLogger(EngineMalletClass.class);
+  private static Logger logger = Logger.getLogger(EngineMalletClass.class);
 
   public EngineMalletClass() { }
 
@@ -125,5 +129,31 @@ public class EngineMalletClass extends EngineMallet {
   protected void loadMalletCorpusRepresentation(File directory) {
     corpusRepresentationMallet = CorpusRepresentationMalletClass.load(directory);
   }
+  
+  @Override
+  protected void loadModel(File directory, String parms) {
+    File modelFile = new File(directory, FILENAME_MODEL);
+    if (!modelFile.exists()) {
+      throw new GateRuntimeException("Cannot load model file, does not exist: " + modelFile);
+    }
+    Classifier classifier;
+    ObjectInputStream ois = null;
+    try {
+      ois = new ObjectInputStream(new FileInputStream(modelFile));
+      classifier = (Classifier) ois.readObject();
+      model=classifier;
+    } catch (Exception ex) {
+      throw new GateRuntimeException("Could not load Mallet model", ex);
+    } finally {
+      if (ois != null) {
+        try {
+          ois.close();
+        } catch (IOException ex) {
+          logger.error("Could not close object input stream after loading model", ex);
+        }
+      }
+    }
+  }
+  
 
 }

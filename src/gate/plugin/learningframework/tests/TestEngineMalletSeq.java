@@ -4,12 +4,15 @@ package gate.plugin.learningframework.tests;
 import cc.mallet.pipe.Pipe;
 import gate.Annotation;
 import gate.AnnotationSet;
+import gate.Corpus;
 import gate.Document;
+import gate.Factory;
 import gate.creole.ResourceInstantiationException;
 import gate.plugin.learningframework.GateClassification;
 import gate.plugin.learningframework.ScalingMethod;
 import gate.plugin.learningframework.data.CorpusRepresentationMallet;
 import gate.plugin.learningframework.data.CorpusRepresentationMalletClass;
+import gate.plugin.learningframework.data.CorpusRepresentationMalletSeq;
 import gate.plugin.learningframework.engines.AlgorithmClassification;
 import gate.plugin.learningframework.engines.Engine;
 import gate.plugin.learningframework.features.FeatureInfo;
@@ -21,6 +24,8 @@ import java.io.File;
 import org.junit.Test;
 import org.junit.BeforeClass;
 import static gate.plugin.learningframework.tests.Utils.*;
+import java.io.FileFilter;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.List;
 import static org.junit.Assert.*;
@@ -39,27 +44,40 @@ public class TestEngineMalletSeq {
   }
   
   @Test
-  public void testEngineMalletClass1() throws MalformedURLException, ResourceInstantiationException {
+  public void testEngineMalletSeq1() throws MalformedURLException, ResourceInstantiationException, IOException {
     gate.Utils.loadPlugin(new File("../LearningFramework"));
-    File configFile = new File("tests/cl-ionosphere/feats.xml");
+    File configFile = new File("testing/sequence-features.xml");
     FeatureSpecification spec = new FeatureSpecification(configFile);
     FeatureInfo featureInfo = spec.getFeatureInfo();
-    CorpusRepresentationMalletClass crm = new CorpusRepresentationMalletClass(featureInfo, ScalingMethod.NONE);
-    Engine engine = Engine.createEngine(AlgorithmClassification.MALLET_CL_C45, "", crm);
+    CorpusRepresentationMalletSeq crm = new CorpusRepresentationMalletSeq(featureInfo, ScalingMethod.NONE);
+    Engine engine = Engine.createEngine(AlgorithmClassification.MALLET_SEQ_CRF, "", crm);
     System.err.println("TESTS: have engine "+engine);
     
-    // load a document and train the model
-    Document doc = loadDocument(new File("tests/cl-ionosphere/ionosphere_gate.xml"));
-    System.err.println("TESTS: have document");
+    // for this we need to go through a number of documents and train on all of them
+    // The directory testing/trainingset_prepared contains the prepared documents in XML format
+    // They have:
+    // class annotations Mention
+    // instance annotations Token
+    // sequence annotations Sentence
     
-    AnnotationSet instanceAS = doc.getAnnotations().get("Mention");
-    AnnotationSet sequenceAS = null;
-    AnnotationSet inputAS = doc.getAnnotations();
-    AnnotationSet classAS = null;
-    String targetFeature = "class";
-    String nameFeature = null;
-    crm.add(instanceAS, sequenceAS, inputAS, classAS, targetFeature, TargetType.NOMINAL, nameFeature);
+    // To do this efficiently we create a corpus and populate it from the directory
+    Corpus corpus = (Corpus)Factory.createResource("gate.corpora.CorpusImpl");
+    corpus.populate(new File("testing/trainingset_prepared").toURI().toURL(), 
+            new gate.util.ExtensionFileFilter("","xml"), "UTF-8", true);
+    
+    for(Document doc : corpus) {
+      System.err.println("Processing document "+doc.getName());
+      AnnotationSet instanceAS = doc.getAnnotations().get("Token");
+      AnnotationSet sequenceAS = doc.getAnnotations().get("Sentence");
+      AnnotationSet inputAS = doc.getAnnotations();
+      AnnotationSet classAS = doc.getAnnotations().get("Mention");
+      String targetFeature = null;
+      String nameFeature = null;
+      crm.add(instanceAS, sequenceAS, inputAS, classAS, targetFeature, TargetType.NOMINAL, nameFeature);
+    }
+    
     System.err.println("TESTS: added instances, number of instances now: "+crm.getRepresentationMallet().size());
+    
     engine.trainModel("");
     System.err.println("TESTS: model trained");
     System.err.println("TESTS: engine before saving: "+engine);
@@ -72,8 +90,8 @@ public class TestEngineMalletSeq {
     // check if the corpusRepresentation has been restored correctly
     CorpusRepresentationMallet crm2 = engine2.getCorpusRepresentationMallet();
     assertNotNull(crm2);
-    assertTrue(crm2 instanceof CorpusRepresentationMalletClass);
-    CorpusRepresentationMalletClass crmc2 = (CorpusRepresentationMalletClass)crm2;
+    assertTrue(crm2 instanceof CorpusRepresentationMalletSeq);
+    CorpusRepresentationMalletSeq crmc2 = (CorpusRepresentationMalletSeq)crm2;
     Pipe pipe = crmc2.getPipe();
     assertNotNull(pipe);
     assertTrue(pipe instanceof LFPipe);
@@ -81,6 +99,7 @@ public class TestEngineMalletSeq {
     FeatureInfo fi = lfpipe.getFeatureInfo();
     assertNotNull(fi);
     
+    /*
     AnnotationSet lfAS = doc.getAnnotations("LF");
     String parms = "";
     List<GateClassification> gcs = engine2.classify(instanceAS, inputAS, sequenceAS, parms);
@@ -105,6 +124,7 @@ public class TestEngineMalletSeq {
     double acc = (double)correct / (double)total;
     System.err.println("Got total="+total+", correct="+correct+", acc="+acc);
     assertEquals(0.9630, acc, 0.01);
+    */
   }
   
 }
