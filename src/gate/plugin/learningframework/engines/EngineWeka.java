@@ -183,12 +183,6 @@ public class EngineWeka extends Engine {
 
         gc = new GateClassification(
                 instAnn, cl, bestprob, classList, confidenceList);
-
-
-
-
-
-        
       }
       gcs.add(gc);
     }

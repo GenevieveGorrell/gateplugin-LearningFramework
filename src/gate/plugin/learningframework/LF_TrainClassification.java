@@ -74,6 +74,16 @@ public class LF_TrainClassification extends LF_TrainBase {
   public AlgorithmClassification getTrainingAlgorithm() {
     return this.trainingAlgorithm;
   }
+  
+  protected String algorithmClass;
+  @RunTime
+  @Optional
+  @CreoleParameter(comment = "The class of the training algorithm to use, only used if SPECIFY_CLASS is selected")
+  public void setAlgorithmClass(String className) { 
+    algorithmClass = className;
+  }
+  
+  public String getAlgorithmClass() { return algorithmClass; }
 
   protected ScalingMethod scaleFeatures = ScalingMethod.NONE;
 
@@ -180,9 +190,25 @@ public class LF_TrainClassification extends LF_TrainBase {
       }
     }
     
+    AlgorithmClassification alg = getTrainingAlgorithm();
+    // if an algorithm is specified where the name ends in "SPECIFY_CLASS" use the 
+    // algorithmClass 
+    if(getTrainingAlgorithm().toString().endsWith("SPECIFY_CLASS")) {
+      if(getAlgorithmClass() == null || getAlgorithmClass().isEmpty()) {
+        throw new GateRuntimeException("AlgorithmClass parameter must be specified when "+getTrainingAlgorithm()+" is chosen");
+      }
+      Class clazz = null;
+      try {
+        clazz = Class.forName(getAlgorithmClass());
+      } catch (ClassNotFoundException ex) {
+        throw new GateRuntimeException("Could not load algorithm class: "+getAlgorithmClass(),ex);
+      }
+      alg.setTrainerClass(clazz);
+    }
+    
     System.err.println("DEBUG: Before Document.");
-    System.err.println("  Training algorithm engine class is "+getTrainingAlgorithm().getEngineClass());
-    System.err.println("  Training algorithm algor class is "+getTrainingAlgorithm().getTrainerClass());
+    System.err.println("  Training algorithm engine class is "+alg.getEngineClass());
+    System.err.println("  Training algorithm algor class is "+alg.getTrainerClass());
     
     // Read and parse the feature specification
     featureSpec = new FeatureSpecification(featureSpecURL);

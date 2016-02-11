@@ -31,7 +31,7 @@ import org.junit.BeforeClass;
  *
  * @author Johann Petrak
  */
-public class TestEngineWeka {
+public class TestEngineLibSVM {
 
   @BeforeClass
   public static void init() throws GateException {
@@ -41,13 +41,13 @@ public class TestEngineWeka {
   }
   
   @Test
-  public void testEngineWeka1() throws MalformedURLException, ResourceInstantiationException {
+  public void testEngineLibSVM1() throws MalformedURLException, ResourceInstantiationException {
     gate.Utils.loadPlugin(new File("../LearningFramework"));
     File configFile = new File("tests/cl-ionosphere/feats.xml");
     FeatureSpecification spec = new FeatureSpecification(configFile);
     FeatureInfo featureInfo = spec.getFeatureInfo();
     CorpusRepresentationMalletClass crm = new CorpusRepresentationMalletClass(featureInfo, ScalingMethod.NONE);
-    Engine engine = Engine.createEngine(AlgorithmClassification.WEKA_CL_NAIVE_BAYES, "", crm);
+    Engine engine = Engine.createEngine(AlgorithmClassification.LIBSVM_CL, "", crm);
     System.err.println("TESTS: have engine "+engine);
     
     // load a document and train the model
@@ -61,7 +61,9 @@ public class TestEngineWeka {
     String nameFeature = null;
     crm.add(instanceAS, sequenceAS, inputAS, classAS, targetFeature, TargetType.NOMINAL, nameFeature);
     System.err.println("TESTS: added instances, number of instances now: "+crm.getRepresentationMallet().size());
-    engine.trainModel("");
+    // Use the same parameters as we did in previous tests with previous versions so we can 
+    // compare the results
+    engine.trainModel("-c 1000 -g 0.02");
     System.err.println("TESTS: model trained");
     System.err.println("TESTS: engine before saving: "+engine);
     engine.saveEngine(new File("."));
@@ -105,7 +107,7 @@ public class TestEngineWeka {
     
     double acc = (double)correct / (double)total;
     System.err.println("Got total="+total+", correct="+correct+", acc="+acc);
-    assertEquals(0.8291, acc, 0.01);
+    assertEquals(0.9972, acc, 0.01);
     
   }
   

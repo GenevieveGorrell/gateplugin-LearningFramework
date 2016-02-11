@@ -11,7 +11,10 @@ package gate.plugin.learningframework.engines;
  * @author johann
  */
 public enum AlgorithmClassification implements Algorithm {
-  LIBSVM_CL_NOTYET(EngineLibSVM.class,null), // TODO!!!
+  // NOTE: not sure if the different LIBSVM algorithms should get a different entry here or 
+  // if we want to use parameters for those.
+  // Also consider supporting in addition this port: https://github.com/davidsoergel/jlibsvm/
+  LIBSVM_CL(EngineLibSVM.class,libsvm.svm.class), 
   MALLET_CL_C45(EngineMalletClass.class,cc.mallet.classify.C45Trainer.class),
   MALLET_CL_DECISION_TREE(EngineMalletClass.class,cc.mallet.classify.DecisionTreeTrainer.class),
   MALLET_CL_MAX_ENT(EngineMalletClass.class,cc.mallet.classify.MaxEntTrainer.class),

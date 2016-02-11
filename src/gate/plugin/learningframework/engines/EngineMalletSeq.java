@@ -13,10 +13,7 @@ import cc.mallet.optimize.Optimizable;
 import cc.mallet.types.InstanceList;
 import gate.AnnotationSet;
 import gate.plugin.learningframework.GateClassification;
-import gate.plugin.learningframework.data.CorpusRepresentationMallet;
-import gate.plugin.learningframework.data.CorpusRepresentationMalletClass;
 import gate.plugin.learningframework.data.CorpusRepresentationMalletSeq;
-import gate.util.GateRuntimeException;
 import java.io.File;
 import java.util.List;
 

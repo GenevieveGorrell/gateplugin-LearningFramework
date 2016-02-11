@@ -16,22 +16,20 @@ import gate.plugin.learningframework.features.FeatureInfo;
 import gate.plugin.learningframework.features.FeatureSpecification;
 import gate.plugin.learningframework.features.TargetType;
 import gate.plugin.learningframework.mallet.LFPipe;
-import static gate.plugin.learningframework.tests.Utils.loadDocument;
 import gate.util.GateException;
 import java.io.File;
+import org.junit.Test;
+import org.junit.BeforeClass;
+import static gate.plugin.learningframework.tests.Utils.*;
 import java.net.MalformedURLException;
 import java.util.List;
-import static org.junit.Assert.assertEquals;
-import org.junit.Test;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import org.junit.BeforeClass;
+import static org.junit.Assert.*;
 
 /**
  *
  * @author Johann Petrak
  */
-public class TestEngineWeka {
+public class TestEngineMalletSeq {
 
   @BeforeClass
   public static void init() throws GateException {
@@ -41,17 +39,18 @@ public class TestEngineWeka {
   }
   
   @Test
-  public void testEngineWeka1() throws MalformedURLException, ResourceInstantiationException {
+  public void testEngineMalletClass1() throws MalformedURLException, ResourceInstantiationException {
     gate.Utils.loadPlugin(new File("../LearningFramework"));
     File configFile = new File("tests/cl-ionosphere/feats.xml");
     FeatureSpecification spec = new FeatureSpecification(configFile);
     FeatureInfo featureInfo = spec.getFeatureInfo();
     CorpusRepresentationMalletClass crm = new CorpusRepresentationMalletClass(featureInfo, ScalingMethod.NONE);
-    Engine engine = Engine.createEngine(AlgorithmClassification.WEKA_CL_NAIVE_BAYES, "", crm);
+    Engine engine = Engine.createEngine(AlgorithmClassification.MALLET_CL_C45, "", crm);
     System.err.println("TESTS: have engine "+engine);
     
     // load a document and train the model
     Document doc = loadDocument(new File("tests/cl-ionosphere/ionosphere_gate.xml"));
+    System.err.println("TESTS: have document");
     
     AnnotationSet instanceAS = doc.getAnnotations().get("Mention");
     AnnotationSet sequenceAS = null;
@@ -105,8 +104,7 @@ public class TestEngineWeka {
     
     double acc = (double)correct / (double)total;
     System.err.println("Got total="+total+", correct="+correct+", acc="+acc);
-    assertEquals(0.8291, acc, 0.01);
-    
+    assertEquals(0.9630, acc, 0.01);
   }
   
 }

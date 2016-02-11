@@ -82,22 +82,32 @@ public class Parms {
       for(int i = 0; i<longNames.size(); i++) {
         String longName = longNames.get(i);
         String type = types.get(i);
-        Object value;
+        Object value =null;
         boolean haveIt = cli.hasOption(longName);
         String optVal = cli.getOptionValue(longName);
         //System.err.println("OPTION value for "+longName+" is "+optVal+" class is "+((optVal==null)? "null" : optVal.getClass())+" have it: "+haveIt);
+        if(haveIt) {
         if(type.equals("b")) {
           value = haveIt;
         } else if(type.equals("s")) {
           value = optVal;
         } else if(type.equals("d")) {
-          value = Double.parseDouble(optVal);
+          try {
+            value = Double.parseDouble(optVal);
+          } catch(Exception ex) {
+            System.err.println("Parms: cannot parse value as double, setting to null: "+optVal);
+          }
         } else if(type.equals("i")) {
-          value = Integer.parseInt(optVal);
+          try {
+            value = Integer.parseInt(optVal);
+          } catch(Exception ex) {
+            System.err.println("Parms: cannot parse value as int, setting to null: "+optVal);
+          }
         } else if(type.equals("B")) {
           value = Boolean.parseBoolean(optVal);
         } else {
           throw new GateRuntimeException("Not a valid type indicator for Parrms: "+type);
+        }
         }
         parmValues.put(longName, value);
       }
