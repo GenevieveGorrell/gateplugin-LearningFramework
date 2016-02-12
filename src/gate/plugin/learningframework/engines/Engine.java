@@ -71,6 +71,12 @@ public abstract class Engine {
     // representation if necessary.
     eng.loadModel(directory, parms);
     eng.loadMalletCorpusRepresentation(directory);
+
+    // we could stop growh right after loading, but that would interfere with engines which
+    // allow updating, incremental learning etc. 
+    // Instead we stop growth at the beginning of each classify method and re-enabled it 
+    // at the end. 
+    // eng.corpusRepresentationMallet.stopGrowth();
     
     // TODO: re-create an algorithm object of the correct class
     Algorithm algorithm = null;

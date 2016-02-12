@@ -83,6 +83,8 @@ public class EngineMalletSeq extends EngineMallet {
   @Override
   public List<GateClassification> classify(
           AnnotationSet instanceAS, AnnotationSet inputAS, AnnotationSet sequenceAS, String parms) {
+    // stop growth
+    // re-enable growth!
     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 

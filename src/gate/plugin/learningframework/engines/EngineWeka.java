@@ -104,6 +104,7 @@ public class EngineWeka extends Engine {
     
     Instances instances = crWeka.getRepresentationWeka();
     CorpusRepresentationMalletClass data = (CorpusRepresentationMalletClass)corpusRepresentationMallet;
+    data.stopGrowth();
     List<GateClassification> gcs = new ArrayList<GateClassification>();
     LFPipe pipe = (LFPipe)data.getRepresentationMallet().getPipe();
     Classifier wekaClassifier = (Classifier)model;
@@ -186,6 +187,7 @@ public class EngineWeka extends Engine {
       }
       gcs.add(gc);
     }
+    data.startGrowth();
     return gcs;
   }
 

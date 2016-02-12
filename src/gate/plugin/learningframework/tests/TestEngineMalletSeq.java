@@ -99,6 +99,17 @@ public class TestEngineMalletSeq {
     FeatureInfo fi = lfpipe.getFeatureInfo();
     assertNotNull(fi);
     
+    // For the application, first remove the class annotations from the default set. This is 
+    // not strictly necessary but just so we are sure no cheating is possible
+    for(Document doc : corpus) {
+      doc.getAnnotations().removeAll(doc.getAnnotations().get("Mention"));
+    }
+    
+    // now go through all the documents and create Mention annotations in the LF set
+    for(Document doc : corpus) {
+      
+    }
+    
     /*
     AnnotationSet lfAS = doc.getAnnotations("LF");
     String parms = "";

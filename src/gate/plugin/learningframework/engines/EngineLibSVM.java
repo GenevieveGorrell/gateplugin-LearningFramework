@@ -13,9 +13,7 @@ import gate.Annotation;
 import gate.AnnotationSet;
 import gate.plugin.learningframework.GateClassification;
 import gate.plugin.learningframework.data.CorpusRepresentationLibSVM;
-import gate.plugin.learningframework.data.CorpusRepresentationMallet;
 import gate.plugin.learningframework.data.CorpusRepresentationMalletClass;
-import gate.plugin.learningframework.data.CorpusRepresentationWeka;
 import gate.plugin.learningframework.mallet.LFPipe;
 import gate.util.GateRuntimeException;
 import java.io.File;
@@ -145,6 +143,7 @@ public class EngineLibSVM extends Engine {
   public List<GateClassification> classify(
           AnnotationSet instanceAS, AnnotationSet inputAS, AnnotationSet sequenceAS, String parms) {
     CorpusRepresentationMalletClass data = (CorpusRepresentationMalletClass)corpusRepresentationMallet;
+    data.stopGrowth();
     // try to figure out if we have regression or classification:
     LFPipe pipe = (LFPipe)data.getPipe();
     Alphabet talph = pipe.getTargetAlphabet();
@@ -186,6 +185,7 @@ public class EngineLibSVM extends Engine {
       gcs.add(gc);
       
     }
+    data.startGrowth();
     return gcs;
   }
 

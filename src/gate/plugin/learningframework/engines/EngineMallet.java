@@ -6,15 +6,12 @@
 
 package gate.plugin.learningframework.engines;
 
-import cc.mallet.classify.Classifier;
 import gate.plugin.learningframework.data.CorpusRepresentationMallet;
 import static gate.plugin.learningframework.engines.Engine.FILENAME_MODEL;
 import gate.util.GateRuntimeException;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import org.apache.log4j.Logger;
 

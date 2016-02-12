@@ -56,6 +56,7 @@ public class EngineMalletClass extends EngineMallet {
       throw new GateRuntimeException("Cannot perform classification with data from "+corpusRepresentationMallet.getClass());
     }
     CorpusRepresentationMalletClass data = (CorpusRepresentationMalletClass)corpusRepresentationMallet;
+    data.stopGrowth();
     List<GateClassification> gcs = new ArrayList<GateClassification>();
     LFPipe pipe = (LFPipe)data.getRepresentationMallet().getPipe();
     Classifier classifier = (Classifier)model;
@@ -77,6 +78,7 @@ public class EngineMalletClass extends EngineMallet {
       //System.err.println("ADDING GC "+gc);
       gcs.add(gc);
     }
+    data.startGrowth();
     return gcs;
   }
 
