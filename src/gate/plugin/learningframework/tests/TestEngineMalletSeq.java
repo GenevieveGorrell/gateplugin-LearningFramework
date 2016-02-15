@@ -70,7 +70,7 @@ public class TestEngineMalletSeq {
             new gate.util.ExtensionFileFilter("","xml"), "UTF-8", true);
     
     for(Document doc : corpus) {
-      System.err.println("Processing document "+doc.getName());
+      //System.err.println("Processing document "+doc.getName());
       AnnotationSet instanceAS = doc.getAnnotations().get("Token");
       AnnotationSet sequenceAS = doc.getAnnotations().get("Sentence");
       AnnotationSet inputAS = doc.getAnnotations();
@@ -83,8 +83,8 @@ public class TestEngineMalletSeq {
     System.err.println("TESTS: added instances, number of instances now: "+crm.getRepresentationMallet().size());
     
     engine.trainModel("");
-    System.err.println("TESTS: model trained");
-    System.err.println("TESTS: engine before saving: "+engine);
+    //System.err.println("TESTS: model trained");
+    //System.err.println("TESTS: engine before saving: "+engine);
     engine.saveEngine(new File("."));
     
     // Now check if we can restore the engine and thus the corpus representation
@@ -109,11 +109,9 @@ public class TestEngineMalletSeq {
       doc.getAnnotations().removeAll(doc.getAnnotations().get("Mention"));
     }
     
-    // TODO: later we will directly evaluate in here, but for now we create an output
-    // directory where we store all the processed documents
-    File outDir = new File("TestEngineMalletSeqOut");
-    FileUtils.deleteDirectory(outDir);
-    outDir.mkdir();
+    //File outDir = new File("TestEngineMalletSeqOut");
+    //FileUtils.deleteDirectory(outDir);
+    //outDir.mkdir();
     
     // Setup the evaluation
     List<String> evalTypes = new ArrayList<String>();
@@ -124,7 +122,7 @@ public class TestEngineMalletSeq {
     // now go through all the documents and create Mention annotations in the LF set
     String parms = "";
     for(Document doc : corpus) {
-      System.err.println("Applying to document "+doc.getName());
+      //System.err.println("Applying to document "+doc.getName());
       AnnotationSet instanceAS = doc.getAnnotations().get("Token");
       AnnotationSet sequenceAS = doc.getAnnotations().get("Sentence");
       AnnotationSet inputAS = doc.getAnnotations();
@@ -150,17 +148,15 @@ public class TestEngineMalletSeq {
               FeatureComparison.FEATURE_EQUALITY,
               annotationTypeSpecs
       );
-      EvalStatsTagging es = docDiffer.getEvalStatsTagging();
-      stats.add(es);
+      stats.add(docDiffer.getEvalStatsTagging());
       
-      File outFile = new File(outDir,doc.getName());
-      gate.corpora.DocumentStaxUtils.writeDocument(doc,outFile);
+      //File outFile = new File(outDir,doc.getName());
+      //gate.corpora.DocumentStaxUtils.writeDocument(doc,outFile);
     }
     
-    // TODO: evaluate right here: for now, we export each document to a directory above so we 
-    // can do the evaluation separately
     System.err.println("GOT STATS F strict="+stats.getFMeasureStrict(1.0));
     System.err.println("GOT STATS F lenient="+stats.getFMeasureLenient(1.0));
+    //System.err.println("TestEngineMalletSeq final stats:\n"+stats);
     //System.err.println("Got total="+total+", correct="+correct+", acc="+acc);
     assertEquals(0.6327, stats.getFMeasureStrict(1.0), 0.01);
     assertEquals(0.7162, stats.getFMeasureLenient(1.0), 0.01);

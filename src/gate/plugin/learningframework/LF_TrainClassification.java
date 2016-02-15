@@ -21,6 +21,7 @@ import gate.creole.metadata.CreoleParameter;
 import gate.creole.metadata.CreoleResource;
 import gate.creole.metadata.Optional;
 import gate.creole.metadata.RunTime;
+import gate.plugin.learningframework.data.CorpusRepresentation;
 import gate.plugin.learningframework.data.CorpusRepresentationMalletClass;
 import gate.plugin.learningframework.engines.AlgorithmClassification;
 import gate.plugin.learningframework.engines.Engine;
@@ -28,6 +29,10 @@ import gate.plugin.learningframework.features.FeatureSpecification;
 import gate.plugin.learningframework.features.TargetType;
 import gate.util.Files;
 import gate.util.GateRuntimeException;
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.logging.Level;
 
 /**
  *
@@ -37,13 +42,10 @@ import gate.util.GateRuntimeException;
         helpURL = "",
         comment = "Train a machine learning model for classification")
 public class LF_TrainClassification extends LF_TrainBase {
+  private static final long serialVersionUID = -420477191226830002L;
+  
 
-  /**
-   *
-   */
-  private static final long serialVersionUID = 1L;
-
-  private Logger logger = Logger.getLogger(LF_TrainClassification.class.getCanonicalName());
+  private final Logger logger = Logger.getLogger(LF_TrainClassification.class.getCanonicalName());
 
   /**
    * The configuration file.
@@ -132,6 +134,19 @@ public class LF_TrainClassification extends LF_TrainBase {
   }
   
   
+  @RunTime
+  @CreoleParameter(comment = "If we want to train or just export the instances.")
+  public void setTrainOrExportAction(TrainOrExportAction value) {
+    this.trainOrExportAction = value;
+  }
+
+  public TrainOrExportAction getTrainOrExportAction() {
+    return trainOrExportAction == null ? TrainOrExportAction.TRAIN : trainOrExportAction;
+  }
+
+  private TrainOrExportAction trainOrExportAction;
+  
+  
 
   @Override
   public void execute(Document doc) {
@@ -155,6 +170,7 @@ public class LF_TrainClassification extends LF_TrainBase {
 
   @Override
   public void afterLastDocument(Controller arg0, Throwable t) {
+    if(trainOrExportAction == TrainOrExportAction.TRAIN) {
       System.out.println("LearningFramework: Starting training engine "+engine);
       System.out.println("Training set classes: "+
            corpusRepresentation.getRepresentationMallet().getPipe().getTargetAlphabet().toString().replaceAll("\\n", " "));
@@ -170,6 +186,11 @@ public class LF_TrainClassification extends LF_TrainBase {
       engine.trainModel(getAlgorithmParameters());
       logger.info("LearningFramework: Training complete!");
       engine.saveEngine(Files.fileFromURL(getDataDirectory()));      
+    } else {
+      corpusRepresentation.addScaling(getScaleFeatures());
+      File outDir = Files.fileFromURL(getDataDirectory());
+      CorpusRepresentation.export(corpusRepresentation, trainOrExportAction, outDir, getAlgorithmParameters());
+    }
     }
 
   @Override

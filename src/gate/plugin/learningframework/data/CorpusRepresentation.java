@@ -7,8 +7,10 @@
 package gate.plugin.learningframework.data;
 
 import gate.plugin.learningframework.ScalingMethod;
+import gate.plugin.learningframework.TrainOrExportAction;
 import gate.plugin.learningframework.features.FeatureInfo;
 import gate.plugin.learningframework.mallet.LFPipe;
+import gate.util.GateRuntimeException;
 import java.io.File;
 
 /**
@@ -40,6 +42,25 @@ public abstract class CorpusRepresentation {
    */
   public abstract void export(File directory, String parms);
   
+  public static void export(CorpusRepresentationMallet crm, TrainOrExportAction action, File directory, String parms) {
+    if(action == TrainOrExportAction.TRAIN) return;
+    if(action == TrainOrExportAction.EXPORT_MALLET) {
+      crm.export(directory, parms);
+    } else if(action == TrainOrExportAction.EXPORT_ARFF) {
+      CorpusRepresentationWeka crw = new CorpusRepresentationWeka(crm);
+      crw.export(directory, parms);
+    } else if(action == TrainOrExportAction.EXPORT_LIBSVM) {
+      CorpusRepresentationLibSVM crl = new CorpusRepresentationLibSVM(crm);
+      crl.export(directory, parms);
+    } else {
+      // NOTE: if we start to get lots more representations and export formats, maybe
+      // we should do this by reflection somehow ...
+      throw new GateRuntimeException("Export method not yet implemented: "+action);
+    }
+  }
+  
+  
+  
   /**
    * Remove all instances but leave other information intact.
    * This removes all the instances but retains information about the features/attributes 
@@ -49,4 +70,7 @@ public abstract class CorpusRepresentation {
 
   // TODO: it may be good in some situations, if we could import data from external sources
   // directly, but not sure about the details. This is not implemented at the moment at all.
+  
+  
+  
 }
