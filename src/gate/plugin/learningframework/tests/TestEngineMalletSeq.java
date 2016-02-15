@@ -7,6 +7,11 @@ import gate.Corpus;
 import gate.Document;
 import gate.Factory;
 import gate.creole.ResourceInstantiationException;
+import gate.plugin.evaluation.api.AnnotationDifferTagging;
+import gate.plugin.evaluation.api.AnnotationTypeSpecs;
+import gate.plugin.evaluation.api.EvalStatsTagging;
+import gate.plugin.evaluation.api.EvalStatsTagging4Score;
+import gate.plugin.evaluation.api.FeatureComparison;
 import gate.plugin.learningframework.GateClassification;
 import gate.plugin.learningframework.ScalingMethod;
 import gate.plugin.learningframework.data.CorpusRepresentationMallet;
@@ -23,6 +28,8 @@ import org.junit.Test;
 import org.junit.BeforeClass;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import javax.xml.stream.XMLStreamException;
 import org.apache.commons.io.FileUtils;
@@ -108,6 +115,12 @@ public class TestEngineMalletSeq {
     FileUtils.deleteDirectory(outDir);
     outDir.mkdir();
     
+    // Setup the evaluation
+    List<String> evalTypes = new ArrayList<String>();
+    evalTypes.add("Mention");
+    AnnotationTypeSpecs annotationTypeSpecs = new AnnotationTypeSpecs(evalTypes);    
+    EvalStatsTagging stats = new EvalStatsTagging4Score(Double.NaN);
+    
     // now go through all the documents and create Mention annotations in the LF set
     String parms = "";
     for(Document doc : corpus) {
@@ -129,15 +142,28 @@ public class TestEngineMalletSeq {
       String outputType = "Mention";
       instanceAS = lfAS;
       GateClassification.addSurroundingAnnotations(doc, inputAS, instanceAS, outputAS, outputType, null);
+      
+      AnnotationDifferTagging docDiffer = new AnnotationDifferTagging(
+              doc.getAnnotations("Key").get("Mention"),
+              doc.getAnnotations("LF").get("Mention"),
+              new HashSet(),
+              FeatureComparison.FEATURE_EQUALITY,
+              annotationTypeSpecs
+      );
+      EvalStatsTagging es = docDiffer.getEvalStatsTagging();
+      stats.add(es);
+      
       File outFile = new File(outDir,doc.getName());
       gate.corpora.DocumentStaxUtils.writeDocument(doc,outFile);
     }
     
     // TODO: evaluate right here: for now, we export each document to a directory above so we 
     // can do the evaluation separately
-    
+    System.err.println("GOT STATS F strict="+stats.getFMeasureStrict(1.0));
+    System.err.println("GOT STATS F lenient="+stats.getFMeasureLenient(1.0));
     //System.err.println("Got total="+total+", correct="+correct+", acc="+acc);
-    //assertEquals(0.9630, acc, 0.01);
+    assertEquals(0.6327, stats.getFMeasureStrict(1.0), 0.01);
+    assertEquals(0.7162, stats.getFMeasureLenient(1.0), 0.01);
     
   }
   
