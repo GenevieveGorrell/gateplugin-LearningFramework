@@ -19,6 +19,9 @@ lf-sequence-application.xgapp
   branch jp-151218-merge1 commit 946cefbd681d0c1bf3c440147cd4e474e2db10c1
     Micro summary	312	887	150	97	0.5581	0.2407	0.3364	0.7317	0.3156	0.4410 
 
+Application on the training set:
+    Micro summary	485	277	158	64	0.6860	0.5872	0.6327	0.7765	0.6646	0.7162
+
 Sequence tagging as above, but using the LIBSVM algorithm instead
    version_1_0
      Micro summary	0	1296	0	0	1.0000	0.0000	0.0000	1.0000	0.0000	0.0000
