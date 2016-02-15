@@ -80,9 +80,9 @@ public class FeatureExtraction {
   
   private static final String MVVALUE = "%%%NA%%%";
   
-  private static final String SEQ_INSIDE = "I";
-  private static final String SEQ_BEGINNING = "B";
-  private static final String SEQ_OUTSIDE = "O";
+  public static final String SEQ_INSIDE = "I";
+  public static final String SEQ_BEGINNING = "B";
+  public static final String SEQ_OUTSIDE = "O";
   
   public static final String PROP_HAVE_MV = "haveMV";
   public static final String PROP_IGNORE_HAS_MV = "ignore-MV";

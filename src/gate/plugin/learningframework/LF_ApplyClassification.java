@@ -124,7 +124,7 @@ public class LF_ApplyClassification extends LearningFrameworkPRBase {
     // extract the required annotation sets,
     AnnotationSet inputAS = doc.getAnnotations(getInputASName());
     AnnotationSet instanceAS = inputAS.get(getInstanceType());
-    // the classAS 
+    // the classAS must be null for classification
     // the sequenceAS must be specified for a sequence tagging algorithm and most not be specified
     // for a non-sequence tagging algorithm!
     AnnotationSet sequenceAS = null;

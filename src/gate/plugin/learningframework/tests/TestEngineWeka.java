@@ -37,12 +37,11 @@ public class TestEngineWeka {
   public static void init() throws GateException {
     gate.Gate.init();
     // load the plugin
-    gate.Utils.loadPlugin(new File("../LearningFramework"));
+    gate.Utils.loadPlugin(new File("."));
   }
   
   @Test
   public void testEngineWeka1() throws MalformedURLException, ResourceInstantiationException {
-    gate.Utils.loadPlugin(new File("../LearningFramework"));
     File configFile = new File("tests/cl-ionosphere/feats.xml");
     FeatureSpecification spec = new FeatureSpecification(configFile);
     FeatureInfo featureInfo = spec.getFeatureInfo();

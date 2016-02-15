@@ -10,17 +10,27 @@ import cc.mallet.classify.Classifier;
 import cc.mallet.fst.CRF;
 import cc.mallet.fst.CRFOptimizableByLabelLikelihood;
 import cc.mallet.fst.CRFTrainerByValueGradients;
+import cc.mallet.fst.SumLatticeDefault;
 import cc.mallet.optimize.Optimizable;
+import cc.mallet.types.FeatureVectorSequence;
+import cc.mallet.types.Instance;
 import cc.mallet.types.InstanceList;
+import gate.Annotation;
 import gate.AnnotationSet;
 import gate.plugin.learningframework.GateClassification;
+import gate.plugin.learningframework.Mode;
+import gate.plugin.learningframework.corpora.CorpusWriterMalletSeq;
+import gate.plugin.learningframework.data.CorpusRepresentationMalletClass;
 import gate.plugin.learningframework.data.CorpusRepresentationMalletSeq;
 import static gate.plugin.learningframework.engines.Engine.FILENAME_MODEL;
+import gate.plugin.learningframework.features.TargetType;
 import gate.util.GateRuntimeException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import org.apache.log4j.Logger;
 
@@ -84,8 +94,64 @@ public class EngineMalletSeq extends EngineMallet {
   public List<GateClassification> classify(
           AnnotationSet instanceAS, AnnotationSet inputAS, AnnotationSet sequenceAS, String parms) {
     // stop growth
-    // re-enable growth!
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    CorpusRepresentationMalletSeq data = (CorpusRepresentationMalletSeq)corpusRepresentationMallet;
+    data.stopGrowth();
+    
+    List<GateClassification> gcs = new ArrayList<GateClassification>();
+
+    CRF crf = (CRF)model;
+    
+    for(Annotation sequenceAnn : sequenceAS) {
+      int sequenceSpanId = sequenceAnn.getId();
+      Instance inst = data.getInstanceForSequence( 
+              instanceAS, sequenceAnn, inputAS, null, null, TargetType.NONE, null);
+
+      //Always put the instance through the same pipe used for training.
+      inst = crf.getInputPipe().instanceFrom(inst);
+
+      SumLatticeDefault sl = new SumLatticeDefault(crf,
+              (FeatureVectorSequence) inst.getData());
+
+      List<Annotation> instanceAnnotations = gate.Utils.getContainedAnnotations(
+              instanceAS, sequenceAnn).inDocumentOrder();
+
+      //Sanity check that we're mapping the probs back onto the right anns.
+      //This being wrong might follow from errors reading in the data to mallet inst.
+      if (instanceAnnotations.size() != ((FeatureVectorSequence) inst.getData()).size()) {
+        logger.warn("LearningFramework: CRF output length: "
+                + ((FeatureVectorSequence) inst.getData()).size()
+                + ", GATE instances: " + instanceAnnotations.size()
+                + ". Can't assign.");
+      } else {
+        int i = 0;
+        for (Annotation instanceAnn : instanceAnnotations) {
+            i++;
+
+          String bestLabel = null;
+          double bestProb = 0.0;
+
+          //For each label option ..
+          for (int j = 0; j < crf.getOutputAlphabet().size(); j++) {
+            String label = crf.getOutputAlphabet().lookupObject(j).toString();
+
+            //Get the probability of being in state j at position i+1
+            //Note that the plus one is because the labels are on the
+            //transitions. Positions are between transitions.
+            double marg = sl.getGammaProbability(i, crf.getState(j));
+            if (marg > bestProb) {
+              bestLabel = label;
+              bestProb = marg;
+            }
+          }
+          GateClassification gc = new GateClassification(
+                  instanceAnn, bestLabel, bestProb, sequenceSpanId);
+
+          gcs.add(gc);
+        }
+      }
+    }
+    data.startGrowth();
+    return gcs;
   }
 
   @Override

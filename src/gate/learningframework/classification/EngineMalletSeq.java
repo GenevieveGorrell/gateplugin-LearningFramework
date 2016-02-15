@@ -41,7 +41,6 @@ import cc.mallet.types.InstanceList.CrossValidationIterator;
 import gate.Annotation;
 import gate.AnnotationSet;
 import gate.Document;
-import gate.creole.ResourceInstantiationException;
 import gate.plugin.learningframework.Mode;
 import gate.plugin.learningframework.corpora.CorpusWriter;
 import gate.plugin.learningframework.corpora.CorpusWriterMalletSeq;

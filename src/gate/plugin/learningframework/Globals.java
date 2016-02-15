@@ -11,7 +11,7 @@ package gate.plugin.learningframework;
  * @author Johann Petrak
  */
 public class Globals {
-  public static final String outputClassFeature = "LF_class";
+  public static final String outputClassFeature = "LF_target";
   public static final String outputProbFeature = "LF_confidence";
   public static final String outputSequenceSpanIDFeature = "LF_seq_span_id";
   //In the case of NER, output instance annotations to temporary

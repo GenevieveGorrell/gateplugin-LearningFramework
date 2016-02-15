@@ -10,6 +10,6 @@ package gate.plugin.learningframework.features;
  * @author johann
  */
 public enum TargetType {
-  NUMERIC, NOMINAL
+  NUMERIC, NOMINAL, NONE
   // possible others: ORDINAL, ??
 }

@@ -56,10 +56,11 @@ public class CorpusRepresentationMalletSeq extends CorpusRepresentationMallet {
     pipe.setFeatureInfo(fi);
     instances = new InstanceList(pipe);
   }
-  
+
   /**
    * Non-public constructor for use when creating from a serialized pipe.
-   * @param fi 
+   *
+   * @param fi
    */
   CorpusRepresentationMalletSeq(LFPipe pipe) {
     this.pipe = pipe;
@@ -67,41 +68,41 @@ public class CorpusRepresentationMalletSeq extends CorpusRepresentationMallet {
     this.scalingMethod = null;
     this.instances = new InstanceList(pipe);
   }
-  
-/**
+
+  /**
    * Create a new instance based on the pipe stored in directory.
+   *
    * @param directory
-   * @return 
+   * @return
    */
   public static CorpusRepresentationMalletSeq load(File directory) {
     // load the pipe
-    File inFile = new File(directory,"pipe.pipe");
+    File inFile = new File(directory, "pipe.pipe");
     ObjectInputStream ois = null;
     LFPipe lfpipe = null;
     try {
-      ois = new ObjectInputStream (new FileInputStream(inFile));
+      ois = new ObjectInputStream(new FileInputStream(inFile));
       lfpipe = (LFPipe) ois.readObject();
     } catch (Exception ex) {
-      throw new GateRuntimeException("Could not read pipe from "+inFile,ex);
+      throw new GateRuntimeException("Could not read pipe from " + inFile, ex);
     } finally {
       try {
-        if(ois!=null) ois.close();
+        if (ois != null) {
+          ois.close();
+        }
       } catch (IOException ex) {
-        logger.error("Error closing stream after loading pipe "+inFile, ex);
+        logger.error("Error closing stream after loading pipe " + inFile, ex);
       }
     }
     CorpusRepresentationMalletSeq crms = new CorpusRepresentationMalletSeq(lfpipe);
     return crms;
   }
-  
-    
-  
-  
+
   public void clear() {
-    LFPipe pipe = (LFPipe)instances.getPipe();
+    LFPipe pipe = (LFPipe) instances.getPipe();
     instances = new InstanceList(pipe);
   }
-  
+
   /**
    * Add instances. The exact way of how the target is created to the instances depends on which
    * parameters are given and which are null. The parameter sequenceAS must always be non-null for
@@ -116,11 +117,12 @@ public class CorpusRepresentationMalletSeq extends CorpusRepresentationMallet {
    * @param inputAS
    * @param nameFeatureName
    */
-  public void add(AnnotationSet instancesAS, AnnotationSet sequenceAS, AnnotationSet inputAS, AnnotationSet classAS, String targetFeatureName, TargetType targetType, String nameFeatureName) {
+  public void addOld(AnnotationSet instancesAS, AnnotationSet sequenceAS, AnnotationSet inputAS, AnnotationSet classAS, String targetFeatureName, TargetType targetType, String nameFeatureName) {
     if (sequenceAS == null) {
       throw new GateRuntimeException("LF invalid call to CorpusRepresentationMallet.add: sequenceAS must not be null "
               + " for document " + inputAS.getDocument().getName());
     }
+    // This was the old approach:
     // First iterate through all the sequence annotations, then for each sequence annotation, get
     // the instance annotations in order. For each of these instance annotations, create a Mallet
     // Instance and record them all in an array, then create a featuresequence and a labelsequence
@@ -168,7 +170,94 @@ public class CorpusRepresentationMalletSeq extends CorpusRepresentationMallet {
 
       }
     }
+
+  }
+
+  /**
+   * Add instances. The exact way of how the target is created to the instances depends on which
+   * parameters are given and which are null. The parameter sequenceAS must always be non-null for
+   * this corpus representation since this corpus representation is always used with sequence
+   * tagging algorithms If the parameter classAS is non-null then instances for a sequence tagging
+   * task are created, in that case targetFeatureName must be null. If targetFeatureName is non-null
+   * then instances for a regression or classification problem are created (depending on targetType)
+   * and classAS must be null. if the parameter nameFeatureName is non-null, then a Mallet instance
+   * name is added from the source document and annotation.
+   *
+   * @param instancesAS
+   * @param inputAS
+   * @param nameFeatureName
+   */
+  public void add(AnnotationSet instancesAS, AnnotationSet sequenceAS, AnnotationSet inputAS, AnnotationSet classAS, String targetFeatureName, TargetType targetType, String nameFeatureName) {
+    if (sequenceAS == null) {
+      throw new GateRuntimeException("LF invalid call to CorpusRepresentationMallet.add: sequenceAS must not be null "
+              + " for document " + inputAS.getDocument().getName());
+    }
+    for (Annotation sequenceAnnotation : sequenceAS.inDocumentOrder()) {
+      Instance inst = getInstanceForSequence(instancesAS, sequenceAnnotation, inputAS, classAS, targetFeatureName, targetType, nameFeatureName);
+        instances.add(inst);
+    }
+  }
+
   
+  /**
+   * Get a single Instance for a sequence annotation. If the
+   *
+   * @param instancesAS
+   * @param sequenceAnnotation
+   * @param inputAS
+   * @param classAS
+   * @param targetFeatureName
+   * @param targetType
+   * @param nameFeatureName
+   * @return
+   */
+  public Instance getInstanceForSequence(
+          AnnotationSet instancesAS,
+          Annotation sequenceAnnotation,
+          AnnotationSet inputAS,
+          AnnotationSet classAS,
+          String targetFeatureName,
+          TargetType targetType,
+          String nameFeatureName) {
+
+    List<Annotation> instanceAnnotations = gate.Utils.getContainedAnnotations(instancesAS, sequenceAnnotation).inDocumentOrder();
+    List<Instance> instanceList = new ArrayList<Instance>(instanceAnnotations.size());
+    for (Annotation instanceAnnotation : instanceAnnotations) {
+      Instance inst = extractIndependentFeaturesHelper(instanceAnnotation, inputAS, featureInfo, pipe);
+      if (targetType != TargetType.NONE) {
+        if (classAS != null) {
+          // extract the target as required for sequence tagging
+          FeatureExtraction.extractClassForSeqTagging(inst, pipe.getTargetAlphabet(), classAS, instanceAnnotation);
+        } else if (targetType == TargetType.NOMINAL) {
+          FeatureExtraction.extractClassTarget(inst, pipe.getTargetAlphabet(), targetFeatureName, instanceAnnotation, inputAS);
+        } else if (targetType == TargetType.NUMERIC) {
+          FeatureExtraction.extractNumericTarget(inst, targetFeatureName, instanceAnnotation, inputAS);
+        }
+      }
+      if (!FeatureExtraction.ignoreInstanceWithMV(inst)) {
+        instanceList.add(inst);
+      }
+    }
+    FeatureVector[] vectors = new FeatureVector[instanceList.size()];
+    for (int i = 0; i < vectors.length; i++) {
+      vectors[i] = (FeatureVector) instanceList.get(i).getData();
+    }
+    FeatureVectorSequence fvseq = new FeatureVectorSequence(vectors);
+    FeatureSequence fseq = null;
+    if (targetType != TargetType.NONE) {
+      int[] labelidxs = new int[instanceList.size()];
+      for (int i = 0; i < labelidxs.length; i++) {
+        labelidxs[i] = ((Label) instanceList.get(i).getTarget()).getIndex();
+      }
+      fseq = new FeatureSequence(pipe.getTargetAlphabet(), labelidxs);
+    }
+    // create the final instance, if a name feature is given also add the name
+    Instance finalInst = new Instance(fvseq, fseq, null, null);
+    if (nameFeatureName != null) {
+      FeatureExtraction.extractName(finalInst, sequenceAnnotation, inputAS.getDocument());
+    }
+    return finalInst;
+
   }
 
   @Override

@@ -2,7 +2,6 @@
 package gate.plugin.learningframework.tests;
 
 import cc.mallet.pipe.Pipe;
-import gate.Annotation;
 import gate.AnnotationSet;
 import gate.Corpus;
 import gate.Document;
@@ -11,7 +10,6 @@ import gate.creole.ResourceInstantiationException;
 import gate.plugin.learningframework.GateClassification;
 import gate.plugin.learningframework.ScalingMethod;
 import gate.plugin.learningframework.data.CorpusRepresentationMallet;
-import gate.plugin.learningframework.data.CorpusRepresentationMalletClass;
 import gate.plugin.learningframework.data.CorpusRepresentationMalletSeq;
 import gate.plugin.learningframework.engines.AlgorithmClassification;
 import gate.plugin.learningframework.engines.Engine;
@@ -23,11 +21,11 @@ import gate.util.GateException;
 import java.io.File;
 import org.junit.Test;
 import org.junit.BeforeClass;
-import static gate.plugin.learningframework.tests.Utils.*;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.List;
+import javax.xml.stream.XMLStreamException;
+import org.apache.commons.io.FileUtils;
 import static org.junit.Assert.*;
 
 /**
@@ -40,12 +38,11 @@ public class TestEngineMalletSeq {
   public static void init() throws GateException {
     gate.Gate.init();
     // load the plugin
-    gate.Utils.loadPlugin(new File("../LearningFramework"));
+    gate.Utils.loadPlugin(new File("."));
   }
   
   @Test
-  public void testEngineMalletSeq1() throws MalformedURLException, ResourceInstantiationException, IOException {
-    gate.Utils.loadPlugin(new File("../LearningFramework"));
+  public void testEngineMalletSeq1() throws MalformedURLException, ResourceInstantiationException, IOException, XMLStreamException {
     File configFile = new File("testing/sequence-features.xml");
     FeatureSpecification spec = new FeatureSpecification(configFile);
     FeatureInfo featureInfo = spec.getFeatureInfo();
@@ -105,37 +102,43 @@ public class TestEngineMalletSeq {
       doc.getAnnotations().removeAll(doc.getAnnotations().get("Mention"));
     }
     
+    // TODO: later we will directly evaluate in here, but for now we create an output
+    // directory where we store all the processed documents
+    File outDir = new File("TestEngineMalletSeqOut");
+    FileUtils.deleteDirectory(outDir);
+    outDir.mkdir();
+    
     // now go through all the documents and create Mention annotations in the LF set
-    for(Document doc : corpus) {
-      
-    }
-    
-    /*
-    AnnotationSet lfAS = doc.getAnnotations("LF");
     String parms = "";
-    List<GateClassification> gcs = engine2.classify(instanceAS, inputAS, sequenceAS, parms);
-    System.err.println("Number of classifications: "+gcs.size());
-    GateClassification.applyClassification(doc, gcs, "target", lfAS);
-    
-    System.err.println("Original instances: "+instanceAS.size()+", classification: "+lfAS.size());
-    
-    // quick and dirty evaluation: go through all the original annotations, get the 
-    // co-extensive annotations from LF, and compare the values from the "class" feature
-    int total = 0;
-    int correct = 0;
-    for(Annotation orig : instanceAS) {
-      total++;
-      Annotation lf = gate.Utils.getOnlyAnn(gate.Utils.getCoextensiveAnnotations(lfAS, orig));
-      //System.err.println("ORIG="+orig+", lf="+lf);
-      if(orig.getFeatures().get("class").equals(lf.getFeatures().get("target"))) {
-        correct++;
-      }
+    for(Document doc : corpus) {
+      System.err.println("Applying to document "+doc.getName());
+      AnnotationSet instanceAS = doc.getAnnotations().get("Token");
+      AnnotationSet sequenceAS = doc.getAnnotations().get("Sentence");
+      AnnotationSet inputAS = doc.getAnnotations();
+      List<GateClassification> gcs = engine2.classify(instanceAS, inputAS, sequenceAS, parms);
+      
+      // actually create annotations for the GateClassification instances
+      AnnotationSet lfAS = doc.getAnnotations("LF_TMP");
+      // First null: targetFeature name, we do not need this and maybe should remove that 
+      // parameter alltogether
+      // Second null: confidence threshold: if null, do not check the threshold at all
+      //GateClassification.addClassificationAnnotations(doc, gcs, lfAS, null, null);
+      GateClassification.addClassificationAnnotations(doc, gcs, lfAS, null, 0.0);
+      
+      AnnotationSet outputAS = doc.getAnnotations("LF");
+      String outputType = "Mention";
+      instanceAS = lfAS;
+      GateClassification.addSurroundingAnnotations(doc, inputAS, instanceAS, outputAS, outputType, null);
+      File outFile = new File(outDir,doc.getName());
+      gate.corpora.DocumentStaxUtils.writeDocument(doc,outFile);
     }
     
-    double acc = (double)correct / (double)total;
-    System.err.println("Got total="+total+", correct="+correct+", acc="+acc);
-    assertEquals(0.9630, acc, 0.01);
-    */
+    // TODO: evaluate right here: for now, we export each document to a directory above so we 
+    // can do the evaluation separately
+    
+    //System.err.println("Got total="+total+", correct="+correct+", acc="+acc);
+    //assertEquals(0.9630, acc, 0.01);
+    
   }
   
 }
