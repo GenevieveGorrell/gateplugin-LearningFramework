@@ -69,7 +69,7 @@ public abstract class CorpusRepresentation {
   public abstract void clear();
 
   // TODO: it may be good in some situations, if we could import data from external sources
-  // directly, but not sure about the details. This is not implemented at the moment at all.
+  // directly, but not sure about the details. This is not implemented at the moment at all  
   
   
   

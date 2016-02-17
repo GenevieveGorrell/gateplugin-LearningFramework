@@ -5,15 +5,14 @@
  */
 package gate.plugin.learningframework.engines;
 
-import gate.learningframework.classification.EngineWeka;
-
 /**
  *
  * @author johann
  */
 public enum AlgorithmSequenceTagging implements Algorithm {
-  MALLET_SEQ_CRF_XXX(EngineMalletSeq.class,null); // too complex to specify the trainer class here
-  // MALLET_SEQ_SPECIFY_CLASS(EngineMallet.class,null); // it is not really possible to specify a class for this
+  MALLET_SEQ_CRF(EngineMalletSeq.class,null), // too complex to specify the trainer class here
+  MALLET_SEQ_HMM(EngineMalletSeq.class,null); // too complex to specify the trainer class here
+  // MALLET_SEQ_SPECIFY_CLASS(EngineMallet.class,null); // it is not really possible to specify a class for this (yet?)
   private AlgorithmSequenceTagging() {
     
   }

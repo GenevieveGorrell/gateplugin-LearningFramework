@@ -6,11 +6,15 @@
 
 package gate.plugin.learningframework.engines;
 
-import cc.mallet.classify.Classifier;
 import cc.mallet.fst.CRF;
 import cc.mallet.fst.CRFOptimizableByLabelLikelihood;
+import cc.mallet.fst.CRFTrainerByLabelLikelihood;
+import cc.mallet.fst.CRFTrainerByStochasticGradient;
 import cc.mallet.fst.CRFTrainerByValueGradients;
 import cc.mallet.fst.SumLatticeDefault;
+import cc.mallet.fst.Transducer;
+import cc.mallet.fst.TransducerTrainer;
+import cc.mallet.fst.ViterbiWriter;
 import cc.mallet.optimize.Optimizable;
 import cc.mallet.types.FeatureVectorSequence;
 import cc.mallet.types.Instance;
@@ -18,9 +22,6 @@ import cc.mallet.types.InstanceList;
 import gate.Annotation;
 import gate.AnnotationSet;
 import gate.plugin.learningframework.GateClassification;
-import gate.plugin.learningframework.Mode;
-import gate.plugin.learningframework.corpora.CorpusWriterMalletSeq;
-import gate.plugin.learningframework.data.CorpusRepresentationMalletClass;
 import gate.plugin.learningframework.data.CorpusRepresentationMalletSeq;
 import static gate.plugin.learningframework.engines.Engine.FILENAME_MODEL;
 import gate.plugin.learningframework.features.TargetType;
@@ -30,7 +31,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import org.apache.log4j.Logger;
 
@@ -53,39 +53,104 @@ public class EngineMalletSeq extends EngineMallet {
  
 
   @Override
-  public void trainModel(String parms) {
+  public void trainModel(String options) {
     
-    // TODO: maybe we should allow more flexibility here based on the parms specified!?!?!
+    // TODO: maybe we should allow more flexibility here based on the parms and the algorithm specified!?!?!
+    
+    // the algorithm name is stored in info.
+    // NOTE: the name can come from an algorithm selected for classification OR an algorithm
+    // selected for actual sequence tagging. This is why we check the literal name here
+    // instead of something derived from the Algorithm enum class.
+    System.err.println("DEBUG: our algorithm name is "+info.algorithmName);
     InstanceList trainingData = corpusRepresentationMallet.getRepresentationMallet();
-    //Sanity check--how does the data look?
-    //logger.info("LearningFramework: Instances: " + trainingData.size());
-    //logger.info("LearningFramework: Data labels: " + trainingData.getDataAlphabet().size());
-    //logger.info("LearningFramework: Target labels: " + trainingData.getTargetAlphabet().size());
-    //Including the pipe at this stage means we have it available to
-    //put data through at apply time.
-    CRF crf = new CRF(trainingData.getPipe(), null);
-    model = crf;
+    if(info.algorithmName.equals("MALLET_SEQ_CRF")) {
+      
+      CRF crf = new CRF(trainingData.getPipe(), null);
+      model = crf;
+      
+      Parms parms = new Parms(options,"S:states:s","o:orders:s","of:ofully:b","as:addstart:B");
+      
+      String states = (String)parms.getValueOrElse("states", "fully-connected");
+      switch (states) {
+        case "fully-connected":
+          crf.addFullyConnectedStatesForLabels();
+          break;
+        case "as-in":
+          crf.addStatesForLabelsConnectedAsIn(trainingData);
+          break;
+        case "fully-threequarter":
+          crf.addFullyConnectedStatesForThreeQuarterLabels(trainingData);
+          break;
+        case "half":
+          crf.addStatesForHalfLabelsConnectedAsIn(trainingData);
+          break;
+        case "order-n":
+          int[] orders = new int[]{1};
+          String ordersparm = (String)parms.getValueOrElse("orders", "1");
+          if(ordersparm.equals("1")) {
+            orders = new int[]{1};
+          } else if(ordersparm.equals("0:1")) {
+            orders = new int[]{0,1};
+          } else if(ordersparm.equals("0:1:2")) {
+            orders = new int[]{0,1,2};
+          } else if(ordersparm.equals("0")) {
+            orders = new int[]{0};
+          } else if(ordersparm.equals("1:2")) {
+            orders = new int[]{1,2};
+          } else if(ordersparm.equals("21")) {
+            orders = new int[]{2};
+          } else {
+            throw new GateRuntimeException("Invalid value for parameter orders: "+ordersparm);
+          }
+          boolean ofully = (Boolean)parms.getValueOrElse("ofully", false);
+          crf.addOrderNStates(trainingData, orders, null, null, null, null, ofully);
+        default:
+          throw new GateRuntimeException("Unknown value for parameter states: "+states);
+      }
+      boolean addStart = (boolean) parms.getValueOrElse("addstart", true);
+      if(addStart) crf.addStartState();
+      
+      //crf.setWeightsDimensionDensely();
+      
+      // initialize model's weights
+      crf.setWeightsDimensionAsIn(trainingData, false);
+      
+      //  CRFOptimizableBy* objects (terms in the objective function)
+      // objective 1: label likelihood objective
+      CRFOptimizableByLabelLikelihood optLabel
+              = new CRFOptimizableByLabelLikelihood(crf, trainingData);
+      
+      // CRF trainer
+      Optimizable.ByGradientValue[] opts
+              = new Optimizable.ByGradientValue[]{optLabel};
+      // by default, use L-BFGS as the optimizer
+      // CRFTrainerByValueGradients crfTrainer = new CRFTrainerByValueGradients(crf, opts);
+      
+      CRFTrainerByLabelLikelihood crft = new CRFTrainerByLabelLikelihood(crf);
+      
+      //CRFTrainerByStochasticGradient crft = new CRFTrainerByStochasticGradient(crf, trainingData);
 
-    // construct the finite state machine
-    crf.addFullyConnectedStatesForLabels();
-    // initialize model's weights
-    crf.setWeightsDimensionAsIn(trainingData, false);
-
-    //  CRFOptimizableBy* objects (terms in the objective function)
-    // objective 1: label likelihood objective
-    CRFOptimizableByLabelLikelihood optLabel
-            = new CRFOptimizableByLabelLikelihood(crf, trainingData);
-
-    // CRF trainer
-    Optimizable.ByGradientValue[] opts
-            = new Optimizable.ByGradientValue[]{optLabel};
-    // by default, use L-BFGS as the optimizer
-    CRFTrainerByValueGradients crfTrainer = new CRFTrainerByValueGradients(crf, opts);
-
-    // all setup done, train until convergence
-    crfTrainer.setMaxResets(0);
-    crfTrainer.train(trainingData, Integer.MAX_VALUE);
-    
+      //crft.setUseSparseWeights(true);
+      //crft.setUseSomeUnsupportedTrick(true);
+      
+      // all setup done, train until convergence
+      //crfTrainer.setMaxResets(0);
+      
+      // TODO: if we want to output the viterbi paths:
+        ViterbiWriter viterbiWriter = new ViterbiWriter(
+          "LF_debug", // output file prefix
+          new InstanceList[] { trainingData },
+          new String[] { "train" }) {
+        @Override
+        public boolean precondition (TransducerTrainer tt) {
+          return tt.getIteration() % Integer.MAX_VALUE == 0;
+        }
+      };
+      crft.addEvaluator(viterbiWriter);      
+      crft.train(trainingData, Integer.MAX_VALUE);
+    } else {
+      // For now, there is no other algorithm!
+    }
     updateInfo();
     
   }
@@ -99,7 +164,7 @@ public class EngineMalletSeq extends EngineMallet {
     
     List<GateClassification> gcs = new ArrayList<GateClassification>();
 
-    CRF crf = (CRF)model;
+    Transducer crf = (Transducer)model;
     
     for(Annotation sequenceAnn : sequenceAS) {
       int sequenceSpanId = sequenceAnn.getId();
@@ -131,8 +196,15 @@ public class EngineMalletSeq extends EngineMallet {
           double bestProb = 0.0;
 
           //For each label option ..
-          for (int j = 0; j < crf.getOutputAlphabet().size(); j++) {
-            String label = crf.getOutputAlphabet().lookupObject(j).toString();
+          
+          // NOTE: for CRF we had this code:
+          //for (int j = 0; j < crf.getOutputAlphabet().size(); j++) {
+          //  String label = crf.getOutputAlphabet().lookupObject(j).toString();
+          // but for Transducer we do not have the getOutputAlphabet method so we use
+          // model.getInputPipe().getTargetAlphabet() instead (this seems to be what 
+          // is used inside CRF anyway.)
+          for (int j = 0; j < crf.getInputPipe().getTargetAlphabet().size(); j++) {
+            String label = crf.getInputPipe().getTargetAlphabet().lookupObject(j).toString();
 
             //Get the probability of being in state j at position i+1
             //Note that the plus one is because the labels are on the
@@ -175,7 +247,7 @@ public class EngineMalletSeq extends EngineMallet {
     if (!modelFile.exists()) {
       throw new GateRuntimeException("Cannot load model file, does not exist: " + modelFile);
     }
-    CRF classifier;
+    Transducer classifier;
     ObjectInputStream ois = null;
     try {
       ois = new ObjectInputStream(new FileInputStream(modelFile));
