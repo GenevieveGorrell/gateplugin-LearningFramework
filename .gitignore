@@ -7,6 +7,7 @@
 #*#
 *.class
 TEST-*.xml
+TEST-*.txt
 TESTS-TestSuites.xml
 junit-noframes.html
 hs_err_*.log
@@ -15,9 +16,7 @@ hs_err_*.log
 /testing/cl-out
 /testing/logs
 /testing/savedModel
-/test-ionosphere/model-wekarf/savedModel/
-/test-ionosphere/model-libsvm/savedModel/
-/test-ionosphere/model-wekanb/savedModel/
+/tests/cl-ionosphere/model-*/*
+/tests/cl-ionosphere/export/*
 /testing/sequence
 /tests/seq-wikipedia1/model-crf/
-/tests/cl-ionosphere/model-libsvm/savedModel/*
