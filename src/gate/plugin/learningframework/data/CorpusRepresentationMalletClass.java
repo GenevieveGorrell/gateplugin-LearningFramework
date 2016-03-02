@@ -247,7 +247,7 @@ public class CorpusRepresentationMalletClass extends CorpusRepresentationMallet 
 
     //We make a new pipe and apply it to all the instances
     FeatureVector2NormalizedFeatureVector normalizer
-            = new FeatureVector2NormalizedFeatureVector(means, variances, instances.getAlphabet());
+            = new FeatureVector2NormalizedFeatureVector(means, variances, instances.getDataAlphabet());
     
     // Run all the instances through this pipe
     for(Instance inst : instances) {

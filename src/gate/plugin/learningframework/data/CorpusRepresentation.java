@@ -7,7 +7,7 @@
 package gate.plugin.learningframework.data;
 
 import gate.plugin.learningframework.ScalingMethod;
-import gate.plugin.learningframework.TrainOrExportAction;
+import gate.plugin.learningframework.Exporter;
 import gate.plugin.learningframework.features.FeatureInfo;
 import gate.plugin.learningframework.mallet.LFPipe;
 import gate.util.GateRuntimeException;
@@ -42,14 +42,14 @@ public abstract class CorpusRepresentation {
    */
   public abstract void export(File directory, String parms);
   
-  public static void export(CorpusRepresentationMallet crm, TrainOrExportAction action, File directory, String parms) {
-    if(action == TrainOrExportAction.TRAIN) return;
-    if(action == TrainOrExportAction.EXPORT_MALLET) {
+  public static void export(CorpusRepresentationMallet crm, Exporter action, File directory, String parms) {
+    if(action == Exporter.EXPORTER_MALLET_CLASS) {
       crm.export(directory, parms);
-    } else if(action == TrainOrExportAction.EXPORT_ARFF) {
+    } else if(action == Exporter.EXPORTER_WEKA_CLASS) {
+      System.err.println("EXPORTING BY WEKA");
       CorpusRepresentationWeka crw = new CorpusRepresentationWeka(crm);
       crw.export(directory, parms);
-    } else if(action == TrainOrExportAction.EXPORT_LIBSVM) {
+    } else if(action == Exporter.EXPORTER_LIBSVM_CLASS) {
       CorpusRepresentationLibSVM crl = new CorpusRepresentationLibSVM(crm);
       crl.export(directory, parms);
     } else {

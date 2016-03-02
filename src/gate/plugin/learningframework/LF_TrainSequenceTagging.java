@@ -111,16 +111,16 @@ public class LF_TrainSequenceTagging extends LF_TrainBase {
     return this.sequenceSpan;
   }
   
-  protected String classType;
+  protected String classAnnotationType;
 
   @RunTime
   @CreoleParameter(comment = "Annotation type containing/indicating the class.")
-  public void setClassType(String classType) {
-    this.classType = classType;
+  public void setClassAnnotationType(String classType) {
+    this.classAnnotationType = classType;
   }
 
-  public String getClassType() {
-    return this.classType;
+  public String getClassAnnotationType() {
+    return this.classAnnotationType;
   }
 
   
@@ -232,7 +232,7 @@ public class LF_TrainSequenceTagging extends LF_TrainBase {
           File trainfilemallet = new File(
                   gate.util.Files.fileFromURL(dataDirectory), Globals.trainFilename);
           trainingCorpus = new CorpusWriterMallet(this.conf, this.instanceType,
-                  this.inputASName, trainfilemallet, mode, classType,
+                  this.inputASName, trainfilemallet, mode, classAnnotationType,
                   targetFeature, identifierFeature, scaleFeatures);
           break;
         case MALLET_SEQ_CRF:
@@ -240,14 +240,14 @@ public class LF_TrainSequenceTagging extends LF_TrainBase {
                   gate.util.Files.fileFromURL(dataDirectory), Globals.trainFilename);
           trainingCorpus = new CorpusWriterMalletSeq(this.conf, this.instanceType,
                   this.inputASName, trainfilemalletseq, this.sequenceSpan,
-                  mode, classType, targetFeature, identifierFeature, scaleFeatures);
+                  mode, classAnnotationType, targetFeature, identifierFeature, scaleFeatures);
           break;
         case WEKA_CL_NUM_ADDITIVE_REGRESSION:
           File trainfileweka = new File(
                   gate.util.Files.fileFromURL(dataDirectory), Globals.trainFilename);
           trainingCorpus = new CorpusWriterArffNumericClass(this.conf, this.instanceType,
                   this.inputASName, trainfileweka,
-                  mode, classType, targetFeature, identifierFeature, null, scaleFeatures);
+                  mode, classAnnotationType, targetFeature, identifierFeature, null, scaleFeatures);
           break;
         case WEKA_CL_NAIVE_BAYES:
         case WEKA_CL_J48:
@@ -261,7 +261,7 @@ public class LF_TrainSequenceTagging extends LF_TrainBase {
                   gate.util.Files.fileFromURL(dataDirectory), Globals.trainFilename);
           trainingCorpus = new CorpusWriterArff(this.conf, this.instanceType,
                   this.inputASName, trainfileweka,
-                  mode, classType, targetFeature, identifierFeature,
+                  mode, classAnnotationType, targetFeature, identifierFeature,
                   null, scaleFeatures);
           break;
       }

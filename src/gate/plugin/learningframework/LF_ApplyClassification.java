@@ -11,17 +11,14 @@
 package gate.plugin.learningframework;
 
 import java.io.File;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import gate.AnnotationSet;
-import gate.Annotation;
 import gate.Controller;
 import gate.Document;
-import gate.Factory;
-import gate.FeatureMap;
+import gate.creole.ExecutionInterruptedException;
 import gate.creole.metadata.CreoleParameter;
 import gate.creole.metadata.CreoleResource;
 import gate.creole.metadata.Optional;
@@ -118,9 +115,16 @@ public class LF_ApplyClassification extends LearningFrameworkPRBase {
 
   private File savedModelDirectoryFile;
 
+  // this is either what the user specifies as the PR parameter, or what we have stored 
+  // with the saved model.
+  private String targetFeatureToUse; 
 
   @Override
   public void execute(Document doc) {
+    if(isInterrupted()) {
+      interrupted = false;
+      throw new GateRuntimeException("Execution was requested to be interrupted");
+    }
     // extract the required annotation sets,
     AnnotationSet inputAS = doc.getAnnotations(getInputASName());
     AnnotationSet instanceAS = inputAS.get(getInstanceType());
@@ -138,7 +142,7 @@ public class LF_ApplyClassification extends LearningFrameworkPRBase {
           instanceAS, inputAS,
           sequenceAS, getAlgorithmParameters());
 
-    GateClassification.applyClassification(doc, gcs, getTargetFeature(), null);
+    GateClassification.applyClassification(doc, gcs, targetFeatureToUse, null);    
   }
 
 
@@ -157,8 +161,7 @@ public class LF_ApplyClassification extends LearningFrameworkPRBase {
     // JP: this was moved from the dataDirectory setter to avoid problems
     // but we should really make sure that the learning is reloaded only 
     // if the URL has changed since the last time (if ever) it was loaded.
-    savedModelDirectoryFile = new File(
-            gate.util.Files.fileFromURL(dataDirectory), Globals.savedModelDirectory);
+    savedModelDirectoryFile = gate.util.Files.fileFromURL(dataDirectory);
 
     // Restore the Engine
     engine = Engine.loadEngine(savedModelDirectoryFile, getAlgorithmParameters());
@@ -170,9 +173,25 @@ public class LF_ApplyClassification extends LearningFrameworkPRBase {
       System.out.println("LearningFramework: Applying model "
               + engine.getModel().getClass() + " ...");
     }
-    // TODO: IMPORTANT: the restored engine should be able to tell 
-    // what is the target feature name?
-    // is it indeed a classification model?
+    
+    if(engine.getAlgorithmKind() == AlgorithmKind.SEQUENCE_TAGGER) {
+      if(getSequenceSpan() == null || getSequenceSpan().isEmpty()) {
+        throw new GateRuntimeException("sequenceSpan parameter must not be empty when a sequence tagging algorithm is used for classification");
+      }
+    }
+    
+    if(getTargetFeature()==null || getTargetFeature().isEmpty()) {
+      // try to get the target feature from the model instead
+      String targetFeatureFromModel = engine.getInfo().targetFeature;
+      if(targetFeatureFromModel == null || targetFeatureFromModel.isEmpty()) {
+        throw new GateRuntimeException("Not targetFeature parameter specified and none available from the model info file either.");
+      }
+      targetFeatureToUse = targetFeatureFromModel;
+      System.err.println("Using target feature name from model: "+targetFeatureToUse);
+    } else {
+      targetFeatureToUse = getTargetFeature();
+      System.err.println("Using target feature name from PR parameter: "+targetFeatureToUse);
+    }
   }
 
 }

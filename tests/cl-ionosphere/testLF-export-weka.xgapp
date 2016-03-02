@@ -141,13 +141,9 @@
               <mapType>gate.util.SimpleFeatureMapImpl</mapType>
               <localMap>
                 <entry>
-                  <string>algorithmJavaClass</string>
-                  <string></string>
-                </entry>
-                <entry>
                   <string>dataDirectory</string>
                   <gate.util.persistence.PersistenceManager-URLHolder>
-                    <urlString>$relpath$model-wekanb</urlString>
+                    <urlString>$relpath$export</urlString>
                   </gate.util.persistence.PersistenceManager-URLHolder>
                 </entry>
                 <entry>
@@ -163,28 +159,32 @@
                   <null/>
                 </entry>
                 <entry>
+                  <string>classAnnotationType</string>
+                  <null/>
+                </entry>
+                <entry>
                   <string>algorithmParameters</string>
                   <null/>
                 </entry>
                 <entry>
                   <string>inputASName</string>
-                  <string></string>
+                  <null/>
                 </entry>
                 <entry>
                   <string>sequenceSpan</string>
-                  <string></string>
+                  <null/>
                 </entry>
                 <entry>
                   <string>targetFeature</string>
                   <string>class</string>
                 </entry>
                 <entry>
-                  <string>identifierFeature</string>
-                  <null/>
+                  <string>exporter</string>
+                  <gate.plugin.learningframework.Exporter>EXPORTER_WEKA_CLASS</gate.plugin.learningframework.Exporter>
                 </entry>
                 <entry>
-                  <string>trainingAlgorithm</string>
-                  <gate.plugin.learningframework.engines.AlgorithmClassification>WEKA_CL_NAIVE_BAYES</gate.plugin.learningframework.engines.AlgorithmClassification>
+                  <string>identifierFeature</string>
+                  <string></string>
                 </entry>
                 <entry>
                   <string>featureSpecURL</string>
@@ -198,8 +198,8 @@
                 </entry>
               </localMap>
             </runtimeParams>
-            <resourceType>gate.plugin.learningframework.LF_TrainClassification</resourceType>
-            <resourceName>LF_TrainClassification</resourceName>
+            <resourceType>gate.plugin.learningframework.LF_Export</resourceType>
+            <resourceName>LF_Export 00008</resourceName>
             <initParams class="gate.util.persistence.MapPersistence">
               <mapType>gate.util.SimpleFeatureMapImpl</mapType>
               <localMap/>
@@ -221,7 +221,7 @@
       <collectionType>java.util.ArrayList</collectionType>
     </prList>
     <resourceType>gate.creole.ConditionalSerialAnalyserController</resourceType>
-    <resourceName>testLF-train-wekanb2</resourceName>
+    <resourceName>testLF-export-weka</resourceName>
     <initParams class="gate.util.persistence.MapPersistence">
       <mapType>gate.util.SimpleFeatureMapImpl</mapType>
       <localMap/>

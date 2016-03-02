@@ -65,8 +65,6 @@ public class EngineWeka extends Engine {
     } catch (Exception ex) {
       throw new GateRuntimeException("Could not create Weka trainer instance for "+info.trainerClass,ex);
     }
-    // now load the Mallet corpus representation
-    loadMalletCorpusRepresentation(directory);
   }
 
   @Override
@@ -94,7 +92,7 @@ public class EngineWeka extends Engine {
   @Override
   protected void loadMalletCorpusRepresentation(File directory) {
     corpusRepresentationMallet = CorpusRepresentationMalletClass.load(directory);
-    crWeka = new CorpusRepresentationWeka(corpusRepresentationMallet,false);
+    crWeka = new CorpusRepresentationWeka(corpusRepresentationMallet);
   }
   
 
@@ -113,7 +111,7 @@ public class EngineWeka extends Engine {
       Instance inst = data.extractIndependentFeatures(instAnn, inputAS);
       inst = pipe.instanceFrom(inst);
       // Convert to weka Instance
-      weka.core.Instance wekaInstance = CorpusRepresentationWeka.wekaInstanceFromMalletInstance(instances, inst, false);
+      weka.core.Instance wekaInstance = CorpusRepresentationWeka.wekaInstanceFromMalletInstance(instances, inst);
       // classify with the weka classifier or predict the numeric value: if the mallet pipe does have
       // a target alphabet we assume classification, otherwise we assume regression
       GateClassification gc = null;
@@ -145,7 +143,7 @@ public class EngineWeka extends Engine {
           //System.err.println("classifying instance "+wekaInstance.toString());
           predictionDistribution = wekaClassifier.distributionForInstance(wekaInstance);
         } catch (Exception ex) {
-          ex.printStackTrace(System.err);
+          throw new RuntimeException("Weka classifier error in document "+instanceAS.getDocument().getName(),ex);
         }
         // This is classification, we should always get a distribution list > 1
         if (predictionDistribution.length < 2) {
@@ -154,7 +152,6 @@ public class EngineWeka extends Engine {
         }
         double bestprob = 0.0;
         int bestlabel = 0;
-
         /*
         System.err.print("DEBUG: got classes from pipe: ");
     		Object[] cls = pipe.getTargetAlphabet().toArray();

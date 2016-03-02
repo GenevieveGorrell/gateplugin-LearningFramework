@@ -21,7 +21,6 @@ import gate.creole.metadata.CreoleParameter;
 import gate.creole.metadata.CreoleResource;
 import gate.creole.metadata.Optional;
 import gate.creole.metadata.RunTime;
-import gate.plugin.learningframework.data.CorpusRepresentation;
 import gate.plugin.learningframework.data.CorpusRepresentationMalletClass;
 import gate.plugin.learningframework.engines.AlgorithmClassification;
 import gate.plugin.learningframework.engines.Engine;
@@ -29,10 +28,6 @@ import gate.plugin.learningframework.features.FeatureSpecification;
 import gate.plugin.learningframework.features.TargetType;
 import gate.util.Files;
 import gate.util.GateRuntimeException;
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.logging.Level;
 
 /**
  *
@@ -42,8 +37,8 @@ import java.util.logging.Level;
         helpURL = "",
         comment = "Train a machine learning model for classification")
 public class LF_TrainClassification extends LF_TrainBase {
+
   private static final long serialVersionUID = -420477191226830002L;
-  
 
   private final Logger logger = Logger.getLogger(LF_TrainClassification.class.getCanonicalName());
 
@@ -76,16 +71,19 @@ public class LF_TrainClassification extends LF_TrainBase {
   public AlgorithmClassification getTrainingAlgorithm() {
     return this.trainingAlgorithm;
   }
-  
-  protected String algorithmClass;
+
+  protected String algorithmJavaClass;
+
   @RunTime
   @Optional
   @CreoleParameter(comment = "The class of the training algorithm to use, only used if SPECIFY_CLASS is selected")
-  public void setAlgorithmClass(String className) { 
-    algorithmClass = className;
+  public void setAlgorithmJavaClass(String className) {
+    algorithmJavaClass = className;
   }
-  
-  public String getAlgorithmClass() { return algorithmClass; }
+
+  public String getAlgorithmJavaClass() {
+    return algorithmJavaClass;
+  }
 
   protected ScalingMethod scaleFeatures = ScalingMethod.NONE;
 
@@ -133,23 +131,14 @@ public class LF_TrainClassification extends LF_TrainBase {
     return this.sequenceSpan;
   }
   
-  
-  @RunTime
-  @CreoleParameter(comment = "If we want to train or just export the instances.")
-  public void setTrainOrExportAction(TrainOrExportAction value) {
-    this.trainOrExportAction = value;
-  }
-
-  public TrainOrExportAction getTrainOrExportAction() {
-    return trainOrExportAction == null ? TrainOrExportAction.TRAIN : trainOrExportAction;
-  }
-
-  private TrainOrExportAction trainOrExportAction;
-  
-  
+  private int nrDocuments;
 
   @Override
   public void execute(Document doc) {
+    if(isInterrupted()) {
+      interrupted = false;
+      throw new GateRuntimeException("Execution was requested to be interrupted");
+    }
     // extract the required annotation sets,
     AnnotationSet inputAS = doc.getAnnotations(getInputASName());
     AnnotationSet instanceAS = inputAS.get(getInstanceType());
@@ -157,10 +146,10 @@ public class LF_TrainClassification extends LF_TrainBase {
     // the sequenceAS must be specified for a sequence tagging algorithm and most not be specified
     // for a non-sequence tagging algorithm!
     AnnotationSet sequenceAS = null;
-    if(getTrainingAlgorithm() == AlgorithmClassification.MALLET_SEQ_CRF) {
+    if (getTrainingAlgorithm() == AlgorithmClassification.MALLET_SEQ_CRF) {
       // NOTE: we already have checked earlier, that in that case, the sequenceSpan parameter is 
       // given!
-      sequenceAS = doc.getAnnotations(getSequenceSpan());
+      sequenceAS = inputAS.get(getSequenceSpan());
     }
     // the classAS is always null for the classification task!
     // the nameFeatureName is always null for now!
@@ -170,28 +159,29 @@ public class LF_TrainClassification extends LF_TrainBase {
 
   @Override
   public void afterLastDocument(Controller arg0, Throwable t) {
-    if(trainOrExportAction == TrainOrExportAction.TRAIN) {
-      System.out.println("LearningFramework: Starting training engine "+engine);
-      System.out.println("Training set classes: "+
-           corpusRepresentation.getRepresentationMallet().getPipe().getTargetAlphabet().toString().replaceAll("\\n", " "));
-      System.out.println("Training set size: " + corpusRepresentation.getRepresentationMallet().size());
-      if (corpusRepresentation.getRepresentationMallet().getDataAlphabet().size() > 20) {
-        System.out.println("LearningFramework: Attributes " + corpusRepresentation.getRepresentationMallet().getDataAlphabet().size());
-      } else {
-        System.out.println("LearningFramework: Attributes " + corpusRepresentation.getRepresentationMallet().getDataAlphabet().toString().replaceAll("\\n", " "));
-      }
-      //System.out.println("DEBUG: instances are "+corpusRepresentation.getRepresentationMallet());
-      
-      corpusRepresentation.addScaling(getScaleFeatures());
-      engine.trainModel(getAlgorithmParameters());
-      logger.info("LearningFramework: Training complete!");
-      engine.saveEngine(Files.fileFromURL(getDataDirectory()));      
+    System.out.println("LearningFramework: Starting training engine " + engine);
+    System.out.println("Training set classes: "
+            + corpusRepresentation.getRepresentationMallet().getPipe().getTargetAlphabet().toString().replaceAll("\\n", " "));
+    System.out.println("Training set size: " + corpusRepresentation.getRepresentationMallet().size());
+    if (corpusRepresentation.getRepresentationMallet().getDataAlphabet().size() > 20) {
+      System.out.println("LearningFramework: Attributes " + corpusRepresentation.getRepresentationMallet().getDataAlphabet().size());
     } else {
-      corpusRepresentation.addScaling(getScaleFeatures());
-      File outDir = Files.fileFromURL(getDataDirectory());
-      CorpusRepresentation.export(corpusRepresentation, trainOrExportAction, outDir, getAlgorithmParameters());
+      System.out.println("LearningFramework: Attributes " + corpusRepresentation.getRepresentationMallet().getDataAlphabet().toString().replaceAll("\\n", " "));
     }
-    }
+      //System.out.println("DEBUG: instances are "+corpusRepresentation.getRepresentationMallet());
+
+    corpusRepresentation.addScaling(getScaleFeatures());
+
+    // Store some additional information in the info datastructure which will be saved with the model
+    engine.getInfo().nrTrainingDocuments = nrDocuments;
+    engine.getInfo().nrTrainingInstances = corpusRepresentation.getRepresentationMallet().size();
+    engine.getInfo().targetFeature = getTargetFeature();
+    engine.getInfo().trainingCorpusName = corpus.getName();
+    
+    engine.trainModel(getAlgorithmParameters());
+    logger.info("LearningFramework: Training complete!");
+    engine.saveEngine(Files.fileFromURL(getDataDirectory()));
+  }
 
   @Override
   protected void finishedNoDocument(Controller c, Throwable t) {
@@ -200,51 +190,53 @@ public class LF_TrainClassification extends LF_TrainBase {
 
   @Override
   protected void beforeFirstDocument(Controller controller) {
-    
-    if(getTrainingAlgorithm() == AlgorithmClassification.MALLET_SEQ_CRF) {
-      if(getSequenceSpan() == null || getSequenceSpan().isEmpty()) {
+
+    if (getTrainingAlgorithm() == AlgorithmClassification.MALLET_SEQ_CRF) {
+      if (getSequenceSpan() == null || getSequenceSpan().isEmpty()) {
         throw new GateRuntimeException("SequenceSpan parameter is required for MALLET_SEQ_CRF");
-      } 
+      }
     } else {
-      if(getSequenceSpan() != null && !getSequenceSpan().isEmpty()) {
+      if (getSequenceSpan() != null && !getSequenceSpan().isEmpty()) {
         throw new GateRuntimeException("SequenceSpan parameter must not be specified with non-sequence tagging algorithm");
       }
     }
-    
+
     AlgorithmClassification alg = getTrainingAlgorithm();
     // if an algorithm is specified where the name ends in "SPECIFY_CLASS" use the 
-    // algorithmClass 
-    if(getTrainingAlgorithm().toString().endsWith("SPECIFY_CLASS")) {
-      if(getAlgorithmClass() == null || getAlgorithmClass().isEmpty()) {
-        throw new GateRuntimeException("AlgorithmClass parameter must be specified when "+getTrainingAlgorithm()+" is chosen");
+    // algorithmJavaClass 
+    if (getTrainingAlgorithm().toString().endsWith("SPECIFY_CLASS")) {
+      if (getAlgorithmJavaClass() == null || getAlgorithmJavaClass().isEmpty()) {
+        throw new GateRuntimeException("AlgorithmClass parameter must be specified when " + getTrainingAlgorithm() + " is chosen");
       }
       Class clazz = null;
       try {
-        clazz = Class.forName(getAlgorithmClass());
+        clazz = Class.forName(getAlgorithmJavaClass());
       } catch (ClassNotFoundException ex) {
-        throw new GateRuntimeException("Could not load algorithm class: "+getAlgorithmClass(),ex);
+        throw new GateRuntimeException("Could not load algorithm class: " + getAlgorithmJavaClass(), ex);
       }
       alg.setTrainerClass(clazz);
     }
-    
+
     System.err.println("DEBUG: Before Document.");
-    System.err.println("  Training algorithm engine class is "+alg.getEngineClass());
-    System.err.println("  Training algorithm algor class is "+alg.getTrainerClass());
-    
+    System.err.println("  Training algorithm engine class is " + alg.getEngineClass());
+    System.err.println("  Training algorithm algor class is " + alg.getTrainerClass());
+
     // Read and parse the feature specification
     featureSpec = new FeatureSpecification(featureSpecURL);
-    System.err.println("DEBUG Read the feature specification: "+featureSpec);
+    System.err.println("DEBUG Read the feature specification: " + featureSpec);
 
     // create the corpus representation for creating the training instances
     corpusRepresentation = new CorpusRepresentationMalletClass(featureSpec.getFeatureInfo(), scaleFeatures);
-    System.err.println("DEBUG: created the corpusRepresentationMallet: "+corpusRepresentation);
+    System.err.println("DEBUG: created the corpusRepresentationMallet: " + corpusRepresentation);
 
     // Create the engine from the Algorithm parameter
-    engine = Engine.createEngine(trainingAlgorithm, getAlgorithmParameters(),corpusRepresentation);
-    System.err.println("DEBUG: created the engine: "+engine);
+    engine = Engine.createEngine(trainingAlgorithm, getAlgorithmParameters(), corpusRepresentation);
     
+    System.err.println("DEBUG: created the engine: " + engine);
+
+    nrDocuments = 0;
     
-    System.err.println("DEBUG: setup of the training PR complete");
+    System.err.println("DEBUG: setup of the training PR complete");    
   }
 
 }

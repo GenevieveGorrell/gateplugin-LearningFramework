@@ -12,14 +12,17 @@ package gate.plugin.learningframework;
 
 import gate.plugin.learningframework.data.CorpusRepresentationLibSVM;
 import gate.plugin.learningframework.data.CorpusRepresentationMallet;
+import gate.plugin.learningframework.data.CorpusRepresentationMalletSeq;
 import gate.plugin.learningframework.data.CorpusRepresentationWeka;
 
-public enum TrainOrExportAction {
-  TRAIN(null),
-  EXPORT_ARFF(CorpusRepresentationWeka.class),
-  EXPORT_MALLET(CorpusRepresentationMallet.class),
-  EXPORT_LIBSVM(CorpusRepresentationLibSVM.class);
-  private TrainOrExportAction(Class corpusRepresentationClass) {
+public enum Exporter {
+  EXPORTER_WEKA_CLASS(CorpusRepresentationWeka.class),
+  EXPORTER_WEKA_REGRESSION(CorpusRepresentationWeka.class),
+  EXPORTER_MALLET_CLASS(CorpusRepresentationMallet.class),
+  EXPORTER_MALLET_SEQ(CorpusRepresentationMalletSeq.class),
+  EXPORTER_LIBSVM_CLASS(CorpusRepresentationLibSVM.class),
+  EXPORTER_LIBSVM_REGRESSION(CorpusRepresentationLibSVM.class);
+  private Exporter(Class corpusRepresentationClass) {
     this.corpusRepresentationClass = corpusRepresentationClass;
   }
   private Class corpusRepresentationClass = null;

@@ -55,8 +55,15 @@ public class EngineMalletSeq extends EngineMallet {
   @Override
   public void trainModel(String options) {
     
-    // TODO: maybe we should allow more flexibility here based on the parms and the algorithm specified!?!?!
+    // NOTE: Training of the CRF is very flexible in Mallet and not everything is clear to me
+    // yet. Unfortunately, there is practically no documentation available.
+    // There is some useful example code around:
+    // http://mallet.cs.umass.edu/fst.php - the only real documentation available
+    // src/cc/mallet/examples/TrainCRF.java -  very basic example
+    // src/cc/mallet/fst/SimpleTagger.java - more detailled: especially also shows multithreaded training!
+    //   how to use this: http://mallet.cs.umass.edu/sequences.php
     
+
     // the algorithm name is stored in info.
     // NOTE: the name can come from an algorithm selected for classification OR an algorithm
     // selected for actual sequence tagging. This is why we check the literal name here

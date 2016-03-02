@@ -59,6 +59,8 @@ public class Parms {
    * @return 
    */
   public Parms(String parmString, String... names) {
+    // just treat a parmString of null equal to the empty string: do nothing
+    if(parmString == null || parmString.isEmpty()) return;
     List<String> longNames = new ArrayList<String>();
     List<String> types = new ArrayList<String>();
     Options options = new Options();

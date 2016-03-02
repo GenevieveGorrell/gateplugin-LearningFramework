@@ -10,7 +10,6 @@ import cc.mallet.pipe.Pipe;
 import cc.mallet.pipe.SerialPipes;
 import gate.plugin.learningframework.features.FeatureInfo;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 
 /**

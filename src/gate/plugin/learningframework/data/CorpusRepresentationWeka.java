@@ -29,6 +29,10 @@ import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ArffSaver;
 import weka.core.converters.CSVSaver;
+import weka.core.converters.JSONSaver;
+import weka.core.converters.LibSVMSaver;
+import weka.core.converters.MatlabSaver;
+import weka.core.converters.SVMLightSaver;
 
 /**
  *
@@ -43,12 +47,9 @@ public class CorpusRepresentationWeka extends CorpusRepresentation {
    * @param other 
    */
   public CorpusRepresentationWeka(CorpusRepresentationMallet other) {
-    data = getFromMallet(other, true);
+    data = getFromMallet(other);
   }
   
-  public CorpusRepresentationWeka(CorpusRepresentationMallet other, boolean haveTarget) {
-    data = getFromMallet(other, haveTarget);
-  }
 
   public void clear() {
     // NOTE: not sure if this actually keeps the attribute infos and only clears the 
@@ -78,12 +79,13 @@ public class CorpusRepresentationWeka extends CorpusRepresentation {
    * @param format
    */
   public void export(File directory, String parms) {
-    if (parms == null) {
+    if (parms == null || parms.isEmpty()) {
+      System.err.println("EXPORTING using ArffSaver");
       ArffSaver saver = new ArffSaver();
       saver.setInstances(data);
       File outFile = new File(directory, "data.arff");
       try {
-        saver.setDestination(outFile);
+        saver.setFile(outFile);
       } catch (IOException ex) {
         throw new GateRuntimeException("Error exporting Weka data to " + outFile, ex);
       }
@@ -94,18 +96,18 @@ public class CorpusRepresentationWeka extends CorpusRepresentation {
       }
     } else {
       // first parse the parms to see if we have a -format value
-      Parms ps = new Parms(parms, ":format:s");
+      Parms ps = new Parms(parms, "f:format:s");
       String format = (String) ps.getValueOrElse("format", "");
       if (format.equals("csv")) {
         ps = new Parms(parms, "F:F:s", "M:M:s", "N:N:b");
         String fieldSep = gate.util.Strings.unescape((String) ps.getValueOrElse("F", "\\t"));
         String mv = gate.util.Strings.unescape((String) ps.getValueOrElse("M", "?"));
-        boolean noHeader = (boolean) ps.getValueOrElse("M", "?");
+        boolean noHeader = (boolean) ps.getValueOrElse("N", true);
         CSVSaver saver = new CSVSaver();
         saver.setInstances(data);
         File outFile = new File(directory, "data.csv");
         try {
-          saver.setDestination(outFile);
+          saver.setFile(outFile);
         } catch (IOException ex) {
           throw new GateRuntimeException("Error exporting Weka data to " + outFile, ex);
         }
@@ -115,15 +117,61 @@ public class CorpusRepresentationWeka extends CorpusRepresentation {
           throw new GateRuntimeException("Error exporting Weka data to " + outFile, ex);
         }
       } else if (format.equals("json")) {
-        throw new NotImplementedException("Save to json not yet implemented");
+        File outFile = new File(directory, "data.json");
+        JSONSaver saver = new JSONSaver();
+        saver.setInstances(data);
+        try {
+          saver.setFile(outFile);
+        } catch (IOException ex) {
+          throw new GateRuntimeException("Error exporting Weka data to " + outFile, ex);
+        }
+        try {
+          saver.writeBatch();
+        } catch (IOException ex) {
+          throw new GateRuntimeException("Error exporting Weka data to " + outFile, ex);
+        }
       } else if (format.equals("libsvm")) {
-        throw new NotImplementedException("Save to libsvm not yet implemented");
-
+        File outFile = new File(directory, "data.libsvm");
+        LibSVMSaver saver = new LibSVMSaver();
+        saver.setInstances(data);
+        try {
+          saver.setFile(outFile);
+        } catch (IOException ex) {
+          throw new GateRuntimeException("Error exporting Weka data to " + outFile, ex);
+        }
+        try {
+          saver.writeBatch();
+        } catch (IOException ex) {
+          throw new GateRuntimeException("Error exporting Weka data to " + outFile, ex);
+        }
       } else if (format.equals("svmlight")) {
-        throw new NotImplementedException("Save to svmlight not yet implemented");
-
+        File outFile = new File(directory, "data.svmlight");
+        SVMLightSaver saver = new SVMLightSaver();
+        saver.setInstances(data);
+        try {
+          saver.setFile(outFile);
+        } catch (IOException ex) {
+          throw new GateRuntimeException("Error exporting Weka data to " + outFile, ex);
+        }
+        try {
+          saver.writeBatch();
+        } catch (IOException ex) {
+          throw new GateRuntimeException("Error exporting Weka data to " + outFile, ex);
+        }
       } else if (format.equals("matlab")) {
-        throw new NotImplementedException("Save to matlab not yet implemented");
+        File outFile = new File(directory, "data.m");
+        MatlabSaver saver = new MatlabSaver();
+        saver.setInstances(data);
+        try {
+          saver.setFile(outFile);
+        } catch (IOException ex) {
+          throw new GateRuntimeException("Error exporting Weka data to " + outFile, ex);
+        }
+        try {
+          saver.writeBatch();
+        } catch (IOException ex) {
+          throw new GateRuntimeException("Error exporting Weka data to " + outFile, ex);
+        }
       } else {
         throw new GateRuntimeException("Unknown format for exporting Weka representation: "+format);
       }
@@ -133,10 +181,11 @@ public class CorpusRepresentationWeka extends CorpusRepresentation {
   /**
    * Create a Weka dataset from just the meta-information of the Mallet representation.
    * This creates an empty Instances object that has all the attributes constructed from 
-   * the information we have in the Mallet representation. The flag haveTarget controls if 
-   * the a class/target attribute is included in the attribute list or not. 
+   * the information we have in the Mallet representation. 
+   * The dataset will always have a class attribute defined: if there is a mallet target alphabet,
+   * a nominal (class) attribute, otherwise a numeric (regression) attribute.
    */
-  public static Instances emptyDatasetFromMallet(CorpusRepresentationMallet cr, boolean haveTarget) {
+  public static Instances emptyDatasetFromMallet(CorpusRepresentationMallet cr) {
     if (!(cr instanceof CorpusRepresentationMalletClass)) {
       throw new GateRuntimeException("Conversion to weka not implemented yet: " + cr.getClass());
     }
@@ -212,8 +261,7 @@ public class CorpusRepresentationWeka extends CorpusRepresentation {
     }
     // now add the class attribute, if necessary: if there is a target alphabet, the class must be nominal,
     // so create a nominal weka attribute, otherwise, create a numeric one
-    weka.core.Attribute classAttr = null;
-    if(haveTarget) {
+    weka.core.Attribute targetAttr = null;
     if (pipe.getTargetAlphabet() != null) {
       Alphabet talph = pipe.getTargetAlphabet();
       // create the values for the target from the target alphabet
@@ -221,44 +269,42 @@ public class CorpusRepresentationWeka extends CorpusRepresentation {
       for (int i = 0; i < talph.size(); i++) {
         classVals.add((String) talph.lookupObject(i));
       }
-      classAttr = new Attribute("class", classVals);
-      wekaAttributes.add(classAttr);
+      targetAttr = new Attribute("class", classVals);
+      wekaAttributes.add(targetAttr);
     } else {
-      classAttr = new Attribute("target");
-      wekaAttributes.add(classAttr);
+      targetAttr = new Attribute("target");
+      wekaAttributes.add(targetAttr);
     }
-    }
-    // create the weka instances
+    // create the weka dataset 
     Instances insts = new weka.core.Instances("GATELearningFramework", wekaAttributes, malletInstances.size());
-    if(haveTarget) {
-      insts.setClass(classAttr);
-    }
+    insts.setClass(targetAttr);
     return insts;
   }
   
   public static weka.core.Instance wekaInstanceFromMalletInstance(Instances wekaDataset, 
-          cc.mallet.types.Instance malletInstance, boolean haveTarget) {
+          cc.mallet.types.Instance malletInstance) {
       FeatureVector fv = (FeatureVector) malletInstance.getData();
       int size = fv.numLocations();
-      int wekaTargetIndex = -1;
-      if(haveTarget) wekaTargetIndex = wekaDataset.classIndex();
+      int wekaTargetIndex = wekaDataset.classIndex();
       // TODO: for now we just directly copy over the mallet values to the weka values
       // We may need to handle certain cases with missing values separately!
 
       // create  the arrays with one more entry which will be the target, if we have a target
-      int indices[] = haveTarget ? new int[size + 1] : new int[size];
-      double values[] = new double[size + 1];
+      
+      //int indices[] = haveTarget ? new int[size + 1] : new int[size];
+      // experimental change: always allocate the space for the class attribute! 
+      // We do this because Weka Random Forest threw an exception and complained about a missing
+      // class. 
+      int indices[] = new int[size+1];
+      double values[] = new double[size+1];
       for (int i = 0; i < size; i++) {
         indices[i] = fv.indexAtLocation(i);
         values[i] = fv.valueAtLocation(i);
       }
       // now set the target, if we have one 
-      if(haveTarget) {
+      Object malletValue = malletInstance.getTarget();
+      if(malletValue != null) {  // we do have a target value, could be a class label or a numeric value
         indices[size] = wekaTargetIndex;
-        Object malletValue = malletInstance.getTarget();
-        if(malletValue == null) {
-          throw new GateRuntimeException("We should have a target but the mallet instance target is null");
-        }
         // if we have a target alphabet, convert the label to a class index, otherwise expect
         // a double value directly
         if(malletInstance.getTargetAlphabet() == null) {
@@ -274,6 +320,9 @@ public class CorpusRepresentationWeka extends CorpusRepresentation {
             System.err.println("DEBUG ASSERTION FAILED: malletIndex for target is not equal to wekaIndex");
           }
         }
+      } else {  // we do not have a target value, so lets create a missing value target for weka
+        indices[size] = wekaDataset.classIndex();
+        values[size] = Double.NaN;
       }
       weka.core.SparseInstance wekaInstance = new weka.core.SparseInstance(1.0, values, indices, values.length);
       // TODO: is this necessary, is this useful?
@@ -296,12 +345,12 @@ public class CorpusRepresentationWeka extends CorpusRepresentation {
    * @param cr
    * @return
    */
-  public static Instances getFromMallet(CorpusRepresentationMallet cr, boolean haveTarget) {
-    Instances wekaInstances =  emptyDatasetFromMallet(cr, haveTarget);
+  public static Instances getFromMallet(CorpusRepresentationMallet cr) {
+    Instances wekaInstances =  emptyDatasetFromMallet(cr);
 
     InstanceList malletInstances = cr.getRepresentationMallet();
     for (cc.mallet.types.Instance malletInstance : malletInstances) {
-      weka.core.Instance wekaInstance = wekaInstanceFromMalletInstance(wekaInstances, malletInstance, haveTarget);
+      weka.core.Instance wekaInstance = wekaInstanceFromMalletInstance(wekaInstances, malletInstance);
       wekaInstances.add(wekaInstance);
     }
     return wekaInstances;
