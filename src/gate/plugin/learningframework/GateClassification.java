@@ -130,7 +130,7 @@ public class GateClassification {
         fm.put(Globals.outputProbFeature + "_list", gc.getConfidenceList());
       }
       if (gc.getSeqSpanID() != null) {
-        System.err.println("Refactoring error: why do we have a SeqSpanID when doing classification?");
+        fm.put(Globals.outputSequenceSpanIDFeature, gc.getSeqSpanID());
       }
       if(outputAS != null) {
         int id = gate.Utils.addAnn(outputAS, gc.getInstance(), gc.getInstance().getType(), fm);
@@ -149,7 +149,7 @@ public class GateClassification {
    * @param outSet 
    */
 public static void addClassificationAnnotations(Document doc, List<GateClassification> gcs, 
-        AnnotationSet outputAnnSet, String targetFeature, Double minConfidence) {
+        String targetFeature, AnnotationSet outputAnnSet, Double minConfidence) {
 
     // !!TODO: if we have a target feature, then I think we should not add classification
     // annotations! This should get handled better in the calling code!!
@@ -182,7 +182,7 @@ public static void addClassificationAnnotations(Document doc, List<GateClassific
     }
   }
   
-  public static void addSurroundingAnnotations(Document doc, 
+  public static void addSurroundingAnnotations( 
           AnnotationSet inputAS, 
           AnnotationSet instanceAS, 
           AnnotationSet outputAS,
@@ -199,7 +199,7 @@ public static void addClassificationAnnotations(Document doc, List<GateClassific
 
     Map<Integer, AnnToAdd> annsToAdd = new HashMap<Integer, AnnToAdd>();
 
-    Iterator<Annotation> it = instanceAS.iterator();
+    Iterator<Annotation> it = instanceAS.inDocumentOrder().iterator();
     while (it.hasNext()) {
       Annotation inst = it.next();
 
@@ -231,6 +231,8 @@ public static void addClassificationAnnotations(Document doc, List<GateClassific
             fm.put(Globals.outputSequenceSpanIDFeature, sequenceSpanID);
           }
           try {
+            // TODO: get an invalid offset exception here: Offsets [31060:31059] not valid for this document of size 43447
+            // so the end offset is before the start offset?
             outputAS.add(
                     thisAnnToAdd.thisStart, thisAnnToAdd.thisEnd,
                     outputAnnType, fm);
@@ -261,7 +263,7 @@ public static void addClassificationAnnotations(Document doc, List<GateClassific
       }
 
       //Remove each inst ann as we consume it
-      inputAS.remove(inst);
+      //inputAS.remove(inst);
     }
 
     //Add any hanging entities at the end.

@@ -38,7 +38,7 @@ import static org.junit.Assert.*;
  *
  * @author Johann Petrak
  */
-public class TestEngineMalletSeq {
+public class TestEngineMalletSeqOld {
 
   @BeforeClass
   public static void init() throws GateException {

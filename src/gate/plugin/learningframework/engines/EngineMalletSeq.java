@@ -9,8 +9,6 @@ package gate.plugin.learningframework.engines;
 import cc.mallet.fst.CRF;
 import cc.mallet.fst.CRFOptimizableByLabelLikelihood;
 import cc.mallet.fst.CRFTrainerByLabelLikelihood;
-import cc.mallet.fst.CRFTrainerByStochasticGradient;
-import cc.mallet.fst.CRFTrainerByValueGradients;
 import cc.mallet.fst.SumLatticeDefault;
 import cc.mallet.fst.Transducer;
 import cc.mallet.fst.TransducerTrainer;
@@ -197,7 +195,7 @@ public class EngineMalletSeq extends EngineMallet {
       } else {
         int i = 0;
         for (Annotation instanceAnn : instanceAnnotations) {
-            i++;
+          i++;
 
           String bestLabel = null;
           double bestProb = 0.0;

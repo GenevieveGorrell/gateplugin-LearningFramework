@@ -6,10 +6,7 @@
 
 package gate.plugin.learningframework.tests;
 
-import gate.plugin.learningframework.engines.Info;
 import gate.plugin.learningframework.engines.Parms;
-import java.io.File;
-import java.util.Map;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

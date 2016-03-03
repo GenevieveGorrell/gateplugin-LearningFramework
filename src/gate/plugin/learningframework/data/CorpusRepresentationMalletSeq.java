@@ -187,6 +187,7 @@ public class CorpusRepresentationMalletSeq extends CorpusRepresentationMallet {
    * @param inputAS
    * @param nameFeatureName
    */
+  @Override
   public void add(AnnotationSet instancesAS, AnnotationSet sequenceAS, AnnotationSet inputAS, AnnotationSet classAS, String targetFeatureName, TargetType targetType, String nameFeatureName) {
     if (sequenceAS == null) {
       throw new GateRuntimeException("LF invalid call to CorpusRepresentationMallet.add: sequenceAS must not be null "
@@ -198,6 +199,11 @@ public class CorpusRepresentationMalletSeq extends CorpusRepresentationMallet {
     }
   }
 
+  @Override
+  public void addScaling(ScalingMethod scaleFeatures) {  
+    if(scaleFeatures != ScalingMethod.NONE)
+      throw new GateRuntimeException("Scaling not allowed/not yet implemented for sequence tagging representation");
+  }
   
   /**
    * Get a single Instance for a sequence annotation. If the

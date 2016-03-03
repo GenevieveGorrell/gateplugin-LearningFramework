@@ -39,6 +39,7 @@ public class Info {
   public List<String> classLabels; // empty for regression
   public String trainingCorpusName;
   public String targetFeature;
+  public String classAnnotationType;  // classAnnotationType 
   
   /**
    * TODO: NOTE: this is incomplete!! Should contain all fields that are also in the hashCode method!

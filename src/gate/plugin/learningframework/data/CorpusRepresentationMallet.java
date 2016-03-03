@@ -8,7 +8,10 @@ package gate.plugin.learningframework.data;
 
 import cc.mallet.types.Alphabet;
 import cc.mallet.types.InstanceList;
+import gate.AnnotationSet;
+import gate.plugin.learningframework.ScalingMethod;
 import gate.plugin.learningframework.features.FeatureInfo;
+import gate.plugin.learningframework.features.TargetType;
 import gate.plugin.learningframework.mallet.LFPipe;
 import gate.util.GateRuntimeException;
 import java.io.File;
@@ -82,5 +85,7 @@ public abstract class CorpusRepresentationMallet extends CorpusRepresentation {
     }
   }
   
+  public abstract void add(AnnotationSet instancesAS, AnnotationSet sequenceAS, AnnotationSet inputAS, AnnotationSet classAS, String targetFeatureName, TargetType targetType, String nameFeatureName);
   
+  public abstract void addScaling(ScalingMethod scaleFeatures);
 }

@@ -1690,7 +1690,7 @@
                   <null/>
                 </entry>
                 <entry>
-                  <string>learnerParams</string>
+                  <string>algorithmParameters</string>
                   <null/>
                 </entry>
                 <entry>
@@ -1700,10 +1700,6 @@
                 <entry>
                   <string>inputASName</string>
                   <null/>
-                </entry>
-                <entry>
-                  <string>classType</string>
-                  <string>Link</string>
                 </entry>
                 <entry>
                   <string>sequenceSpan</string>

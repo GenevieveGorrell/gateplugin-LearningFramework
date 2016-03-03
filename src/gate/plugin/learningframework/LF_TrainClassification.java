@@ -28,6 +28,7 @@ import gate.plugin.learningframework.features.FeatureSpecification;
 import gate.plugin.learningframework.features.TargetType;
 import gate.util.Files;
 import gate.util.GateRuntimeException;
+import java.io.File;
 
 /**
  *
@@ -132,6 +133,8 @@ public class LF_TrainClassification extends LF_TrainBase {
   }
   
   private int nrDocuments;
+  
+  private File dataDir;
 
   @Override
   public void execute(Document doc) {
@@ -180,7 +183,7 @@ public class LF_TrainClassification extends LF_TrainBase {
     
     engine.trainModel(getAlgorithmParameters());
     logger.info("LearningFramework: Training complete!");
-    engine.saveEngine(Files.fileFromURL(getDataDirectory()));
+    engine.saveEngine(dataDir);
   }
 
   @Override
@@ -190,7 +193,12 @@ public class LF_TrainClassification extends LF_TrainBase {
 
   @Override
   protected void beforeFirstDocument(Controller controller) {
+    dataDir = gate.util.Files.fileFromURL(dataDirectory);
+    if(!dataDir.exists()) throw new GateRuntimeException("Data directory not found: "+dataDir.getAbsolutePath());
 
+    if (getTrainingAlgorithm() == null) {
+      throw new GateRuntimeException("LearningFramework: no training algorithm specified");
+    }
     if (getTrainingAlgorithm() == AlgorithmClassification.MALLET_SEQ_CRF) {
       if (getSequenceSpan() == null || getSequenceSpan().isEmpty()) {
         throw new GateRuntimeException("SequenceSpan parameter is required for MALLET_SEQ_CRF");

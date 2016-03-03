@@ -1197,14 +1197,14 @@
               <mapType>gate.util.SimpleFeatureMapImpl</mapType>
               <localMap>
                 <entry>
+                  <string>encoding</string>
+                  <string>UTF-8</string>
+                </entry>
+                <entry>
                   <string>tokeniserRulesURL</string>
                   <gate.util.persistence.PersistenceManager-URLHolder>
                     <urlString>$gatehome$plugins/ANNIE/resources/tokeniser/DefaultTokeniser.rules</urlString>
                   </gate.util.persistence.PersistenceManager-URLHolder>
-                </entry>
-                <entry>
-                  <string>encoding</string>
-                  <string>UTF-8</string>
                 </entry>
                 <entry>
                   <string>transducerGrammarURL</string>
@@ -1252,14 +1252,14 @@
               <mapType>gate.util.SimpleFeatureMapImpl</mapType>
               <localMap>
                 <entry>
+                  <string>encoding</string>
+                  <string>UTF-8</string>
+                </entry>
+                <entry>
                   <string>gazetteerListsURL</string>
                   <gate.util.persistence.PersistenceManager-URLHolder>
                     <urlString>$gatehome$plugins/ANNIE/resources/sentenceSplitter/gazetteer/lists.def</urlString>
                   </gate.util.persistence.PersistenceManager-URLHolder>
-                </entry>
-                <entry>
-                  <string>encoding</string>
-                  <string>UTF-8</string>
                 </entry>
                 <entry>
                   <string>transducerURL</string>
@@ -1304,12 +1304,12 @@
                   <null/>
                 </entry>
                 <entry>
-                  <string>baseTokenAnnotationType</string>
-                  <string>Token</string>
-                </entry>
-                <entry>
                   <string>posTagAllTokens</string>
                   <boolean>true</boolean>
+                </entry>
+                <entry>
+                  <string>baseTokenAnnotationType</string>
+                  <string>Token</string>
                 </entry>
                 <entry>
                   <string>baseSentenceAnnotationType</string>
@@ -1477,12 +1477,12 @@
                   <double>0.5</double>
                 </entry>
                 <entry>
-                  <string>personType</string>
-                  <string>Person</string>
-                </entry>
-                <entry>
                   <string>encoding</string>
                   <string>UTF-8</string>
+                </entry>
+                <entry>
+                  <string>personType</string>
+                  <string>Person</string>
                 </entry>
                 <entry>
                   <string>processUnknown</string>
@@ -1613,21 +1613,22 @@
           <featureName></featureName>
           <featureValue></featureValue>
           <pr class="gate.util.persistence.LanguageAnalyserPersistence">
+            <corpus class="gate.util.persistence.CorpusPersistence" reference="../../../../../corpus"/>
             <runtimeParams class="gate.util.persistence.MapPersistence">
               <mapType>gate.util.SimpleFeatureMapImpl</mapType>
               <localMap>
                 <entry>
                   <string>identifierFeature</string>
-                  <null/>
+                  <string></string>
                 </entry>
                 <entry>
                   <string>trainingAlgorithm</string>
-                  <gate.plugin.learningframework.engines.AlgorithmClassification>MALLET_SEQ_CRF</gate.plugin.learningframework.engines.AlgorithmClassification>
+                  <gate.plugin.learningframework.engines.AlgorithmClassification>WEKA_CL_NAIVE_BAYES</gate.plugin.learningframework.engines.AlgorithmClassification>
                 </entry>
                 <entry>
                   <string>dataDirectory</string>
                   <gate.util.persistence.PersistenceManager-URLHolder>
-                    <urlString>$relpath$model-crf</urlString>
+                    <urlString>$relpath$model-wekanb</urlString>
                   </gate.util.persistence.PersistenceManager-URLHolder>
                 </entry>
                 <entry>
@@ -1640,7 +1641,11 @@
                 </entry>
                 <entry>
                   <string>corpus</string>
-                  <null/>
+                  <gate.util.persistence.CorpusPersistence reference="../../../../../../../../corpus"/>
+                </entry>
+                <entry>
+                  <string>classAnnotationType</string>
+                  <string>Link</string>
                 </entry>
                 <entry>
                   <string>algorithmParameters</string>
@@ -1661,12 +1666,8 @@
                   <gate.plugin.learningframework.ScalingMethod>NONE</gate.plugin.learningframework.ScalingMethod>
                 </entry>
                 <entry>
-                  <string>classAnnotationType</string>
-                  <string>Link</string>
-                </entry>
-                <entry>
                   <string>sequenceSpan</string>
-                  <string>Sentence</string>
+                  <string></string>
                 </entry>
               </localMap>
             </runtimeParams>
@@ -1700,7 +1701,7 @@
       <collectionType>java.util.ArrayList</collectionType>
     </prList>
     <resourceType>gate.creole.ConditionalSerialAnalyserController</resourceType>
-    <resourceName>testLF-train-crf</resourceName>
+    <resourceName>testLF-train-wekanb</resourceName>
     <initParams class="gate.util.persistence.MapPersistence">
       <mapType>gate.util.SimpleFeatureMapImpl</mapType>
       <localMap/>

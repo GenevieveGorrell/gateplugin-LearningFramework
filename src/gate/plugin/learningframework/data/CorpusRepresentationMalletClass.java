@@ -38,7 +38,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
-import java.util.logging.Level;
 import org.apache.log4j.Logger;
 
 /**
@@ -182,6 +181,7 @@ public class CorpusRepresentationMalletClass extends CorpusRepresentationMallet 
    * @param inputAS
    * @param nameFeatureName
    */
+  @Override
   public void add(AnnotationSet instancesAS, AnnotationSet sequenceAS, AnnotationSet inputAS, AnnotationSet classAS, String targetFeatureName, TargetType targetType, String nameFeatureName) {
     if(sequenceAS != null) {
       throw new GateRuntimeException("LF invalid call to CorpusRepresentationMallet.add: sequenceAS must be null "+
@@ -215,6 +215,7 @@ public class CorpusRepresentationMalletClass extends CorpusRepresentationMallet 
    * If the ScalingMethod is NONE, this does nothing.
    * @param scaleFeatures 
    */
+  @Override
   public void addScaling(ScalingMethod scaleFeatures) {
     if(scaleFeatures == ScalingMethod.NONE) return;
     System.out.println("DEBUG normalize: getDataAlphabet=" + instances.getDataAlphabet());

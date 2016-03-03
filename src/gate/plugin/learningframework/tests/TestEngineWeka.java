@@ -41,7 +41,7 @@ public class TestEngineWeka {
   }
   
   @Test
-  public void testEngineWeka1() throws MalformedURLException, ResourceInstantiationException {
+  public void testEngineWekaClass1() throws MalformedURLException, ResourceInstantiationException {
     File configFile = new File("tests/cl-ionosphere/feats.xml");
     FeatureSpecification spec = new FeatureSpecification(configFile);
     FeatureInfo featureInfo = spec.getFeatureInfo();

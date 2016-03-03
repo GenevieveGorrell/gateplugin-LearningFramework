@@ -10,11 +10,7 @@
  */
 package gate.plugin.learningframework;
 
-import gate.learningframework.classification.EngineLibSVM;
-import gate.learningframework.classification.EngineMalletSeq;
-import gate.learningframework.classification.EngineWeka;
-import gate.learningframework.classification.Engine;
-import gate.learningframework.classification.EngineMallet;
+import gate.AnnotationSet;
 import java.io.File;
 import java.net.URL;
 
@@ -26,12 +22,13 @@ import gate.creole.metadata.CreoleParameter;
 import gate.creole.metadata.CreoleResource;
 import gate.creole.metadata.Optional;
 import gate.creole.metadata.RunTime;
-import gate.plugin.learningframework.corpora.CorpusWriter;
-import gate.plugin.learningframework.corpora.CorpusWriterArff;
-import gate.plugin.learningframework.corpora.CorpusWriterArffNumericClass;
-import gate.plugin.learningframework.corpora.CorpusWriterMallet;
-import gate.plugin.learningframework.corpora.CorpusWriterMalletSeq;
-import gate.plugin.learningframework.corpora.FeatureSpecification;
+import gate.plugin.learningframework.data.CorpusRepresentationMallet;
+import gate.plugin.learningframework.data.CorpusRepresentationMalletClass;
+import gate.plugin.learningframework.data.CorpusRepresentationMalletSeq;
+import gate.plugin.learningframework.engines.AlgorithmClassification;
+import gate.plugin.learningframework.engines.Engine;
+import gate.plugin.learningframework.features.FeatureSpecification;
+import gate.plugin.learningframework.features.TargetType;
 import gate.util.GateRuntimeException;
 
 /**
@@ -70,18 +67,17 @@ public class LF_TrainSequenceTagging extends LF_TrainBase {
    * The implementation to be used, such as Mallet.
    *
    */
-  private Algorithm trainingAlgo;
+  private AlgorithmClassification trainingAlgorithm;
 
   @RunTime
   @Optional
-  @CreoleParameter(comment = "The algorithm to be used for training. Ignored at "
-          + "application time.")
-  public void setTrainingAlgo(Algorithm algo) {
-    this.trainingAlgo = algo;
+  @CreoleParameter(comment = "The algorithm to be used for training.")
+  public void setTrainingAlgorithm(AlgorithmClassification algo) {
+    this.trainingAlgorithm = algo;
   }
 
-  public Algorithm getTrainingAlgo() {
-    return this.trainingAlgo;
+  public AlgorithmClassification getTrainingAlgorithm() {
+    return this.trainingAlgorithm;
   }
 
   protected ScalingMethod scaleFeatures = ScalingMethod.NONE;
@@ -123,82 +119,68 @@ public class LF_TrainSequenceTagging extends LF_TrainBase {
     return this.classAnnotationType;
   }
 
+
+  private boolean haveSequenceTagger;
+
+  private FeatureSpecification featureSpec = null;
+
+  private File dataDir;
+
+  private Engine engine;
   
-
-  private Mode mode = Mode.NAMED_ENTITY_RECOGNITION;
-
-  //These corpora will be added to on each document so they need to be globals
-  private CorpusWriter trainingCorpus = null;
-
-  private FeatureSpecification conf = null;
-
-  private Engine trainingLearner = null;
-
-  private File savedModelDirectoryFile;
-
-  private Engine createLearner(Algorithm algo, File savedModelFile) {
-    if (algo != null) {
-      String spec = algo.toString();
-      switch (algo) {
-        case MALLET_CL_C45:
-        case MALLET_CL_DECISION_TREE:
-        case MALLET_CL_MAX_ENT:
-        case MALLET_CL_NAIVE_BAYES_EM:
-        case MALLET_CL_NAIVE_BAYES:
-        case MALLET_CL_WINNOW:
-          return new EngineMallet(savedModelFile, mode, algorithmParameters, spec, false);
-        case MALLET_SEQ_CRF:
-          return new EngineMalletSeq(savedModelFile, mode, spec, false);
-        case LIBSVM:
-          return new EngineLibSVM(
-                  savedModelFile, mode, algorithmParameters, spec, false);
-        case WEKA_CL_NUM_ADDITIVE_REGRESSION:
-        case WEKA_CL_NAIVE_BAYES:
-        case WEKA_CL_J48:
-        case WEKA_CL_JRIP:
-        case WEKA_CL_RANDOM_TREE:
-        case WEKA_CL_IBK:
-        case WEKA_CL_LOGISTIC_REGRESSION:
-        case WEKA_CL_MULTILAYER_PERCEPTRON:
-        case WEKA_CL_RANDOM_FOREST:
-          return new EngineWeka(
-                  savedModelFile, mode, algorithmParameters, spec, false);
-      }
-    }
-    return null;
-  }
-
+  private int nrDocuments;
+  
+  private CorpusRepresentationMallet corpusRepresentation;
+  
   @Override
   public void execute(Document doc) {
-    trainingCorpus.add(doc);
+    if(isInterrupted()) {
+      interrupted = false;
+      throw new GateRuntimeException("Execution was requested to be interrupted");
+    }
+    // extract the required annotation sets,
+    AnnotationSet inputAS = doc.getAnnotations(getInputASName());
+    AnnotationSet instanceAS = inputAS.get(getInstanceType());
+    // the classAS 
+    AnnotationSet classAS = inputAS.get(getClassAnnotationType());
+    // the nameFeatureName is always null for now!
+    String nameFeatureName = null;
+    if(haveSequenceTagger) {
+      AnnotationSet sequenceAS = inputAS.get(getSequenceSpan());
+      corpusRepresentation.add(instanceAS, sequenceAS, inputAS, classAS, null, TargetType.NOMINAL, nameFeatureName);
+    } else {
+      corpusRepresentation.add(instanceAS, null, inputAS, classAS, null, TargetType.NOMINAL, nameFeatureName);
+    }
+    nrDocuments++;
   }
 
   @Override
   public void afterLastDocument(Controller arg0, Throwable t) {
-    if (t != null) {
-      // Something went wrong during execution, so we better do not train a model... 
-      logger.error("Error during the processing of documents, no training is done");
-    } else if (trainingLearner != null) {
-      //Ready to go
-      // JP: Using the logger does not always make the info show, so using System.out here 
-      // just to be safe.
-      System.out.println("LearningFramework: Training "
-              + trainingLearner.whatIsItString() + " ...");
-      System.out.println("Training set classes: "
-              + trainingCorpus.getPipe().getTargetAlphabet().toString().replaceAll("\\n", " "));
-      System.out.println("Training set size: " + trainingCorpus.getInstances().size());
-      System.out.println("LearningFramework: Instances: " + trainingCorpus.getInstances().size());
-      if (trainingCorpus.getInstances().getDataAlphabet().size() > 20) {
-        System.out.println("LearningFramework: Attributes " + trainingCorpus.getInstances().getDataAlphabet().size());
-      } else {
-        System.out.println("LearningFramework: Attributes " + trainingCorpus.getInstances().getDataAlphabet().toString().replaceAll("\\n", " "));
-      }
-      //System.out.println("DEBUG: instances are "+trainingCorpus.getInstances());
-      System.out.println("DEBUG: trainingCorpus class is " + trainingCorpus.getClass());
-      trainingCorpus.conclude();
-      trainingLearner.train(conf, trainingCorpus);
-      logger.info("LearningFramework: Training complete!");
+    System.out.println("LearningFramework: Starting training engine " + engine);
+    System.out.println("Training set classes: "
+            + corpusRepresentation.getRepresentationMallet().getPipe().getTargetAlphabet().toString().replaceAll("\\n", " "));
+    System.out.println("Training set size: " + corpusRepresentation.getRepresentationMallet().size());
+    if (corpusRepresentation.getRepresentationMallet().getDataAlphabet().size() > 20) {
+      System.out.println("LearningFramework: Attributes " + corpusRepresentation.getRepresentationMallet().getDataAlphabet().size());
+    } else {
+      System.out.println("LearningFramework: Attributes " + corpusRepresentation.getRepresentationMallet().getDataAlphabet().toString().replaceAll("\\n", " "));
     }
+      //System.out.println("DEBUG: instances are "+corpusRepresentation.getRepresentationMallet());
+
+    corpusRepresentation.addScaling(getScaleFeatures());
+
+    // Store some additional information in the info datastructure which will be saved with the model
+    engine.getInfo().nrTrainingDocuments = nrDocuments;
+    engine.getInfo().nrTrainingInstances = corpusRepresentation.getRepresentationMallet().size();
+    
+    // TODO: what if we do sequence tagging by classification???
+    engine.getInfo().targetFeature = "LF_class";
+    engine.getInfo().trainingCorpusName = corpus.getName();
+    engine.getInfo().classAnnotationType = getClassAnnotationType();
+    
+    engine.trainModel(getAlgorithmParameters());
+    logger.info("LearningFramework: Training complete!");
+    engine.saveEngine(dataDir);
   }
 
   @Override
@@ -208,66 +190,38 @@ public class LF_TrainSequenceTagging extends LF_TrainBase {
 
   @Override
   protected void beforeFirstDocument(Controller controller) {
-    conf = new FeatureSpecification(featureSpecURL);
-    savedModelDirectoryFile = new File(
-            gate.util.Files.fileFromURL(dataDirectory), Globals.savedModelDirectory);
+    featureSpec = new FeatureSpecification(featureSpecURL);
+    dataDir = gate.util.Files.fileFromURL(dataDirectory);
+    if(!dataDir.exists()) throw new GateRuntimeException("Data directory not found: "+dataDir.getAbsolutePath());
 
-    if (trainingAlgo == null) {
-      throw new GateRuntimeException("LearningFramework: no training algorithm specified");
-    } else {
-      trainingLearner = this.createLearner(trainingAlgo, savedModelDirectoryFile);
-
-      // TODO: not sure how this should work: what is targetFeature if we want to do sequence
-      // tagging without an actual sequence learner? 
-      // CHECK: for now we always use null as the targetFeature in this PR to make it compile!
-      String targetFeature = null;
-      switch (this.getTrainingAlgo()) {
-        case LIBSVM: //Yes we are making a mallet corpus writer for use with libsvm ..
-        case MALLET_CL_C45:
-        case MALLET_CL_DECISION_TREE:
-        case MALLET_CL_MAX_ENT:
-        case MALLET_CL_NAIVE_BAYES_EM:
-        case MALLET_CL_NAIVE_BAYES:
-        case MALLET_CL_WINNOW:
-          File trainfilemallet = new File(
-                  gate.util.Files.fileFromURL(dataDirectory), Globals.trainFilename);
-          trainingCorpus = new CorpusWriterMallet(this.conf, this.instanceType,
-                  this.inputASName, trainfilemallet, mode, classAnnotationType,
-                  targetFeature, identifierFeature, scaleFeatures);
-          break;
-        case MALLET_SEQ_CRF:
-          File trainfilemalletseq = new File(
-                  gate.util.Files.fileFromURL(dataDirectory), Globals.trainFilename);
-          trainingCorpus = new CorpusWriterMalletSeq(this.conf, this.instanceType,
-                  this.inputASName, trainfilemalletseq, this.sequenceSpan,
-                  mode, classAnnotationType, targetFeature, identifierFeature, scaleFeatures);
-          break;
-        case WEKA_CL_NUM_ADDITIVE_REGRESSION:
-          File trainfileweka = new File(
-                  gate.util.Files.fileFromURL(dataDirectory), Globals.trainFilename);
-          trainingCorpus = new CorpusWriterArffNumericClass(this.conf, this.instanceType,
-                  this.inputASName, trainfileweka,
-                  mode, classAnnotationType, targetFeature, identifierFeature, null, scaleFeatures);
-          break;
-        case WEKA_CL_NAIVE_BAYES:
-        case WEKA_CL_J48:
-        case WEKA_CL_JRIP:
-        case WEKA_CL_RANDOM_TREE:
-        case WEKA_CL_MULTILAYER_PERCEPTRON:
-        case WEKA_CL_IBK:
-        case WEKA_CL_LOGISTIC_REGRESSION:
-        case WEKA_CL_RANDOM_FOREST:
-          trainfileweka = new File(
-                  gate.util.Files.fileFromURL(dataDirectory), Globals.trainFilename);
-          trainingCorpus = new CorpusWriterArff(this.conf, this.instanceType,
-                  this.inputASName, trainfileweka,
-                  mode, classAnnotationType, targetFeature, identifierFeature,
-                  null, scaleFeatures);
-          break;
-      }
-
-      logger.info("LearningFramework: Preparing training data ...");
+    if(getClassAnnotationType()==null || getClassAnnotationType().isEmpty()) {
+      throw new GateRuntimeException("classAnnotationType must be specified for sequence tagging!");
     }
+    if (getTrainingAlgorithm() == null) {
+      throw new GateRuntimeException("LearningFramework: no training algorithm specified");
+    }
+    if (getTrainingAlgorithm() == AlgorithmClassification.MALLET_SEQ_CRF) {
+      if (getSequenceSpan() == null || getSequenceSpan().isEmpty()) {
+        throw new GateRuntimeException("SequenceSpan parameter is required for MALLET_SEQ_CRF");
+      }
+      haveSequenceTagger = true;
+    } else {
+      if (getSequenceSpan() != null && !getSequenceSpan().isEmpty()) {
+        throw new GateRuntimeException("SequenceSpan parameter must not be specified with non-sequence tagging algorithm");
+      }
+      haveSequenceTagger = false;
+    }
+    
+    // we need to choose our representation based on if we have a classification algorithm or 
+    // a sequence tagger
+    if(haveSequenceTagger) {
+      corpusRepresentation = new CorpusRepresentationMalletSeq(featureSpec.getFeatureInfo(), scaleFeatures);
+    } else {
+      corpusRepresentation = new CorpusRepresentationMalletClass(featureSpec.getFeatureInfo(),scaleFeatures);      
+    }
+    engine = Engine.createEngine(trainingAlgorithm, getAlgorithmParameters(), corpusRepresentation);
+    System.err.println("DEBUG: created the engine: " + engine);  
+    nrDocuments = 0;
   }
 
 }

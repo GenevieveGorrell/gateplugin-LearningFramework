@@ -41,7 +41,7 @@ public class TestEngineLibSVM {
   }
   
   @Test
-  public void testEngineLibSVM1() throws MalformedURLException, ResourceInstantiationException {
+  public void testEngineLibSvmForClass() throws MalformedURLException, ResourceInstantiationException {
     File configFile = new File("tests/cl-ionosphere/feats.xml");
     FeatureSpecification spec = new FeatureSpecification(configFile);
     FeatureInfo featureInfo = spec.getFeatureInfo();
