@@ -114,8 +114,15 @@ public class GateClassification {
   public static void applyClassification(Document doc, 
           List<GateClassification> gcs, 
           String targetFeature, 
-          AnnotationSet outputAS) {
+          AnnotationSet outputAS,
+          Double minConfidence) {
     for(GateClassification gc : gcs) {
+      if (minConfidence != null && 
+          minConfidence != Double.NaN &&
+          gc.getConfidenceScore() < minConfidence) {
+        //Skip it
+        continue;
+      }      
       FeatureMap fm = null;
       if(outputAS == null) {
         fm = gc.getInstance().getFeatures();
@@ -140,47 +147,6 @@ public class GateClassification {
     } // for
   }
   
-  /**
-   * Utility method to create annotations from GateClassification instances.
-   * If minConfidence is null or NaN, annotations are created for all instances in gcs,
-   * otherwise the confidence of the gc instance must be at least the minConfidence.
-   * @param doc
-   * @param gcs
-   * @param outSet 
-   */
-public static void addClassificationAnnotations(Document doc, List<GateClassification> gcs, 
-        String targetFeature, AnnotationSet outputAnnSet, Double minConfidence) {
-
-    // !!TODO: if we have a target feature, then I think we should not add classification
-    // annotations! This should get handled better in the calling code!!
-    Iterator<GateClassification> gcit = gcs.iterator();
-
-    while (gcit.hasNext()) {
-      GateClassification gc = gcit.next();
-
-      if (minConfidence != null && 
-          minConfidence != Double.NaN &&
-          gc.getConfidenceScore() < minConfidence) {
-        //Skip it
-      } else {
-        FeatureMap fm = Factory.newFeatureMap();
-        fm.putAll(gc.getInstance().getFeatures());
-        fm.put(Globals.outputClassFeature, gc.getClassAssigned());
-        fm.put(Globals.outputProbFeature, gc.getConfidenceScore());
-        if (gc.getClassList() != null && gc.getConfidenceList() != null) {
-          fm.put(Globals.outputClassFeature + "_list", gc.getClassList());
-          fm.put(Globals.outputProbFeature + "_list", gc.getConfidenceList());
-        }
-        //fm.put(this.conf.getIdentifier(), identifier);
-        if (gc.getSeqSpanID() != null) {
-          fm.put(Globals.outputSequenceSpanIDFeature, gc.getSeqSpanID());
-        }
-        outputAnnSet.add(gc.getInstance().getStartNode(),
-                gc.getInstance().getEndNode(),
-                gc.getInstance().getType(), fm);
-      }
-    }
-  }
   
   public static void addSurroundingAnnotations( 
           AnnotationSet inputAS, 

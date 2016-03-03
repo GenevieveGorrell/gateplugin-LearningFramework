@@ -26,7 +26,6 @@ import gate.plugin.learningframework.engines.AlgorithmClassification;
 import gate.plugin.learningframework.engines.Engine;
 import gate.plugin.learningframework.features.FeatureSpecification;
 import gate.plugin.learningframework.features.TargetType;
-import gate.util.Files;
 import gate.util.GateRuntimeException;
 import java.io.File;
 

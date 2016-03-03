@@ -84,7 +84,7 @@ public class TestEngineMalletClass {
     String parms = "";
     List<GateClassification> gcs = engine2.classify(instanceAS, inputAS, sequenceAS, parms);
     System.err.println("Number of classifications: "+gcs.size());
-    GateClassification.applyClassification(doc, gcs, "target", lfAS);
+    GateClassification.applyClassification(doc, gcs, "target", lfAS, null);
     
     System.err.println("Original instances: "+instanceAS.size()+", classification: "+lfAS.size());
     

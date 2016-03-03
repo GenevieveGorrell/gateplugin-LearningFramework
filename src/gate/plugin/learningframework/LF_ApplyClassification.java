@@ -142,7 +142,7 @@ public class LF_ApplyClassification extends LearningFrameworkPRBase {
           instanceAS, inputAS,
           sequenceAS, getAlgorithmParameters());
 
-    GateClassification.applyClassification(doc, gcs, targetFeatureToUse, null);    
+    GateClassification.applyClassification(doc, gcs, targetFeatureToUse, null, null);    
   }
 
 

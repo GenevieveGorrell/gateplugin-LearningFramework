@@ -133,7 +133,7 @@ public class TestEngineMalletSeqOld {
       // parameter alltogether
       // Second null: confidence threshold: if null, do not check the threshold at all
       //GateClassification.addClassificationAnnotations(doc, gcs, lfAS, null, null);
-      GateClassification.addClassificationAnnotations(doc, gcs, null, lfAS, 0.0);
+      GateClassification.applyClassification(doc, gcs, null, lfAS, null);
       
       AnnotationSet outputAS = doc.getAnnotations("LF");
       String outputType = "Mention";
@@ -186,7 +186,7 @@ public class TestEngineMalletSeqOld {
       // parameter alltogether
       // Second null: confidence threshold: if null, do not check the threshold at all
       //GateClassification.addClassificationAnnotations(doc, gcs, lfAS, null, null);
-      GateClassification.addClassificationAnnotations(doc, gcs, null, lfAS, 0.0);
+      GateClassification.applyClassification(doc, gcs, null, lfAS, null);
       
       AnnotationSet outputAS = doc.getAnnotations("LF");
       String outputType = "Mention";

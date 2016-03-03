@@ -141,18 +141,16 @@ public class LF_ApplySequenceTagging extends LearningFrameworkPRBase {
 
     System.err.println("Got gcs="+gcs);
     AnnotationSet tmpAS = doc.getAnnotations("LF_SEQ_TMP");
-    AnnotationSet tmpAS2 = doc.getAnnotations("LF_SEQ_TMP2");
     // since we specify the output annotation set tmpAS, new instance annotations are created there
     String featureName = engine.getInfo().targetFeature;    
-    GateClassification.applyClassification(doc, gcs, Globals.outputClassFeature, tmpAS);
-    GateClassification.addClassificationAnnotations(doc, gcs, Globals.outputClassFeature, tmpAS2, null);
+    GateClassification.applyClassification(doc, gcs, Globals.outputClassFeature, tmpAS, null);
     // TODO: tmpAS only contains the instances we have just created, so we can probably get
     // read of the tmpInstanceAS parameter alltogether?
     AnnotationSet tmpInstanceAS = tmpAS.get(getInstanceType());
     AnnotationSet outputAS = doc.getAnnotations(getOutputASName());
     // TODO: maybe make confidence threshold more flexible for sequence annotations?
     String classAnnotationType = engine.getInfo().classAnnotationType;
-    GateClassification.addSurroundingAnnotations(tmpAS2, tmpInstanceAS, outputAS, classAnnotationType, getConfidenceThreshold());
+    GateClassification.addSurroundingAnnotations(tmpAS, tmpInstanceAS, outputAS, classAnnotationType, getConfidenceThreshold());
   }
 
 
