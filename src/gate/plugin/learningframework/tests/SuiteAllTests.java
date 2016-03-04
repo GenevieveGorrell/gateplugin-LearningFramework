@@ -6,7 +6,6 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-  /*
   TestFeatureSpecification.class,
   TestFeatureExtraction.class,
   TestPipeSerialization.class,
@@ -18,7 +17,6 @@ import org.junit.runners.Suite;
   TestEngineLibSVM.class,
   TestEngineMalletSeqOld.class,
   TestEngineMalletSeq.class,
-*/
   TestFeatureScaling.class
 })
 public class SuiteAllTests {

@@ -100,9 +100,7 @@ public class TestFeatureScaling {
     weka.core.Instance wekaInst2 = CorpusRepresentationWeka.wekaInstanceFromMalletInstance(wekaDS, inst);
     System.err.println("WEKA directly converted = "+wekaInst2);
     
-    System.err.println("BEFORE running through pipe");
     inst = crmc2.getPipe().instanceFrom(inst);
-    System.err.println("AFTER running through pipe");
     wekaInst2 = CorpusRepresentationWeka.wekaInstanceFromMalletInstance(wekaDS, inst);
     System.err.println("WEKA instance through pipe = "+wekaInst2);
     // Mallet instances do not have a nice toString()
