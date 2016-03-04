@@ -259,9 +259,6 @@ public class CorpusRepresentationMalletClass extends CorpusRepresentationMallet 
     ArrayList<Pipe> pipeList = pipe.pipes();
     pipeList.add(normalizer);
     System.out.println("DEBUG normalize: added normalizer pipe " + normalizer);
-    // pipe = new SerialPipes(pipeList);
-    LFPipe pipe = (LFPipe)instances.getPipe();
-    pipe.addPipe(normalizer);
     System.out.println("DEBUG pipes after normalization: " + pipe);
   }
 

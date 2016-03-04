@@ -248,7 +248,11 @@ public class TestFeatureExtraction {
     assertEquals(1,att2a.lookupIndex("yyyy"));
   }  
 
-  @Test(expected = GateRuntimeException.class)
+  /* previously we did not allow more than one overlapping feature annotation
+     but we have since removed that constraint. We still log a warning about this 
+     though.
+  */
+  // @Test(expected = GateRuntimeException.class)
   public void extractSimple2() {
     String spec = "<ROOT>"+
             "<ATTRIBUTE><TYPE>theType</TYPE><FEATURE>feature1</FEATURE><DATATYPE>nominal</DATATYPE></ATTRIBUTE>"+

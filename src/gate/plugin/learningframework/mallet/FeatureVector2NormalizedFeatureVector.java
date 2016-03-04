@@ -15,7 +15,9 @@ import cc.mallet.pipe.Pipe;
 import cc.mallet.types.Alphabet;
 import cc.mallet.types.FeatureVector;
 import cc.mallet.types.Instance;
+import gate.util.GateRuntimeException;
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  *
@@ -31,6 +33,7 @@ public class FeatureVector2NormalizedFeatureVector extends Pipe implements Seria
     super(alphabet, null);
     this.means = means;
     this.variances = variances;
+    System.err.println("Creating FV2NF instance with means="+Arrays.toString(means)+",variances="+Arrays.toString(variances));
   }
 
   public Instance pipe(Instance carrier) {
@@ -41,9 +44,7 @@ public class FeatureVector2NormalizedFeatureVector extends Pipe implements Seria
 
     if (this.means.length != this.getDataAlphabet().size()
             || this.variances.length != this.getDataAlphabet().size()) {
-      //Nothing for now. Despite my best efforts to stop growing the
-      //alphabet, application time instances still turn up with
-      //unseen features.
+      throw new GateRuntimeException("Alphabet has grown, this should not happen!");
     }
 
     FeatureVector fv = (FeatureVector) carrier.getData();

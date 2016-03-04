@@ -88,6 +88,15 @@ public class EngineWeka extends Engine {
   
   CorpusRepresentationWeka crWeka;
   
+  /**
+   * Return the Weka dataset stored with this engine.
+   * This exists mainly so that the engine nows the features, the dataset
+   * itself is empty.
+   * @return 
+   */
+  public CorpusRepresentationWeka getCorpusRepresentationWeka() {
+    return crWeka;
+  }
   
   @Override
   protected void loadMalletCorpusRepresentation(File directory) {

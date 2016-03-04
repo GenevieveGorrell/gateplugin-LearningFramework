@@ -18,11 +18,26 @@ LibSVM: 0.3590
 RF:     0.6410
 NB:     0.8291
 MLP:    0.9972
-MallC45 [Exception during training]
+MallC45 [Exception during training, see below]
 
 This values were obtained for
   branch version_1_0, commit 63e734dbc5adf1a7115e8e5d8f1fdaa8ea0f23bb
   branch jp-151218-merge1, commit 2dcaee3fd53066f60e0dd11d371fdda41dde2c2e
+  also later merge1 branches since we did not change any of the old code.
+
+No feature scaling, new:
+LibSVM -c 1000 -g 0.02: 0.9972
+Weka RF:              : 1.0000
+NB:                     0.8291
+MalletC45               0.9630
+
+With feature scaling, new:
+LibSVM -c 1000 -g 0.02: 0.9972
+Weka RF:                1.0000
+NB                      0.8291
+MalletC45:              Exception/does not complete
+
+OK,LibSVM works with feature scaling!
 
 MalletC45 training exception:
 Exception in thread "ApplicationViewer1" java.lang.StackOverflowError
