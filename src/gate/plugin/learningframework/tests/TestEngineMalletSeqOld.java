@@ -16,6 +16,7 @@ import gate.plugin.learningframework.GateClassification;
 import gate.plugin.learningframework.ScalingMethod;
 import gate.plugin.learningframework.data.CorpusRepresentationMallet;
 import gate.plugin.learningframework.data.CorpusRepresentationMalletSeq;
+import gate.plugin.learningframework.engines.AlgorithmClassification;
 import gate.plugin.learningframework.engines.AlgorithmSequenceTagging;
 import gate.plugin.learningframework.engines.Engine;
 import gate.plugin.learningframework.features.FeatureInfo;
@@ -53,7 +54,7 @@ public class TestEngineMalletSeqOld {
     FeatureSpecification spec = new FeatureSpecification(configFile);
     FeatureInfo featureInfo = spec.getFeatureInfo();
     CorpusRepresentationMalletSeq crm = new CorpusRepresentationMalletSeq(featureInfo, ScalingMethod.NONE);
-    Engine engine = Engine.createEngine(AlgorithmSequenceTagging.MALLET_SEQ_CRF, "", crm);
+    Engine engine = Engine.createEngine(AlgorithmClassification.MALLET_SEQ_CRF, "", crm);
     System.err.println("TESTS: have engine "+engine);
     
     // for this we need to go through a number of documents and train on all of them

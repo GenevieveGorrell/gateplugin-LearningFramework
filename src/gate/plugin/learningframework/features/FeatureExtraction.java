@@ -147,11 +147,17 @@ public class FeatureExtraction {
     Datatype dt = att.datatype;
     Alphabet alphabet = att.alphabet;
     // first of all get the annotation from where we want to construct the annotation.
-    // If the annType is the same inputAS the annType of the instance annotation, use the 
-    // instance annotation directly. Otherwise, use an annotation of annType annType that overlaps
+    // If annType is the same type as the annType of the instance annotation, use the 
+    // instance annotation directly. Otherwise, use an annotation of type annType that overlaps
     // with the instance annotation.
     // TODO: what do if there are several such overlapping annotations?
-    // For now, we throw an exception if there are several!
+    // For now, we log a warning and use the longest!
+    // Throwing an exception could be too harsh since there may be cases 
+    // where this could occur, e.g. when the instance is a token and the 
+    // type for which we construct features is Person. Normally, one would 
+    // expect each person to be made up of several tokens, but it could e.g.
+    // happen that Marie-Luise is annotated as a single token but Marie and 
+    // Luise end up being annotated as separate Person annotations.
     
     Annotation sourceAnnotation = null;
     if (annType.isEmpty() || instanceAnnotation.getType().equals(annType)) {
@@ -160,16 +166,27 @@ public class FeatureExtraction {
     } else {
       AnnotationSet overlappings = gate.Utils.getOverlappingAnnotations(inputAS, instanceAnnotation, annType);
       if(overlappings.size() > 1) {
-        throw new GateRuntimeException("More than one overlapping annotation of type "+annType+" for instance annotation at offset "+
+        logger.warn("More than one overlapping annotation of type "+annType+" for instance annotation at offset "+
                 gate.Utils.start(instanceAnnotation)+" in document "+doc.getName());
-      } 
-      if(overlappings.size() == 0) {
+        // find the last longest (try to make this deterministic, there is 
+        // still a small chance of non-determinism if there are more than one
+        // overlapping annotations of the same length in the last position 
+        // where a longest annotation occurs.
+        int maxSize = 0;
+        for(Annotation ann : overlappings.inDocumentOrder()) {
+          if(gate.Utils.length(ann)>maxSize) {
+            maxSize = gate.Utils.length(ann);
+            sourceAnnotation = ann;
+          }
+        }
+      } else if(overlappings.size() == 0) {
         // if there is no overlapping annotation of annType annType, we simply do nothing
         // TODO: handle this inputAS if all features have missing values!!!!!!
         return;
+      } else {
+        // we have exactly one annotation, use that one
+        sourceAnnotation = gate.Utils.getOnlyAnn(overlappings);
       }
-      // we have exactly one annotation, use that one
-      sourceAnnotation = gate.Utils.getOnlyAnn(overlappings);
     }
     // NOTE: there should be no way of how a featureName we encounter now is already in the featureName
     // vector, so we do not even check, we simply add the featureName.
@@ -624,13 +641,24 @@ public class FeatureExtraction {
       LabelAlphabet labelalph = (LabelAlphabet)alph;
       AnnotationSet overlappingClassAnns = Utils.getOverlappingAnnotations(classAS, instanceAnnotation);
       // Note: each instance annotation should only overlap with at most one class annotation.
-      // Since it is weird to have more than one, we throw an exception if there is more than one
+      // Like with overlapping annotations from the feature specification, we log a warning and 
+      // pick the longest here
       if (overlappingClassAnns.size() > 0) {
+        Annotation classAnn = null;
         if(overlappingClassAnns.size() > 1) {
-          throw new GateRuntimeException("More than one class annotation for instance at offset "+
+          logger.warn("More than one class annotation for instance at offset "+
                   gate.Utils.start(instanceAnnotation)+" in document "+doc.getName());
+          // find the longest
+          int maxSize = 0;
+          for(Annotation ann : overlappingClassAnns.inDocumentOrder()) {
+            if(gate.Utils.length(ann)>maxSize) {
+              maxSize = gate.Utils.length(ann);
+              classAnn = ann;
+            }
+          }
+        } else {
+          classAnn = gate.Utils.getOnlyAnn(overlappingClassAnns);
         }
-        Annotation classAnn = gate.Utils.getOnlyAnn(overlappingClassAnns);
         // NOTE: this does allow situations where an instance annotation starts with the class
         // annotation and goes beyond the end of the class annotation or where it starts within
         // a class annotation and goes beyond the end. This is weird, but still probably the best
