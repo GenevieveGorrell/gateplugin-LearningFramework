@@ -103,6 +103,9 @@
       <formatter type="xml" />
       <test name="gate.plugin.learningframework.tests.SuiteAllTests" />
     </junit>
+    <delete file="info.yaml"/>
+    <delete file="lf.model"/>
+    <delete file="pipe.pipe"/>
   </target>
 
   <!-- Build JavaDoc documentation -->
