@@ -2,6 +2,7 @@
 /LearningFramework-*.zip
 /gateplugin-LearningFramework.jar
 /classes
+/lib
 
 *~
 #*#
