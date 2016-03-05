@@ -21,5 +21,6 @@ hs_err_*.log
 /testing/sequence
 /tests/seq-wikipedia1/model-crf/
 /tests/seq-wikipedia1/model-crfOld/
+/tests/seq-wikipedia1/model-*/
 /tests/rg-abalone/model-wekaar/
 /tests/rg-abalone/model-wekalr/
