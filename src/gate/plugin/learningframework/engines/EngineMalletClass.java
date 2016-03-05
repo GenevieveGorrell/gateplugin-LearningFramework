@@ -16,7 +16,7 @@ import cc.mallet.types.Labeling;
 import gate.Annotation;
 import gate.AnnotationSet;
 import gate.plugin.learningframework.GateClassification;
-import gate.plugin.learningframework.data.CorpusRepresentationMalletClass;
+import gate.plugin.learningframework.data.CorpusRepresentationMalletTarget;
 import static gate.plugin.learningframework.engines.Engine.FILENAME_MODEL;
 import gate.plugin.learningframework.mallet.LFPipe;
 import gate.util.GateRuntimeException;
@@ -51,10 +51,10 @@ public class EngineMalletClass extends EngineMallet {
   public List<GateClassification> classify(
           AnnotationSet instanceAS, AnnotationSet inputAS, AnnotationSet sequenceAS, String parms) {
     // NOTE: the crm should be of type CorpusRepresentationMalletClass for this to work!
-    if(!(corpusRepresentationMallet instanceof CorpusRepresentationMalletClass)) {
+    if(!(corpusRepresentationMallet instanceof CorpusRepresentationMalletTarget)) {
       throw new GateRuntimeException("Cannot perform classification with data from "+corpusRepresentationMallet.getClass());
     }
-    CorpusRepresentationMalletClass data = (CorpusRepresentationMalletClass)corpusRepresentationMallet;
+    CorpusRepresentationMalletTarget data = (CorpusRepresentationMalletTarget)corpusRepresentationMallet;
     data.stopGrowth();
     List<GateClassification> gcs = new ArrayList<GateClassification>();
     LFPipe pipe = (LFPipe)data.getRepresentationMallet().getPipe();
@@ -117,7 +117,7 @@ public class EngineMalletClass extends EngineMallet {
   }
 
   @Override
-  public Object evaluateHoldout(InstanceList instances, double portion, String parms) {
+  public Object evaluateHoldout(InstanceList instances, double portion, int repeats, String parms) {
     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 
@@ -128,7 +128,7 @@ public class EngineMalletClass extends EngineMallet {
 
   @Override
   protected void loadMalletCorpusRepresentation(File directory) {
-    corpusRepresentationMallet = CorpusRepresentationMalletClass.load(directory);
+    corpusRepresentationMallet = CorpusRepresentationMalletTarget.load(directory);
   }
   
   @Override

@@ -22,7 +22,7 @@ import gate.creole.metadata.CreoleResource;
 import gate.creole.metadata.Optional;
 import gate.creole.metadata.RunTime;
 import gate.plugin.learningframework.data.CorpusRepresentationMalletTarget;
-import gate.plugin.learningframework.engines.AlgorithmClassification;
+import gate.plugin.learningframework.engines.AlgorithmRegression;
 import gate.plugin.learningframework.engines.Engine;
 import gate.plugin.learningframework.features.FeatureSpecification;
 import gate.plugin.learningframework.features.TargetType;
@@ -33,14 +33,14 @@ import java.io.File;
  *
  */
 @CreoleResource(
-        name = "LF_TrainClassification",
+        name = "LF_TrainRegression",
         helpURL = "",
-        comment = "Train a machine learning model for classification")
-public class LF_TrainClassification extends LF_TrainBase {
+        comment = "Train a machine learning model for regression")
+public class LF_TrainRegression extends LF_TrainBase {
 
   private static final long serialVersionUID = -420477191226830002L;
 
-  private final Logger logger = Logger.getLogger(LF_TrainClassification.class.getCanonicalName());
+  private final Logger logger = Logger.getLogger(LF_TrainRegression.class.getCanonicalName());
 
   /**
    * The configuration file.
@@ -58,17 +58,16 @@ public class LF_TrainClassification extends LF_TrainBase {
     return featureSpecURL;
   }
 
-  private AlgorithmClassification trainingAlgorithm;
+  private AlgorithmRegression trainingAlgorithm;
 
   @RunTime
   @Optional
-  @CreoleParameter(comment = "The algorithm to be used for training. Ignored at "
-          + "application time.")
-  public void setTrainingAlgorithm(AlgorithmClassification algo) {
+  @CreoleParameter(comment = "The algorithm to be used for training.")
+  public void setTrainingAlgorithm(AlgorithmRegression algo) {
     this.trainingAlgorithm = algo;
   }
 
-  public AlgorithmClassification getTrainingAlgorithm() {
+  public AlgorithmRegression getTrainingAlgorithm() {
     return this.trainingAlgorithm;
   }
 
@@ -101,8 +100,7 @@ public class LF_TrainClassification extends LF_TrainBase {
 
   @RunTime
   @Optional
-  @CreoleParameter(comment = "For classification, the feature "
-          + "containing the class. Ignored for NER, where type only is used.")
+  @CreoleParameter(comment = "The feature containing the target value")
   public void setTargetFeature(String classFeature) {
     this.targetFeature = classFeature;
   }
@@ -116,20 +114,6 @@ public class LF_TrainClassification extends LF_TrainBase {
 
   private Engine engine = null;
 
-  protected String sequenceSpan;
-
-  @RunTime
-  @Optional
-  @CreoleParameter(comment = "For sequence learners, an annotation type "
-          + "defining a meaningful sequence span. Ignored by non-sequence "
-          + "learners. Needs to be in the input AS.")
-  public void setSequenceSpan(String seq) {
-    this.sequenceSpan = seq;
-  }
-
-  public String getSequenceSpan() {
-    return this.sequenceSpan;
-  }
   
   private int nrDocuments;
   
@@ -144,26 +128,16 @@ public class LF_TrainClassification extends LF_TrainBase {
     // extract the required annotation sets,
     AnnotationSet inputAS = doc.getAnnotations(getInputASName());
     AnnotationSet instanceAS = inputAS.get(getInstanceType());
-    // the classAS 
-    // the sequenceAS must be specified for a sequence tagging algorithm and most not be specified
-    // for a non-sequence tagging algorithm!
-    AnnotationSet sequenceAS = null;
-    if (getTrainingAlgorithm() == AlgorithmClassification.MALLET_SEQ_CRF) {
-      // NOTE: we already have checked earlier, that in that case, the sequenceSpan parameter is 
-      // given!
-      sequenceAS = inputAS.get(getSequenceSpan());
-    }
-    // the classAS is always null for the classification task!
+    // the classAS is always null for the regression task!
+    // the sequenceAS is always null for the regression task!
     // the nameFeatureName is always null for now!
     String nameFeatureName = null;
-    corpusRepresentation.add(instanceAS, sequenceAS, inputAS, null, getTargetFeature(), TargetType.NOMINAL, nameFeatureName);
+    corpusRepresentation.add(instanceAS, null, inputAS, null, getTargetFeature(), TargetType.NUMERIC, nameFeatureName);
   }
 
   @Override
   public void afterLastDocument(Controller arg0, Throwable t) {
     System.out.println("LearningFramework: Starting training engine " + engine);
-    System.out.println("Training set classes: "
-            + corpusRepresentation.getRepresentationMallet().getPipe().getTargetAlphabet().toString().replaceAll("\\n", " "));
     System.out.println("Training set size: " + corpusRepresentation.getRepresentationMallet().size());
     if (corpusRepresentation.getRepresentationMallet().getDataAlphabet().size() > 20) {
       System.out.println("LearningFramework: Attributes " + corpusRepresentation.getRepresentationMallet().getDataAlphabet().size());
@@ -198,17 +172,7 @@ public class LF_TrainClassification extends LF_TrainBase {
     if (getTrainingAlgorithm() == null) {
       throw new GateRuntimeException("LearningFramework: no training algorithm specified");
     }
-    if (getTrainingAlgorithm() == AlgorithmClassification.MALLET_SEQ_CRF) {
-      if (getSequenceSpan() == null || getSequenceSpan().isEmpty()) {
-        throw new GateRuntimeException("SequenceSpan parameter is required for MALLET_SEQ_CRF");
-      }
-    } else {
-      if (getSequenceSpan() != null && !getSequenceSpan().isEmpty()) {
-        throw new GateRuntimeException("SequenceSpan parameter must not be specified with non-sequence tagging algorithm");
-      }
-    }
-
-    AlgorithmClassification alg = getTrainingAlgorithm();
+    AlgorithmRegression alg = getTrainingAlgorithm();
     // if an algorithm is specified where the name ends in "SPECIFY_CLASS" use the 
     // algorithmJavaClass 
     if (getTrainingAlgorithm().toString().endsWith("SPECIFY_CLASS")) {
@@ -233,7 +197,7 @@ public class LF_TrainClassification extends LF_TrainBase {
     System.err.println("DEBUG Read the feature specification: " + featureSpec);
 
     // create the corpus representation for creating the training instances
-    corpusRepresentation = new CorpusRepresentationMalletTarget(featureSpec.getFeatureInfo(), scaleFeatures, TargetType.NOMINAL);
+    corpusRepresentation = new CorpusRepresentationMalletTarget(featureSpec.getFeatureInfo(), scaleFeatures, TargetType.NUMERIC);
     System.err.println("DEBUG: created the corpusRepresentationMallet: " + corpusRepresentation);
 
     // Create the engine from the Algorithm parameter

@@ -36,7 +36,7 @@ import gate.plugin.learningframework.mallet.LFPipe;
 import gate.util.GateRuntimeException;
 import java.io.File;
 import org.apache.log4j.Logger;
-import static gate.plugin.learningframework.data.CorpusRepresentationMalletClass.extractIndependentFeaturesHelper;
+import static gate.plugin.learningframework.data.CorpusRepresentationMalletTarget.extractIndependentFeaturesHelper;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;

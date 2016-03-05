@@ -12,7 +12,7 @@ import gate.Annotation;
 import gate.AnnotationSet;
 import gate.plugin.learningframework.GateClassification;
 import gate.plugin.learningframework.data.CorpusRepresentationLibSVM;
-import gate.plugin.learningframework.data.CorpusRepresentationMalletClass;
+import gate.plugin.learningframework.data.CorpusRepresentationMalletTarget;
 import gate.plugin.learningframework.mallet.LFPipe;
 import gate.util.GateRuntimeException;
 import java.io.File;
@@ -33,7 +33,7 @@ import libsvm.svm_problem;
 public class EngineLibSVM extends Engine {
 
   @Override
-  public Object evaluateHoldout(InstanceList instances, double portion, String parms) {
+  public Object evaluateHoldout(InstanceList instances, double portion, int reapeats, String parms) {
     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 
@@ -66,7 +66,24 @@ public class EngineLibSVM extends Engine {
             "r:coef0:d", "c:cost:d", "n:nu:d", "e:epsilon:d", "m:cachesize:i", "h:shrinking:i",
             "b:probability_estimates:i", "S:seed:i");
     svm_parameter svmparms = new svm_parameter();
+    // we use 0 as the default for classification
     svmparms.svm_type = (int) ps.getValueOrElse("svm_type", 0);
+    
+    // immediately check if the svm type is compatible with regression or classification 
+    // as it was selected
+    if(algorithm instanceof AlgorithmRegression) {
+      Integer algType = (Integer)ps.getValue("svm_type");
+      // if the parameter is not give at all, we use 3 as the default for regression
+      if(algType == null) svmparms.svm_type = 3;
+      if(svmparms.svm_type != 3 && svmparms.svm_type != 4) {
+        throw new GateRuntimeException("SvmLib: only -s 3 or -s 4 allowed for regression");
+      }
+    } else {
+      if(svmparms.svm_type != 0 && svmparms.svm_type != 1) {
+        throw new GateRuntimeException("SvmLib: only -s 0 or -s 1 allowed for classification");
+      }      
+    }
+    
     svmparms.kernel_type = (int) ps.getValueOrElse("kernel_type", 2);
     svmparms.degree = (int) ps.getValueOrElse("degree", 3);
     svmparms.gamma = (double) ps.getValueOrElse("gamma", defaultGamma);
@@ -144,7 +161,7 @@ public class EngineLibSVM extends Engine {
   @Override
   public List<GateClassification> classify(
           AnnotationSet instanceAS, AnnotationSet inputAS, AnnotationSet sequenceAS, String parms) {
-    CorpusRepresentationMalletClass data = (CorpusRepresentationMalletClass) corpusRepresentationMallet;
+    CorpusRepresentationMalletTarget data = (CorpusRepresentationMalletTarget) corpusRepresentationMallet;
     data.stopGrowth();
     // try to figure out if we have regression or classification:
     LFPipe pipe = (LFPipe) data.getPipe();
@@ -169,22 +186,28 @@ public class EngineLibSVM extends Engine {
 
       // TODO: not sure how to handle regression models here, so far this works only with
       // classification!?!
-      if (svm.svm_check_probability_model(svmModel) == 1) {
-        double[] confidences = new double[numberOfLabels];
-        double v = svm.svm_predict_probability(svmModel, svmInstance, confidences);
-        bestConf = confidences[bestLabel];
+      if(algorithm instanceof AlgorithmRegression) {
+        double prediction = svm.svm_predict(svmModel, svmInstance);
+        GateClassification gc = new GateClassification(instAnn, prediction);
+        gcs.add(gc);
       } else {
-        double[] confidences = new double[numberOfLabels * (numberOfLabels - 1) / 2];
-        svm.svm_predict_values(svmModel, svmInstance, confidences);
-        //For now we are not providing decision values for non-prob
-        //models because it is complex, see here: 
-        //http://www.csie.ntu.edu.tw/~r94100/libsvm-2.8/README
-      }
+        if (svm.svm_check_probability_model(svmModel) == 1) {
+          double[] confidences = new double[numberOfLabels];
+          double v = svm.svm_predict_probability(svmModel, svmInstance, confidences);
+          bestConf = confidences[bestLabel];
+        } else {
+          double[] confidences = new double[numberOfLabels * (numberOfLabels - 1) / 2];
+          svm.svm_predict_values(svmModel, svmInstance, confidences);
+          //For now we are not providing decision values for non-prob
+          //models because it is complex, see here: 
+          //http://www.csie.ntu.edu.tw/~r94100/libsvm-2.8/README
+        }
 
-      String labelstr = (String) pipe.getTargetAlphabet().lookupObject(bestLabel);
-      GateClassification gc = new GateClassification(
+        String labelstr = (String) pipe.getTargetAlphabet().lookupObject(bestLabel);
+        GateClassification gc = new GateClassification(
               instAnn, labelstr, bestConf);
-      gcs.add(gc);
+        gcs.add(gc);
+      }
 
     }
     data.startGrowth();
@@ -207,7 +230,7 @@ public class EngineLibSVM extends Engine {
 
   @Override
   protected void loadMalletCorpusRepresentation(File directory) {
-    corpusRepresentationMallet = CorpusRepresentationMalletClass.load(directory);
+    corpusRepresentationMallet = CorpusRepresentationMalletTarget.load(directory);
   }
   
   private String libsvmParmsAsString(libsvm.svm_parameter parms) {

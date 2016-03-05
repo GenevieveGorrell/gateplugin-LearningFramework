@@ -12,7 +12,7 @@ import gate.Document;
 import gate.creole.ResourceInstantiationException;
 import gate.plugin.learningframework.Mode;
 import gate.plugin.learningframework.ScalingMethod;
-import gate.plugin.learningframework.data.CorpusRepresentationMalletClass;
+import gate.plugin.learningframework.data.CorpusRepresentationMalletTarget;
 import gate.plugin.learningframework.data.CorpusRepresentationMalletSeq;
 import gate.plugin.learningframework.corpora.CorpusWriterMallet;
 import gate.plugin.learningframework.corpora.CorpusWriterMalletSeq;
@@ -79,7 +79,7 @@ public class TestNewVersusOld {
     
     // 2) Create the instances the new way.
     FeatureInfo fi = new FeatureSpecification(spec).getFeatureInfo();
-    CorpusRepresentationMalletClass crm = new CorpusRepresentationMalletClass(fi, ScalingMethod.NONE);
+    CorpusRepresentationMalletTarget crm = new CorpusRepresentationMalletTarget(fi, ScalingMethod.NONE,TargetType.NOMINAL);
     crm.add(
             doc.getAnnotations().get("type1"), 
             null, 

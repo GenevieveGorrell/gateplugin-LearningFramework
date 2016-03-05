@@ -11,7 +11,7 @@ import cc.mallet.types.InstanceList;
 import gate.Annotation;
 import gate.AnnotationSet;
 import gate.plugin.learningframework.GateClassification;
-import gate.plugin.learningframework.data.CorpusRepresentationMalletClass;
+import gate.plugin.learningframework.data.CorpusRepresentationMalletTarget;
 import gate.plugin.learningframework.data.CorpusRepresentationWeka;
 import gate.plugin.learningframework.mallet.LFPipe;
 import gate.util.GateRuntimeException;
@@ -23,9 +23,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import weka.classifiers.Classifier;
+import weka.classifiers.evaluation.Evaluation;
 import weka.core.Instances;
 
 /**
@@ -36,13 +38,76 @@ public class EngineWeka extends Engine {
   
   
   @Override
-  public Object evaluateHoldout(InstanceList instances, double portion, String parms) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  public Object evaluateHoldout(InstanceList instances, double portion, int repeats, String parms) {
+    // Get the parameters 
+    // -s/-seed <int> : seed, default 0
+    // -S/-nostratify : switch off stratification if we evaluate classification
+    Parms opts = new Parms(parms,"s:seed:i","S:nostratify:b");
+    int seed = (int)opts.getValueOrElse("seed", 0);
+    if(algorithm instanceof AlgorithmRegression) {
+      throw new UnsupportedOperationException("Weka holdout eval for regression not supported yet."); 
+    } else {
+      // must be classification algorithm then!
+       weka.core.Instances all = new CorpusRepresentationWeka(corpusRepresentationMallet).getRepresentationWeka();
+       boolean noStratify = (boolean)opts.getValueOrElse("nostratify", 0);
+       Random rand = new Random(seed); 
+       all.randomize(rand);
+       boolean stratified = !noStratify;
+       // TODO: not sure if/how we can do stratification for holdout evaluation
+       // TODO: there must be a better way to do the splitting too!
+       // TODO: if there is no better way to split, maybe do out outside for
+       // TODO: how to implement repeats?
+       if(repeats!=1) {
+         throw new GateRuntimeException("Only repeats == 1 supported yet");
+       }
+       // both regression and classification?
+       int trainSize = (int)Math.round(all.numInstances()*portion);
+       int testSize = all.numInstances()-trainSize;
+       Instances train = new Instances(all,0,trainSize);
+       Instances test = new Instances(all,trainSize,testSize);
+       Classifier classifier = (Classifier)trainer;
+      try {
+        classifier.buildClassifier(train);
+      } catch (Exception ex) {
+        throw new GateRuntimeException("Error during training of Weka classifier",ex);
+      }
+      Evaluation eval = null;
+      try {
+        eval = new Evaluation(train);
+      } catch (Exception ex) {
+        throw new GateRuntimeException("Could not create Evaluation object",ex);
+      }
+      try {
+        eval.evaluateModel(classifier, test);
+      } catch (Exception ex) {
+        throw new GateRuntimeException("Error evaluating the classifier",ex);
+      }
+      System.out.println("Evaluation result:\n"+eval);
+      return eval;
+    }
   }
 
   @Override
   public Object evaluateXVal(InstanceList instances, int k, String parms) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    Parms opts = new Parms(parms,"s:seed:i","S:nostratify:b");
+    int seed = (int)opts.getValueOrElse("seed", 0);
+    boolean noStratify = (boolean)opts.getValueOrElse("nostratify", 0);
+    Random rand = new Random(seed); 
+    Instances all = new CorpusRepresentationWeka(corpusRepresentationMallet).getRepresentationWeka();
+    Evaluation eval = null;
+    try {
+      eval = new Evaluation(all);
+    } catch (Exception ex) {
+      throw new GateRuntimeException("Could not create evaluation object",ex);
+    }
+    Classifier classifier = (Classifier)trainer;
+    try {
+      eval.crossValidateModel(classifier, all, k, rand);
+    } catch (Exception ex) {
+      throw new GateRuntimeException("Error running cross validation",ex);
+    }
+    System.out.println("Crossvaliation evaluation result:\n"+eval);
+    return eval;
   }
 
   @Override
@@ -69,6 +134,7 @@ public class EngineWeka extends Engine {
 
   @Override
   public void trainModel(String parms) {
+    // TODO: process parameters!
     if(trainer == null) {
       throw new GateRuntimeException("Cannot train Weka model, not trainer initialized");
     }
@@ -100,7 +166,7 @@ public class EngineWeka extends Engine {
   
   @Override
   protected void loadMalletCorpusRepresentation(File directory) {
-    corpusRepresentationMallet = CorpusRepresentationMalletClass.load(directory);
+    corpusRepresentationMallet = CorpusRepresentationMalletTarget.load(directory);
     crWeka = new CorpusRepresentationWeka(corpusRepresentationMallet);
   }
   
@@ -110,7 +176,7 @@ public class EngineWeka extends Engine {
           AnnotationSet instanceAS, AnnotationSet inputAS, AnnotationSet sequenceAS, String parms) {
     
     Instances instances = crWeka.getRepresentationWeka();
-    CorpusRepresentationMalletClass data = (CorpusRepresentationMalletClass)corpusRepresentationMallet;
+    CorpusRepresentationMalletTarget data = (CorpusRepresentationMalletTarget)corpusRepresentationMallet;
     data.stopGrowth();
     List<GateClassification> gcs = new ArrayList<GateClassification>();
     LFPipe pipe = (LFPipe)data.getRepresentationMallet().getPipe();
@@ -134,7 +200,8 @@ public class EngineWeka extends Engine {
           ex.printStackTrace(System.err);
           Logger.getLogger(EngineWeka.class.getName()).log(Level.SEVERE, null, ex);
         }
-        gc = new GateClassification(instAnn, (result==Double.NaN ? null : String.valueOf(result)), 1.0);
+        //gc = new GateClassification(instAnn, (result==Double.NaN ? null : String.valueOf(result)), 1.0);
+        gc = new GateClassification(instAnn, result);
       } else {
         // classification
 

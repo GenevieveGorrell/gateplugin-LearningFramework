@@ -49,7 +49,8 @@ public class Parms {
   /**
    * Create a Parms object that contains the parsed values from the parmString.
    * The names are strings which consist of three parts, separated by colons: a short name,
-   * a long name, and either b, if the parameter is boolean and does not have a value, 
+   * a long name, and one of 
+   * b if the parameter is boolean and does not have a value, 
    * s if the parameter has a string  value,
    * d if the parameter has a double value or i if the parameter has an integer value.
    * B is used for a parameter with an excplicit boolean value.

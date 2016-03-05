@@ -23,7 +23,7 @@ import gate.creole.metadata.Optional;
 import gate.creole.metadata.RunTime;
 import gate.plugin.learningframework.data.CorpusRepresentation;
 import gate.plugin.learningframework.data.CorpusRepresentationMallet;
-import gate.plugin.learningframework.data.CorpusRepresentationMalletClass;
+import gate.plugin.learningframework.data.CorpusRepresentationMalletTarget;
 import gate.plugin.learningframework.data.CorpusRepresentationMalletSeq;
 import gate.plugin.learningframework.engines.AlgorithmClassification;
 import gate.plugin.learningframework.engines.Engine;
@@ -100,10 +100,15 @@ public class LF_Export extends LF_ExportBase {
     return this.classAnnotationType;
   }
 
+  protected TargetType targetType;
+  @RunTime
+  @CreoleParameter(comment = "Target type if classification or regression problem")
+  public void setTargetType(TargetType val) { targetType = val; }
+  public TargetType getTargetType() { return targetType; }
   
   
   // Depending on what the user wants, we use one of the two, so we avoid constant casting.
-  private CorpusRepresentationMalletClass corpusRepresentationClass = null;
+  private CorpusRepresentationMalletTarget corpusRepresentationClass = null;
   private CorpusRepresentationMalletSeq corpusRepresentationSeq = null;
   
   private FeatureSpecification featureSpec = null;
@@ -174,9 +179,9 @@ public class LF_Export extends LF_ExportBase {
     // the nameFeatureName is always null for now!
     String nameFeatureName = null;
     if(haveSequenceAlg) {      
-      corpusRepresentationSeq.add(instanceAS, sequenceAS, inputAS, classAnnots, null, TargetType.NOMINAL, nameFeatureName);
+      corpusRepresentationSeq.add(instanceAS, sequenceAS, inputAS, classAnnots, null, targetType, nameFeatureName);
     } else {
-      corpusRepresentationClass.add(instanceAS, sequenceAS, inputAS, null, getTargetFeature(), TargetType.NOMINAL, nameFeatureName);
+      corpusRepresentationClass.add(instanceAS, sequenceAS, inputAS, null, getTargetFeature(), targetType, nameFeatureName);
     }
   }
 
@@ -223,7 +228,7 @@ public class LF_Export extends LF_ExportBase {
       if(getClassAnnotationType() != null && !getClassAnnotationType().isEmpty()) {
         throw new GateRuntimeException("Either targetFeature or classAnnotationType must be specified, not both");
       }
-      corpusRepresentationClass = new CorpusRepresentationMalletClass(featureSpec.getFeatureInfo(), scaleFeatures);
+      corpusRepresentationClass = new CorpusRepresentationMalletTarget(featureSpec.getFeatureInfo(), scaleFeatures, targetType);
       System.err.println("DEBUG: created the corpusRepresentationMalletClass: "+corpusRepresentationClass);
     } else if(getClassAnnotationType() != null && !getClassAnnotationType().isEmpty()) {
       haveSequenceProblem = true;

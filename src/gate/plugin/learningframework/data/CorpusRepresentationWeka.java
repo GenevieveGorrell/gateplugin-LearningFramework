@@ -186,7 +186,7 @@ public class CorpusRepresentationWeka extends CorpusRepresentation {
    * a nominal (class) attribute, otherwise a numeric (regression) attribute.
    */
   public static Instances emptyDatasetFromMallet(CorpusRepresentationMallet cr) {
-    if (!(cr instanceof CorpusRepresentationMalletClass)) {
+    if (!(cr instanceof CorpusRepresentationMalletTarget)) {
       throw new GateRuntimeException("Conversion to weka not implemented yet: " + cr.getClass());
     }
     InstanceList malletInstances = cr.getRepresentationMallet();
@@ -271,9 +271,11 @@ public class CorpusRepresentationWeka extends CorpusRepresentation {
       }
       targetAttr = new Attribute("class", classVals);
       wekaAttributes.add(targetAttr);
+      System.err.println("LF: created an empty weka dataset for classification");
     } else {
       targetAttr = new Attribute("target");
       wekaAttributes.add(targetAttr);
+      System.err.println("LF: created an empty weka dataset for regression");
     }
     // create the weka dataset 
     Instances insts = new weka.core.Instances("GATELearningFramework", wekaAttributes, malletInstances.size());

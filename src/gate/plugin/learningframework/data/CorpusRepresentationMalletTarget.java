@@ -49,7 +49,7 @@ import org.apache.log4j.Logger;
  *
  * @author johann
  */
-public class CorpusRepresentationMalletClass extends CorpusRepresentationMallet {
+public class CorpusRepresentationMalletTarget extends CorpusRepresentationMallet {
 
   static final Logger logger = Logger.getLogger("CorpusRepresentationMallet");
 
@@ -59,11 +59,12 @@ public class CorpusRepresentationMalletClass extends CorpusRepresentationMallet 
    * @param fi
    * @param sm 
    */
-  public CorpusRepresentationMalletClass(FeatureInfo fi, ScalingMethod sm) {
+  public CorpusRepresentationMalletTarget(FeatureInfo fi, ScalingMethod sm, TargetType targetType) {
     featureInfo = fi;
     scalingMethod = sm;
 
-    Pipe innerPipe = new Noop(new Alphabet(), new LabelAlphabet());
+    LabelAlphabet targetAlphabet = (targetType == TargetType.NOMINAL) ? new LabelAlphabet() : null;
+    Pipe innerPipe = new Noop(new Alphabet(), targetAlphabet);
     List<Pipe> pipes = new ArrayList<Pipe>();
     pipes.add(innerPipe);
     pipe = new LFPipe(pipes);
@@ -75,7 +76,7 @@ public class CorpusRepresentationMalletClass extends CorpusRepresentationMallet 
    * Non-public constructor for use when creating from a serialized pipe.
    * @param fi 
    */
-  CorpusRepresentationMalletClass(LFPipe pipe) {
+  CorpusRepresentationMalletTarget(LFPipe pipe) {
     this.pipe = pipe;
     this.featureInfo = pipe.getFeatureInfo();
     this.scalingMethod = null;
@@ -87,7 +88,7 @@ public class CorpusRepresentationMalletClass extends CorpusRepresentationMallet 
    * @param directory
    * @return 
    */
-  public static CorpusRepresentationMalletClass load(File directory) {
+  public static CorpusRepresentationMalletTarget load(File directory) {
     // load the pipe
     File inFile = new File(directory,"pipe.pipe");
     ObjectInputStream ois = null;
@@ -104,7 +105,7 @@ public class CorpusRepresentationMalletClass extends CorpusRepresentationMallet 
         logger.error("Error closing stream after loading pipe "+inFile, ex);
       }
     }
-    CorpusRepresentationMalletClass crmc = new CorpusRepresentationMalletClass(lfpipe);
+    CorpusRepresentationMalletTarget crmc = new CorpusRepresentationMalletTarget(lfpipe);
     return crmc;
   }
   

@@ -10,7 +10,7 @@ import gate.creole.ResourceInstantiationException;
 import gate.plugin.learningframework.GateClassification;
 import gate.plugin.learningframework.ScalingMethod;
 import gate.plugin.learningframework.data.CorpusRepresentationMallet;
-import gate.plugin.learningframework.data.CorpusRepresentationMalletClass;
+import gate.plugin.learningframework.data.CorpusRepresentationMalletTarget;
 import gate.plugin.learningframework.data.CorpusRepresentationWeka;
 import gate.plugin.learningframework.engines.AlgorithmClassification;
 import gate.plugin.learningframework.engines.Engine;
@@ -29,6 +29,9 @@ import org.junit.Test;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.BeforeClass;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  *
@@ -48,7 +51,7 @@ public class TestFeatureScaling {
     File configFile = new File("tests/cl-ionosphere/feats.xml");
     FeatureSpecification spec = new FeatureSpecification(configFile);
     FeatureInfo featureInfo = spec.getFeatureInfo();
-    CorpusRepresentationMalletClass crm = new CorpusRepresentationMalletClass(featureInfo, ScalingMethod.NONE);
+    CorpusRepresentationMalletTarget crm = new CorpusRepresentationMalletTarget(featureInfo, ScalingMethod.NONE, TargetType.NOMINAL);
     Engine engine = (EngineWeka)Engine.createEngine(AlgorithmClassification.WEKA_CL_NAIVE_BAYES, "", crm);
     System.err.println("TEST TestFeatureScaling: have new engine "+engine);
     
@@ -80,8 +83,8 @@ public class TestFeatureScaling {
     // check if the corpusRepresentation has been restored correctly
     CorpusRepresentationMallet crm2 = engine2.getCorpusRepresentationMallet();
     assertNotNull(crm2);
-    assertTrue(crm2 instanceof CorpusRepresentationMalletClass);
-    CorpusRepresentationMalletClass crmc2 = (CorpusRepresentationMalletClass)crm2;
+    assertTrue(crm2 instanceof CorpusRepresentationMalletTarget);
+    CorpusRepresentationMalletTarget crmc2 = (CorpusRepresentationMalletTarget)crm2;
     Pipe pipe = crmc2.getPipe();
     assertNotNull(pipe);
     assertTrue(pipe instanceof LFPipe);

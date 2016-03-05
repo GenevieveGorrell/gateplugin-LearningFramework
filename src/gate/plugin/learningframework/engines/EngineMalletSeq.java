@@ -232,7 +232,7 @@ public class EngineMalletSeq extends EngineMallet {
   }
 
   @Override
-  public Object evaluateHoldout(InstanceList instances, double portion, String parms) {
+  public Object evaluateHoldout(InstanceList instances, double portion, int reapeats, String parms) {
     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 

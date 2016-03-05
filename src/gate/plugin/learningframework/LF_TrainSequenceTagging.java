@@ -23,7 +23,7 @@ import gate.creole.metadata.CreoleResource;
 import gate.creole.metadata.Optional;
 import gate.creole.metadata.RunTime;
 import gate.plugin.learningframework.data.CorpusRepresentationMallet;
-import gate.plugin.learningframework.data.CorpusRepresentationMalletClass;
+import gate.plugin.learningframework.data.CorpusRepresentationMalletTarget;
 import gate.plugin.learningframework.data.CorpusRepresentationMalletSeq;
 import gate.plugin.learningframework.engines.AlgorithmClassification;
 import gate.plugin.learningframework.engines.Engine;
@@ -217,7 +217,7 @@ public class LF_TrainSequenceTagging extends LF_TrainBase {
     if(haveSequenceTagger) {
       corpusRepresentation = new CorpusRepresentationMalletSeq(featureSpec.getFeatureInfo(), scaleFeatures);
     } else {
-      corpusRepresentation = new CorpusRepresentationMalletClass(featureSpec.getFeatureInfo(),scaleFeatures);      
+      corpusRepresentation = new CorpusRepresentationMalletTarget(featureSpec.getFeatureInfo(),scaleFeatures, TargetType.NOMINAL);      
     }
     engine = Engine.createEngine(trainingAlgorithm, getAlgorithmParameters(), corpusRepresentation);
     System.err.println("DEBUG: created the engine: " + engine);  

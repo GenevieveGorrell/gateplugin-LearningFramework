@@ -36,6 +36,8 @@ public abstract class Engine {
    */
   CorpusRepresentationMallet corpusRepresentationMallet;
   
+  Algorithm algorithm;
+  
   /**
    * A factory method to return the engine which is stored in the given directory.
    * All the filenames are fixed so only the directory name is needed.
@@ -103,6 +105,7 @@ public abstract class Engine {
     }
     
     eng.initializeAlgorithm(algorithm,parms);
+    eng.algorithm = algorithm;
     return eng;
   }
   
@@ -162,6 +165,7 @@ public abstract class Engine {
     eng.info.task = eng.getAlgorithmKind().toString();
     eng.info.algorithmClass = algorithm.getClass().getName();
     eng.info.algorithmName = algorithm.toString();
+    eng.algorithm = algorithm;
     return eng;
   }
   
@@ -226,7 +230,7 @@ public abstract class Engine {
    * @param parms
    * @return 
    */
-  public abstract Object evaluateHoldout(InstanceList instances, double portion, String parms);
+  public abstract Object evaluateHoldout(InstanceList instances, double portion, int repeats, String parms);
   
   public abstract Object evaluateXVal(InstanceList instances, int k, String parms);
   
@@ -271,8 +275,8 @@ public abstract class Engine {
   }
   
   public String toString() {
-    return "Engine{"+getClass()+" alg="+trainer+", info="+info+
-            ", model="+this.getModel()+", CR="+corpusRepresentationMallet+"}";
+    return "Engine{"+getClass()+"/"+algorithm.getClass()+",alg="+trainer+",info="+info+
+            ",model="+this.getModel()+",CR="+corpusRepresentationMallet+"}";
   }
   
 }

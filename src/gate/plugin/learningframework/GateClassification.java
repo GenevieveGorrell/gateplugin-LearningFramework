@@ -32,6 +32,8 @@ public class GateClassification {
 
   private Annotation instance;
   private String classAssigned;
+  private Double targetAssigned = null;
+  private boolean numericTarget = false;
   private Double confidenceScore;
   private Integer seqSpanID;
   private List<String> classList;
@@ -42,6 +44,11 @@ public class GateClassification {
     this.instance = instance;
     this.classAssigned = classAssigned;
     this.confidenceScore = confidenceScore;
+  }
+  public GateClassification(Annotation instance, double targetAssigned) {
+    this.instance = instance;
+    this.targetAssigned = targetAssigned;
+    numericTarget = true;
   }
 
   public GateClassification(Annotation instance, String classAssigned,
@@ -129,15 +136,19 @@ public class GateClassification {
       } else {
         fm = gate.Utils.toFeatureMap(gc.getInstance().getFeatures());
       }
-      fm.put(targetFeature, gc.getClassAssigned());
-      fm.put(Globals.outputClassFeature, gc.getClassAssigned());
-      fm.put(Globals.outputProbFeature, gc.getConfidenceScore());
-      if (gc.getClassList() != null && gc.getConfidenceList() != null) {
-        fm.put(Globals.outputClassFeature + "_list", gc.getClassList());
-        fm.put(Globals.outputProbFeature + "_list", gc.getConfidenceList());
-      }
-      if (gc.getSeqSpanID() != null) {
-        fm.put(Globals.outputSequenceSpanIDFeature, gc.getSeqSpanID());
+      if(gc.numericTarget) {
+        fm.put(targetFeature,gc.targetAssigned);
+      } else {
+        fm.put(targetFeature, gc.getClassAssigned());        
+        fm.put(Globals.outputClassFeature, gc.getClassAssigned());
+        fm.put(Globals.outputProbFeature, gc.getConfidenceScore());
+        if (gc.getClassList() != null && gc.getConfidenceList() != null) {
+          fm.put(Globals.outputClassFeature + "_list", gc.getClassList());
+          fm.put(Globals.outputProbFeature + "_list", gc.getConfidenceList());
+        }
+        if (gc.getSeqSpanID() != null) {
+          fm.put(Globals.outputSequenceSpanIDFeature, gc.getSeqSpanID());
+        }
       }
       if(outputAS != null) {
         int id = gate.Utils.addAnn(outputAS, gc.getInstance(), gc.getInstance().getType(), fm);
@@ -261,6 +272,6 @@ public class GateClassification {
   @Override
   public String toString() {
     return "GateClassification{type="+instance.getType()+", at="+gate.Utils.start(instance)+
-            ", target="+classAssigned+"}";
+            ", target="+(numericTarget?targetAssigned:classAssigned)+"}";
   }
 }
