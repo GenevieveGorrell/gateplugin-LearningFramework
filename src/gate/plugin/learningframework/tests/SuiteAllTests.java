@@ -9,7 +9,6 @@ import org.junit.runners.Suite;
   TestFeatureSpecification.class,
   TestFeatureExtraction.class,
   TestPipeSerialization.class,
-  TestNewVersusOld.class,
   TestInfo.class,
   TestParms.class,
   TestEngineMalletClass.class,
