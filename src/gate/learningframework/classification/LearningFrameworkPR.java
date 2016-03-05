@@ -15,22 +15,17 @@
 
 package gate.learningframework.classification;
 
+import gate.plugin.learningframework.GateClassification;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.ObjectInputStream;
 import java.io.Serializable;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import libsvm.svm_model;
-
 import org.apache.log4j.Logger;
 
-import cc.mallet.pipe.Pipe;
 import gate.AnnotationSet;
 import gate.Annotation;
 import gate.Controller;
@@ -47,14 +42,22 @@ import gate.creole.metadata.CreoleParameter;
 import gate.creole.metadata.CreoleResource;
 import gate.creole.metadata.Optional;
 import gate.creole.metadata.RunTime;
-import gate.learningframework.corpora.CorpusWriter;
-import gate.learningframework.corpora.CorpusWriterArff;
-import gate.learningframework.corpora.CorpusWriterArffNumericClass;
-import gate.learningframework.corpora.CorpusWriterMallet;
-import gate.learningframework.corpora.CorpusWriterMalletSeq;
-import gate.learningframework.corpora.FeatureSpecification;
+import gate.plugin.learningframework.corpora.CorpusWriter;
+import gate.plugin.learningframework.corpora.CorpusWriterArff;
+import gate.plugin.learningframework.corpora.CorpusWriterArffNumericClass;
+import gate.plugin.learningframework.corpora.CorpusWriterMallet;
+import gate.plugin.learningframework.corpora.CorpusWriterMalletSeq;
+import gate.plugin.learningframework.corpora.FeatureSpecification;
+import gate.util.GateRuntimeException;
 import gate.util.InvalidOffsetException;
-
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
+import java.io.PrintStream;
+import libsvm.svm_problem;
+import gate.plugin.learningframework.Mode;
+import gate.plugin.learningframework.Algorithm;
+import gate.plugin.learningframework.ScalingMethod;
 
 /**
  * <p>Training, evaluation and application of ML in GATE.</p>
@@ -171,19 +174,23 @@ Serializable, ControllerAwarePR {
 	 */
 	private String learnerParams;
 
+        /**
+         * A flag that indicates that the PR has just been started. Used in execute()
+         * to run code that needs to run once before any documents are processed. 
+         */
+        protected boolean justStarted = false;
 
+        /**
+         * A flag that indicates that at least one document was processed.
+         */
+        protected boolean haveSomeDocuments = false;
 
 	@RunTime
 	@CreoleParameter(comment = "The feature specification file.")
 	public void setFeatureSpecURL(URL featureSpecURL) {
 		if(!featureSpecURL.equals(this.featureSpecURL)){
 			this.featureSpecURL = featureSpecURL;
-			try {
 				this.conf = new FeatureSpecification(featureSpecURL);
-			} catch (ResourceInstantiationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		}
 	}
 
@@ -195,15 +202,8 @@ Serializable, ControllerAwarePR {
 	@RunTime
 	@CreoleParameter(comment = "The directory to which data will be saved, including models and corpora.")
 	public void setSaveDirectory(URL output) {
+    //System.out.println("LF DEBUG: setting saveDirectory to "+output);
 		this.saveDirectory = output;
-
-		savedModelDirectoryFile = new File(
-				gate.util.Files.fileFromURL(saveDirectory), savedModelDirectory);
-
-		evaluationModelDirectoryFile = new File(
-				gate.util.Files.fileFromURL(saveDirectory), evaluationModelDirectory);
-
-		this.applicationLearner = Engine.restoreLearner(savedModelDirectoryFile);
 	}
 
 	public URL getSaveDirectory() {
@@ -376,6 +376,32 @@ Serializable, ControllerAwarePR {
 		return this.learnerParams;
 	}
 
+        @RunTime
+	@CreoleParameter(defaultValue = "NONE", comment = "If and how to scale features. ")
+	public void setScaleFeatures(ScalingMethod sf) {
+          scaleFeatures = sf;
+	}
+	public ScalingMethod getScaleFeatures() {
+          return scaleFeatures;
+	}
+        protected ScalingMethod scaleFeatures = ScalingMethod.NONE;
+        
+        
+        
+  // TODO: eventually, maybe LF_class should be the default for this,
+  // but for now we make empty the default so that the existing 
+  // pipelines work unchanged. Since it is optional, the parameter
+  // does not need to exist in the pipeline either.
+  private String outClassFeature;
+  @RunTime
+	@Optional
+	@CreoleParameter(comment = "Name of class feature to add to the original "+
+          "instance annotations, if empty new annotation is created.",
+          defaultValue = "")
+	public void setOutClassFeature(String name) {
+		outClassFeature = name;
+	}
+  public String getOutClassFeature() { return outClassFeature; }
 
 
 
@@ -445,15 +471,19 @@ Serializable, ControllerAwarePR {
 			case MALLET_CL_WINNOW:
 				return new EngineMallet(savedModelFile, mode, learnerParams, spec, false);
 			case MALLET_SEQ_CRF:
-				return new EngineMalletSeq(savedModelFile, mode, false);
+				return new EngineMalletSeq(savedModelFile, mode, spec, false);
 			case LIBSVM:
 				return new EngineLibSVM(
-						savedModelFile, mode, learnerParams, false);
+						savedModelFile, mode, learnerParams, spec, false);
 			case WEKA_CL_NUM_ADDITIVE_REGRESSION:
 			case WEKA_CL_NAIVE_BAYES:
 			case WEKA_CL_J48:
+			case WEKA_CL_JRIP:
 			case WEKA_CL_RANDOM_TREE:
 			case WEKA_CL_IBK:
+			case WEKA_CL_LOGISTIC_REGRESSION:
+			case WEKA_CL_MULTILAYER_PERCEPTRON:
+			case WEKA_CL_RANDOM_FOREST:
 				return new EngineWeka(
 						savedModelFile, mode, learnerParams, spec, false);
 			}
@@ -462,7 +492,14 @@ Serializable, ControllerAwarePR {
 	}
 	
 	@Override
-	public void execute() throws ExecutionException {	 
+	public void execute() throws ExecutionException {
+          
+                if(justStarted) {
+                  justStarted = false;
+                  runAfterJustStarted();
+                }
+                haveSomeDocuments = true;
+                
 		Document doc = getDocument();
 
 		switch(this.getOperation()){
@@ -475,34 +512,63 @@ Serializable, ControllerAwarePR {
 			if(applicationLearner!=null){
 				List<GateClassification> gcs = null;
 
-				switch(applicationLearner.whatIsIt()){
-				case LIBSVM:
-					gcs = ((EngineLibSVM)applicationLearner).classify(
-							this.instanceName, this.inputASName, doc);
-					break;
-				case MALLET_CL_C45:
-				case MALLET_CL_DECISION_TREE:
-				case MALLET_CL_MAX_ENT:
-				case MALLET_CL_NAIVE_BAYES_EM:
-				case MALLET_CL_NAIVE_BAYES:
-				case MALLET_CL_WINNOW:
-					gcs = ((EngineMallet)applicationLearner).classify(
-							this.instanceName, this.inputASName, doc);
-					break;
-				case MALLET_SEQ_CRF:
-					gcs = ((EngineMalletSeq)applicationLearner).classify(
-							this.instanceName, this.inputASName, doc, this.sequenceSpan);
-					break;
-				case WEKA_CL_NUM_ADDITIVE_REGRESSION:
-				case WEKA_CL_NAIVE_BAYES:
-				case WEKA_CL_J48:
-				case WEKA_CL_RANDOM_TREE:
-				case WEKA_CL_IBK:
-					gcs = ((EngineWeka)applicationLearner).classify(
-							this.instanceName, this.inputASName, doc);
-					break;
-				}
+                                // TODO: (JP) this should really check the actual type of the learner,
+                                // rather than what kind of learning is currently set as a parameter,
+                                // because the learner we read from the savedModel directory could
+                                // be entirely different. Also, we could then inform about the actual
+                                // learning class used.
+                                // At the moment, if an unknown model was loaded from a directory,
+                                // the whatIsIt will return null, so we handle this separately.
+                                if (applicationLearner.whatIsIt() == null) {
+                                  if(applicationLearner instanceof EngineWeka) {
+                                    gcs = ((EngineWeka) applicationLearner).classify(
+                                        this.instanceName, this.inputASName, doc);
+                                  } else if(applicationLearner instanceof EngineMallet && 
+                                            ((EngineMallet)applicationLearner).getMode() == Mode.CLASSIFICATION) {
+                                    gcs = ((EngineMallet) applicationLearner).classify(
+                                        this.instanceName, this.inputASName, doc);
+                                  } else if(applicationLearner instanceof EngineMallet && 
+                                            ((EngineMallet)applicationLearner).getMode() == Mode.NAMED_ENTITY_RECOGNITION) {
+                                    gcs = ((EngineMalletSeq) applicationLearner).classify(
+                                        this.instanceName, this.inputASName, doc, this.sequenceSpan);
+                                  } else {
+                                    throw new GateRuntimeException("Found a strange instance of an engine");
+                                  }
+                          } else {
+                            switch (applicationLearner.whatIsIt()) {
+                              case LIBSVM:
+                                gcs = ((EngineLibSVM) applicationLearner).classify(
+                                        this.instanceName, this.inputASName, doc);
+                                break;
+                              case MALLET_CL_C45:
+                              case MALLET_CL_DECISION_TREE:
+                              case MALLET_CL_MAX_ENT:
+                              case MALLET_CL_NAIVE_BAYES_EM:
+                              case MALLET_CL_NAIVE_BAYES:
+                              case MALLET_CL_WINNOW:
+                                gcs = ((EngineMallet) applicationLearner).classify(
+                                        this.instanceName, this.inputASName, doc);
+                                break;
+                              case MALLET_SEQ_CRF:
+                                gcs = ((EngineMalletSeq) applicationLearner).classify(
+                                        this.instanceName, this.inputASName, doc, this.sequenceSpan);
+                                break;
+                              case WEKA_CL_NUM_ADDITIVE_REGRESSION:
+                              case WEKA_CL_NAIVE_BAYES:
+                              case WEKA_CL_J48:
+                              case WEKA_CL_JRIP:
+                              case WEKA_CL_RANDOM_TREE:
+                              case WEKA_CL_MULTILAYER_PERCEPTRON:
+                              case WEKA_CL_IBK:
+                        			case WEKA_CL_LOGISTIC_REGRESSION:
+                              case WEKA_CL_RANDOM_FOREST:
+                                gcs = ((EngineWeka) applicationLearner).classify(
+                                        this.instanceName, this.inputASName, doc);
+                                break;
+                            }
+                          }
 
+                                
 				addClassificationAnnotations(doc, gcs);
 				if(this.getMode()==Mode.NAMED_ENTITY_RECOGNITION){
 					//We need to make the surrounding annotations
@@ -520,6 +586,7 @@ Serializable, ControllerAwarePR {
 		case EXPORT_ARFF_THRU_CURRENT_PIPE:
 		case EXPORT_ARFF_NUMERIC_CLASS:
 		case EXPORT_ARFF_NUMERIC_CLASS_THRU_CURRENT_PIPE:
+    case EXPORT_LIBSVM:
 			exportCorpus.add(document);
 			break;
 		} 
@@ -543,22 +610,49 @@ Serializable, ControllerAwarePR {
 		while(gcit.hasNext()){
 			GateClassification gc = gcit.next();
 
+      // JP: TODO: need to check if we always get the correct confidence
+      // score here and if the default makes this do what is expected!
 			if(this.getMode()==Mode.CLASSIFICATION
 					&& gc.getConfidenceScore()<this.getConfidenceThreshold()){
 				//Skip it
 			} else {
 				//We have a valid classification. Now write it onto the document.
-				FeatureMap fm = Factory.newFeatureMap();
-				fm.putAll(gc.getInstance().getFeatures());
-				fm.put(outputClassFeature, gc.getClassAssigned());
-				fm.put(outputProbFeature, gc.getConfidenceScore());
-				//fm.put(this.conf.getIdentifier(), identifier);
-				if(gc.getSeqSpanID()!=null){
-					fm.put(outputSequenceSpanIDFeature, gc.getSeqSpanID());
-				}
-				outputAnnSet.add(gc.getInstance().getStartNode(), 
-						gc.getInstance().getEndNode(),
-						gc.getInstance().getType(), fm);
+        // If this is classification and the add feature value is set,
+        // do not create a new annotation and instead just add features
+        // to the instance annotation
+        
+        // TODO: this can be refactored to be more concise!
+        if(getMode()==Mode.CLASSIFICATION && getOutClassFeature()!=null &&
+                !getOutClassFeature().isEmpty()) {
+          Annotation instance = gc.getInstance();
+          FeatureMap fm = instance.getFeatures();
+          // Instead of the predefined output class feature name use the one specified
+          // as a PR parameter
+          //
+				  // fm.put(outputClassFeature, gc.getClassAssigned());
+          fm.put(getOutClassFeature(), gc.getClassAssigned());
+				  fm.put(outputProbFeature, gc.getConfidenceScore());
+          if(gc.getClassList()!=null && gc.getConfidenceList()!=null){
+			  		fm.put(outputClassFeature + "_list", gc.getClassList());
+			  		fm.put(outputProbFeature + "_list", gc.getConfidenceList());
+			  	}
+        } else {
+				  FeatureMap fm = Factory.newFeatureMap();
+				  fm.putAll(gc.getInstance().getFeatures());
+				  fm.put(outputClassFeature, gc.getClassAssigned());
+				  fm.put(outputProbFeature, gc.getConfidenceScore());
+          if(gc.getClassList()!=null && gc.getConfidenceList()!=null){
+			  		fm.put(outputClassFeature + "_list", gc.getClassList());
+			  		fm.put(outputProbFeature + "_list", gc.getConfidenceList());
+			  	}
+			  	//fm.put(this.conf.getIdentifier(), identifier);
+		  		if(gc.getSeqSpanID()!=null){
+		  			fm.put(outputSequenceSpanIDFeature, gc.getSeqSpanID());
+	  			}
+		  		outputAnnSet.add(gc.getInstance().getStartNode(), 
+			  			gc.getInstance().getEndNode(),
+				  		gc.getInstance().getType(), fm);
+        } // else if CLASSIFICATION and have out class feature
 			}
 
 		}
@@ -684,20 +778,45 @@ Serializable, ControllerAwarePR {
 	@Override
 	public void controllerExecutionAborted(Controller arg0, Throwable arg1)
 			throws ExecutionException {
-		// TODO Auto-generated method stub
-		
+                // reset the flags for the next time the controller is run
+		justStarted = false;
+                haveSomeDocuments = false;
 	}
 
 	@Override
 	public void controllerExecutionFinished(Controller arg0)
 			throws ExecutionException {
+                // reset the flags for the next time the controller is run but remember if we had 
+                // some documents for checking later!
+                boolean hadSomeDocuments = haveSomeDocuments;                
+                justStarted = false;
+                haveSomeDocuments = false;
+
 		switch(this.getOperation()){
 		case TRAIN:	
+                  // check if there were some documents: if not we have nothing to train our
+                  // model on!
+                  if(!hadSomeDocuments) {
+                    throw new GateRuntimeException("Cannot train, did not see any documents!");
+                  }
 			if(trainingLearner!=null) {	
 				//Ready to go
-				logger.info("LearningFramework: Training " 
-						+ trainingLearner.whatIsIt().toString() + " ...");
-
+        // JP: Using the logger does not always make the info show, so using System.out here 
+        // just to be safe.
+				System.out.println("LearningFramework: Training " 
+						+ trainingLearner.whatIsItString() + " ...");
+        System.out.println("Training set classes: "+
+                trainingCorpus.getPipe().getTargetAlphabet().toString().replaceAll("\\n", " "));
+        System.out.println("Training set size: "+trainingCorpus.getInstances().size());
+  			System.out.println("LearningFramework: Instances: " + trainingCorpus.getInstances().size());
+        if(trainingCorpus.getInstances().getDataAlphabet().size() > 20) {
+          System.out.println("LearningFramework: Attributes " + trainingCorpus.getInstances().getDataAlphabet().size());
+        } else {
+			    System.out.println("LearningFramework: Attributes " + trainingCorpus.getInstances().getDataAlphabet().toString().replaceAll("\\n"," "));
+        }
+          //System.out.println("DEBUG: instances are "+trainingCorpus.getInstances());
+          System.out.println("DEBUG: trainingCorpus class is "+trainingCorpus.getClass());
+                                trainingCorpus.conclude();
 				trainingLearner.train(conf, trainingCorpus);
 				this.applicationLearner = trainingLearner;
 				logger.info("LearningFramework: Training complete!");				
@@ -709,6 +828,7 @@ Serializable, ControllerAwarePR {
 			if(evaluationLearner!=null) {	
 				//Ready to evaluate
 				logger.info("LearningFramework: Evaluating ..");
+                                testCorpus.conclude();
 				evaluationLearner.evaluateXFold(testCorpus, this.foldsForXVal);
 			}
 			break;
@@ -716,6 +836,7 @@ Serializable, ControllerAwarePR {
 			if(evaluationLearner!=null) {	
 				//Ready to evaluate
 				logger.info("LearningFramework: Evaluating ..");
+                                testCorpus.conclude();
 				evaluationLearner.evaluateHoldout(
 						testCorpus, this.trainingproportion);
 			}
@@ -725,13 +846,67 @@ Serializable, ControllerAwarePR {
 		case EXPORT_ARFF_NUMERIC_CLASS:
 		case EXPORT_ARFF_NUMERIC_CLASS_THRU_CURRENT_PIPE:
 			exportCorpus.conclude();
+                        ((CorpusWriterArff)exportCorpus).writeToFile();
 			break;
-		}
+      case EXPORT_LIBSVM:
+        // JP: this should get moved to some better place
+        // JP: I have no idea if conclude works properly here! CHECK!
+        exportCorpus.conclude();
+        svm_problem prob = ((CorpusWriterMallet) exportCorpus).getLibSVMProblem();
+        PrintStream out = null;
+        File savedir = gate.util.Files.fileFromURL(saveDirectory);
+        File expdir = new File(savedir, "exportedLibSVM");
+        expdir.mkdir();
+        try {
+          out = new PrintStream(new File(expdir, "data.libsvm"));
+          for (int i = 0; i < prob.l; i++) {
+            out.print(prob.y[i]);
+            for (int j = 0; j < prob.x[i].length; j++) {
+              out.print(" ");
+              out.print(prob.x[i][j].index);
+              out.print(":");
+              out.print(prob.x[i][j].value);
+            }
+            out.println();
+          }
+          out.close();
+        } catch (FileNotFoundException ex) {
+          System.err.println("Could not write training instances to svm format file");
+          ex.printStackTrace(System.out);
+        }
+        try {
+          ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(expdir
+                  + "/my.pipe"));
+          oos.writeObject(exportCorpus.getInstances().getPipe());
+          oos.close();
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+        break;
+    }
 	}
 
 	@Override
 	public void controllerExecutionStarted(Controller arg0)
 			throws ExecutionException {
+          justStarted = true;
+        }
+        
+        protected void runAfterJustStarted() {
+          
+    // JP: this was moved from the saveDirectory setter to avoid problems
+    // but we should really make sure that the learning is reloaded only 
+    // if the URL has changed since the last time (if ever) it was loaded.
+		savedModelDirectoryFile = new File(
+				gate.util.Files.fileFromURL(saveDirectory), savedModelDirectory);
+
+		evaluationModelDirectoryFile = new File(
+				gate.util.Files.fileFromURL(saveDirectory), evaluationModelDirectory);
+
+    //System.out.println("LF-Info: loading model from "+savedModelDirectoryFile.getAbsolutePath()+" saveDirectory is "+saveDirectory);
+		applicationLearner = Engine.restoreLearner(savedModelDirectoryFile);
+    //System.out.println("LF-Info: model loaded is now "+applicationLearner);
+          
 		switch(this.getOperation()){
 		case TRAIN:
 			if(trainingAlgo==null){
@@ -754,31 +929,36 @@ Serializable, ControllerAwarePR {
 							gate.util.Files.fileFromURL(saveDirectory), trainfilenamemallet);
 					trainingCorpus = new CorpusWriterMallet(this.conf, this.instanceName, 
 							this.inputASName, trainfilemallet, mode, classType, 
-							classFeature, identifierFeature);
+							classFeature, identifierFeature, scaleFeatures);
 					break;
 				case MALLET_SEQ_CRF:
 					File trainfilemalletseq = new File(
 							gate.util.Files.fileFromURL(saveDirectory), trainfilenamemalletseq);
 					trainingCorpus = new CorpusWriterMalletSeq(this.conf, this.instanceName, 
 							this.inputASName, trainfilemalletseq, this.sequenceSpan, 
-							mode, classType, classFeature, identifierFeature);
+							mode, classType, classFeature, identifierFeature, scaleFeatures);
 					break;
 				case WEKA_CL_NUM_ADDITIVE_REGRESSION:
 					File trainfileweka = new File(
 							gate.util.Files.fileFromURL(saveDirectory), trainfilenamearff);
 					trainingCorpus = new CorpusWriterArffNumericClass(this.conf, this.instanceName, 
 							this.inputASName, trainfileweka, 
-							mode, classType, classFeature, identifierFeature, null);
+							mode, classType, classFeature, identifierFeature, null, scaleFeatures);
 					break;
 				case WEKA_CL_NAIVE_BAYES:
 				case WEKA_CL_J48:
+				case WEKA_CL_JRIP:
 				case WEKA_CL_RANDOM_TREE:
+				case WEKA_CL_MULTILAYER_PERCEPTRON:
 				case WEKA_CL_IBK:
+  			case WEKA_CL_LOGISTIC_REGRESSION:
+	  		case WEKA_CL_RANDOM_FOREST:
 					trainfileweka = new File(
 							gate.util.Files.fileFromURL(saveDirectory), trainfilenamearff);
 					trainingCorpus = new CorpusWriterArff(this.conf, this.instanceName, 
 							this.inputASName, trainfileweka, 
-							mode, classType, classFeature, identifierFeature, null);
+							mode, classType, classFeature, identifierFeature, 
+                                                null, scaleFeatures);
 					break;
 				}
 
@@ -786,14 +966,22 @@ Serializable, ControllerAwarePR {
 			}
 			break;
 		case APPLY_CURRENT_MODEL:
-			//this.applicationLearner = Engine.restoreLearner(savedModelDirectoryFile);
+      // TODO JP: OK I do not really understand if we need this here or not, but it seems not
+			// applicationLearner = Engine.restoreLearner(savedModelDirectoryFile);
 			if(this.applicationLearner==null){
-				logger.warn("LearningFramework: Begin by training a model!");
+				logger.warn("LearningFramework: either train a new or load an existing model!");
 				interrupt();
 				break;
 			} else {
-				logger.info("LearningFramework: Applying " 
-						+ this.applicationLearner.whatIsIt().toString());
+				System.out.println("LearningFramework: Applying model " 
+						+ applicationLearner.whatIsItString() + " ...");
+        if(applicationLearner.getPipe()==null) {
+          System.out.println("Model classes: UNKNOWN, no pipe");
+        } else {
+          System.out.println("Model classes: "+
+                  applicationLearner.getPipe().getTargetAlphabet().toString().replaceAll("\\n", " "));
+        }
+      
 				if(applicationLearner.getMode()!=this.getMode()){
 					logger.warn("LearningFramework: Warning! Applying "
 							+ "model trained in " + applicationLearner.getMode() 
@@ -823,40 +1011,52 @@ Serializable, ControllerAwarePR {
 							gate.util.Files.fileFromURL(saveDirectory), testfilenamemallet);
 					testCorpus = new CorpusWriterMallet(this.conf, this.instanceName, 
 							this.inputASName, testfilemallet, mode, classType, 
-							classFeature, identifierFeature);
+							classFeature, identifierFeature, scaleFeatures);
 					break;
 				case MALLET_SEQ_CRF:
 					File testfilemalletseq = new File(
 							gate.util.Files.fileFromURL(saveDirectory), testfilenamemalletseq);
 					testCorpus = new CorpusWriterMalletSeq(this.conf, this.instanceName, 
 							this.inputASName, testfilemalletseq, this.sequenceSpan, 
-							mode, classType, classFeature, identifierFeature);
+							mode, classType, classFeature, identifierFeature, scaleFeatures);
 					break;
 				case WEKA_CL_NUM_ADDITIVE_REGRESSION:
 					File testfileweka = new File(
 							gate.util.Files.fileFromURL(saveDirectory), testfilenamearff);
 					testCorpus = new CorpusWriterArffNumericClass(this.conf, this.instanceName, 
 							this.inputASName, testfileweka, mode, classType, classFeature, 
-							identifierFeature, null);
+							identifierFeature, null, scaleFeatures);
 					break;
 				case WEKA_CL_NAIVE_BAYES:
 				case WEKA_CL_J48:
+				case WEKA_CL_JRIP:
 				case WEKA_CL_RANDOM_TREE:
+				case WEKA_CL_MULTILAYER_PERCEPTRON:
 				case WEKA_CL_IBK:
+  			case WEKA_CL_LOGISTIC_REGRESSION:
+	   		case WEKA_CL_RANDOM_FOREST:
 					testfileweka = new File(
 							gate.util.Files.fileFromURL(saveDirectory), testfilenamearff);
 					testCorpus = new CorpusWriterArff(this.conf, this.instanceName, 
 							this.inputASName, testfileweka, mode, classType, classFeature, 
-							identifierFeature, null);
+							identifierFeature, null, scaleFeatures);
 					break;
 				}
 			}
 			break;
+    case EXPORT_LIBSVM:
+      File trainfilemallet = new File(
+							gate.util.Files.fileFromURL(saveDirectory), corpusoutputdirectory);
+		  exportCorpus = new CorpusWriterMallet(conf, instanceName, 
+							inputASName, trainfilemallet, mode, classType, 
+							classFeature, identifierFeature, scaleFeatures);            
+      break;
 		case EXPORT_ARFF:
 			File outputfilearff = new File(
 					gate.util.Files.fileFromURL(saveDirectory), corpusoutputdirectory);
 			exportCorpus = new CorpusWriterArff(this.conf, this.instanceName, this.inputASName, 
-					outputfilearff, mode, classType, classFeature, identifierFeature, null);
+					outputfilearff, mode, classType, classFeature, identifierFeature, null,
+                        scaleFeatures);
 			break;
 		case EXPORT_ARFF_THRU_CURRENT_PIPE:
 			File outputfilearff2 = new File(
@@ -872,13 +1072,13 @@ Serializable, ControllerAwarePR {
 			
 			exportCorpus = new CorpusWriterArff(this.conf, this.instanceName, this.inputASName, 
 					outputfilearff2, mode, classType, classFeature, identifierFeature, 
-					CorpusWriterArff.getArffPipe(outputfilearff2));
+					CorpusWriterArff.getArffPipe(outputfilearff2),scaleFeatures);
 			break;
 		case EXPORT_ARFF_NUMERIC_CLASS:
 			File outputfilearff3 = new File(
 					gate.util.Files.fileFromURL(saveDirectory), corpusoutputdirectory);
 			exportCorpus = new CorpusWriterArffNumericClass(this.conf, this.instanceName, this.inputASName, 
-					outputfilearff3, mode, classType, classFeature, identifierFeature, null);
+					outputfilearff3, mode, classType, classFeature, identifierFeature, null, scaleFeatures);
 			break;
 		case EXPORT_ARFF_NUMERIC_CLASS_THRU_CURRENT_PIPE:
 			File outputfilearff4 = new File(
@@ -894,7 +1094,7 @@ Serializable, ControllerAwarePR {
 			
 			exportCorpus = new CorpusWriterArffNumericClass(this.conf, this.instanceName, this.inputASName, 
 					outputfilearff4, mode, classType, classFeature, identifierFeature, 
-					CorpusWriterArff.getArffPipe(outputfilearff4));
+					CorpusWriterArff.getArffPipe(outputfilearff4),scaleFeatures);
 			break;
 		}
 	}

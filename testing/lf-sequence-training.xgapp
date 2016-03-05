@@ -2929,7 +2929,7 @@
                 </entry>
                 <entry>
                   <string>mode</string>
-                  <gate.learningframework.classification.Mode>NAMED_ENTITY_RECOGNITION</gate.learningframework.classification.Mode>
+                  <gate.plugin.learningframework.Mode>NAMED_ENTITY_RECOGNITION</gate.plugin.learningframework.Mode>
                 </entry>
                 <entry>
                   <string>operation</string>
@@ -2961,7 +2961,7 @@
                 </entry>
                 <entry>
                   <string>trainingAlgo</string>
-                  <gate.learningframework.classification.Algorithm>MALLET_SEQ_CRF</gate.learningframework.classification.Algorithm>
+                  <gate.plugin.learningframework.Algorithm>MALLET_SEQ_CRF</gate.plugin.learningframework.Algorithm>
                 </entry>
               </localMap>
             </runtimeParams>

@@ -23,7 +23,7 @@ rm -rf ${SCRIPTDIR}/cl-out
 java -Dat.ofai.gate.modularpipelines.configFile="lf.config.yaml" \
 -cp ${SCRIPTDIR}/evaluate.jar:${GATE_HOME}/bin/gate.jar:${GATE_HOME}/lib/* \
 gate.eval.CrossValidate -t ${SCRIPTDIR}/lf-training.xgapp \
--n -1 -d "cl-training" -v ${SCRIPTDIR}/../../../johann-petrak/gateplugin-VirtualCorpus
+-n -1 -d "cl-training" -v ${SCRIPTDIR}/../../VirtualCorpus
 
 rm -rf ${SCRIPTDIR}/temp-data-store0000
 
