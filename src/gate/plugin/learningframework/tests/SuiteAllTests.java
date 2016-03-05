@@ -15,7 +15,6 @@ import org.junit.runners.Suite;
   TestEngineMalletClass.class,
   TestEngineWeka.class,
   TestEngineLibSVM.class,
-  TestEngineMalletSeqOld.class,
   TestEngineMalletSeq.class,
   TestFeatureScaling.class
 })

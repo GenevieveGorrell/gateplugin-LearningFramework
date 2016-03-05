@@ -6,7 +6,9 @@
   HELPURL="https://github.com/GenevieveGorrell/gateplugin-LearningFramework/wiki"
 
 >
-  <JAR scan="true">LearningFramework.jar</JAR>
+  <JAR scan="true">gateplugin-LearningFramework.jar</JAR>
+  <IVY>ivy.xml</IVY>
+  <!--
   <JAR>lib/commons-cli-1.4-modified.jar</JAR> 
   <JAR>lib/bsh.jar</JAR>
   <JAR>lib/colt-1.2.0.jar</JAR>
@@ -28,5 +30,6 @@
   <JAR>lib/trove4j-3.0.3.jar</JAR>
   <JAR>lib/trove-2.0.2.jar</JAR>
   <JAR>lib/weka.jar</JAR>
+  -->
 
 </CREOLE-DIRECTORY>
